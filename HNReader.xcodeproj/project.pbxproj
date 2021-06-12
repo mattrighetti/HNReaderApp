@@ -15,6 +15,7 @@
 		C9D0938326741BBF002CC786 /* HNReader.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = C9D0938126741BBF002CC786 /* HNReader.xcdatamodeld */; };
 		C9D0938F26741BC0002CC786 /* HNReaderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9D0938E26741BC0002CC786 /* HNReaderTests.swift */; };
 		C9D0939A26741BC0002CC786 /* HNReaderUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9D0939926741BC0002CC786 /* HNReaderUITests.swift */; };
+		C9D093AC26741C25002CC786 /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9D093AB26741C25002CC786 /* Item.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -50,6 +51,7 @@
 		C9D0939526741BC0002CC786 /* HNReaderUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HNReaderUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C9D0939926741BC0002CC786 /* HNReaderUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HNReaderUITests.swift; sourceTree = "<group>"; };
 		C9D0939B26741BC0002CC786 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C9D093AB26741C25002CC786 /* Item.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Item.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -100,8 +102,11 @@
 		C9D0937526741BBE002CC786 /* HNReader */ = {
 			isa = PBXGroup;
 			children = (
+				C9D093AA26741BFD002CC786 /* HNClient */,
+				C9D093A926741BF6002CC786 /* ViewModel */,
+				C9D093A826741BF0002CC786 /* Model */,
+				C9D093A726741BE1002CC786 /* View */,
 				C9D0937626741BBE002CC786 /* HNReaderApp.swift */,
-				C9D0937826741BBE002CC786 /* ContentView.swift */,
 				C9D0937A26741BBF002CC786 /* Assets.xcassets */,
 				C9D0937F26741BBF002CC786 /* Persistence.swift */,
 				C9D0938426741BBF002CC786 /* Info.plist */,
@@ -136,6 +141,36 @@
 				C9D0939B26741BC0002CC786 /* Info.plist */,
 			);
 			path = HNReaderUITests;
+			sourceTree = "<group>";
+		};
+		C9D093A726741BE1002CC786 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				C9D0937826741BBE002CC786 /* ContentView.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		C9D093A826741BF0002CC786 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				C9D093AB26741C25002CC786 /* Item.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		C9D093A926741BF6002CC786 /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		C9D093AA26741BFD002CC786 /* HNClient */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = HNClient;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -267,6 +302,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C9D093AC26741C25002CC786 /* Item.swift in Sources */,
 				C9D0938026741BBF002CC786 /* Persistence.swift in Sources */,
 				C9D0937926741BBE002CC786 /* ContentView.swift in Sources */,
 				C9D0938326741BBF002CC786 /* HNReader.xcdatamodeld in Sources */,
