@@ -12,7 +12,7 @@ struct HomeView: View {
     var body: some View {
         NavigationView {
             Sidebar()
-            Text("Select a category")
+            ItemList()
         }
     }
 }

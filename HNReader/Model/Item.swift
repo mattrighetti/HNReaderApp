@@ -33,7 +33,7 @@ public struct Item: Decodable {
     public let time: Int?
     public let text: String?
     public let dead: Bool?
-    public let parent: UUID?
+    public let parent: Int?
     public let poll: Bool?
     public let kids: [Int]?
     public let url: String?
