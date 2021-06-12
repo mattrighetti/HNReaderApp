@@ -5,7 +5,7 @@
 import Combine
 import Foundation
 
-class TopStoriesViewModel: ObservableObject {
+class ItemListViewModel: ObservableObject {
     @Published var fetching: Bool = false
     @Published var stories:[Item] = []
     private var subscriptions = Set<AnyCancellable>()
@@ -25,5 +25,9 @@ class TopStoriesViewModel: ObservableObject {
             })
             .store(in: &subscriptions)
         fetching.toggle()
+    }
+    
+    public func refreshStories() {
+        fetchStories()
     }
 }

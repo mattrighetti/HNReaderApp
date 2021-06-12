@@ -41,6 +41,18 @@ public struct Item: Decodable {
     public let title: String?
     public let parts: Int?
     public let descendants: Int?
+    
+    public var urlHost: String? {
+        if let url = url {
+            var hostString = URL(string: url)!.host!
+            if hostString.contains("www.") {
+                hostString.removeFirst(4)
+            }
+            return hostString
+        } else {
+            return nil
+        }
+    }
 }
 
 public enum ItemType: String, Decodable {

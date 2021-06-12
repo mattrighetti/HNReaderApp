@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ItemList: View {
-    @ObservedObject var viewModel = TopStoriesViewModel()
+    @ObservedObject var viewModel = ItemListViewModel()
     
     var body: some View {
         ScrollView {
@@ -20,6 +20,13 @@ struct ItemList: View {
             }
             .padding(.vertical)
         }
+        .toolbar {
+            Button(action: viewModel.refreshStories) {
+                Label("Refresh news", systemImage: "arrow.counterclockwise.circle")
+            }
+        }
+        .navigationTitle("Hacker News")
+        .navigationSubtitle("by mattrighetti")
     }
 }
 

@@ -16,6 +16,13 @@ struct ItemCell: View {
                 .font(.system(.title, design: .rounded))
                 .fontWeight(.bold)
             
+            if let host = item.urlHost {
+                Text(host)
+                    .font(.callout)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.blue)
+            }
+            
             if let text = item.text {
                 Text(text)
                     .font(.body)
@@ -28,6 +35,7 @@ struct ItemCell: View {
                     Text("\(score)")
                         .font(.system(.callout, design: .rounded))
                         .foregroundColor(.orange)
+                        .fontWeight(.bold)
                 }
                 
                 if let by = item.by {
