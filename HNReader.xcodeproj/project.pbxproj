@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3307126A428DB719906660C2 /* HackerNewsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 330710C56EDE2FA6193B5CCE /* HackerNewsTests.swift */; };
+		33071902CB84EABE552F457C /* HackerNewsClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3307122925D90F30B0863D9A /* HackerNewsClientTests.swift */; };
 		C9D0937726741BBE002CC786 /* HNReaderApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9D0937626741BBE002CC786 /* HNReaderApp.swift */; };
 		C9D0937926741BBE002CC786 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9D0937826741BBE002CC786 /* HomeView.swift */; };
 		C9D0937B26741BBF002CC786 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C9D0937A26741BBF002CC786 /* Assets.xcassets */; };
@@ -40,6 +42,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		330710C56EDE2FA6193B5CCE /* HackerNewsTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HackerNewsTests.swift; sourceTree = "<group>"; };
+		3307122925D90F30B0863D9A /* HackerNewsClientTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HackerNewsClientTests.swift; sourceTree = "<group>"; };
 		C9D0937326741BBE002CC786 /* HNReader.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HNReader.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C9D0937626741BBE002CC786 /* HNReaderApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HNReaderApp.swift; sourceTree = "<group>"; };
 		C9D0937826741BBE002CC786 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
@@ -138,6 +142,8 @@
 			children = (
 				C9D0938E26741BC0002CC786 /* HNReaderTests.swift */,
 				C9D0939026741BC0002CC786 /* Info.plist */,
+				330710C56EDE2FA6193B5CCE /* HackerNewsTests.swift */,
+				3307122925D90F30B0863D9A /* HackerNewsClientTests.swift */,
 			);
 			path = HNReaderTests;
 			sourceTree = "<group>";
@@ -331,6 +337,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				C9D0938F26741BC0002CC786 /* HNReaderTests.swift in Sources */,
+				3307126A428DB719906660C2 /* HackerNewsTests.swift in Sources */,
+				33071902CB84EABE552F457C /* HackerNewsClientTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

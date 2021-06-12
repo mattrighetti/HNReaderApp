@@ -10,8 +10,10 @@ import Foundation
 /// HackerNews endpoint data structure
 struct HackerNews {
     public static let endpoint = "https://hacker-news.firebaseio.com/v0"
-    
+
+    /// HackerNews REST API methods
     enum API {
+        /// HackerNews User REST API methods
         enum User {
             case id(String)
             
@@ -22,7 +24,8 @@ struct HackerNews {
                 }
             }
         }
-        
+
+        /// HackerNews Stories REST API methods
         enum Stories {
             case top
             case new
@@ -33,13 +36,14 @@ struct HackerNews {
                 case .top:
                     return "\(HackerNews.endpoint)/topstories.json"
                 case .best:
-                    return "\(HackerNews.endpoint)/beststores.json"
+                    return "\(HackerNews.endpoint)/beststories.json"
                 case .new:
                     return "\(HackerNews.endpoint)/newstories.json"
                 }
             }
         }
-        
+
+        /// HackerNews Item REST API methods
         enum Item {
             case id(Int)
             
