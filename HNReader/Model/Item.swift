@@ -26,7 +26,7 @@ import Foundation
  ```
  */
 public struct Item: Decodable {
-    public let id: UUID
+    public let id: Int
     public let deleted: Bool?
     public let type: ItemType?
     public let by: String?
@@ -35,7 +35,7 @@ public struct Item: Decodable {
     public let dead: Bool?
     public let parent: UUID?
     public let poll: Bool?
-    public let kids: [UUID]?
+    public let kids: [Int]?
     public let url: String?
     public let score: Int?
     public let title: String?

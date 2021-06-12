@@ -8,10 +8,12 @@
 import Foundation
 import Combine
 
+/// HackerNews Client that exposes methods to get users, items and stories from https://news.ycombinator.com
 class HackerNewsClient {
     public static let shared: HackerNewsClient = HackerNewsClient()
     private let session: URLSession = URLSession.shared
     private let decoder: JSONDecoder = JSONDecoder()
+    private var subscriptions = Set<AnyCancellable>()
     
     /// Retrieves user  from HackerNews
     public func getUser(withId id: String) -> AnyPublisher<User, Error> {
@@ -19,9 +21,8 @@ class HackerNewsClient {
         return session
             .dataTaskPublisher(for: url)
             .retry(3)
-            .tryMap { [unowned self] response in
-                try decoder.decode(User.self, from: response.data)
-            }
+            .map(\.data)
+            .decode(type: User.self, decoder: decoder)
             .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
     }
@@ -32,28 +33,39 @@ class HackerNewsClient {
         return session
             .dataTaskPublisher(for: url)
             .retry(3)
-            .tryMap { [unowned self] response in
-                try decoder.decode(Item.self, from: response.data)
-            }
-            .receive(on: DispatchQueue.main)
+            .map(\.data)
+            .decode(type: Item.self, decoder: decoder)
             .eraseToAnyPublisher()
     }
     
     /// Retrieves array of items from HackerNews
     ///
-    /// You can specify which kind of stories you would like to retrive:
+    /// You can specify which kind of stories you would like to retrieve:
     ///   - `top`
     ///   - `best`
     ///   - `new`
-    public func getStories(by api: HackerNews.API.Stories) -> AnyPublisher<[Item], Error> {
+    public func getStoriesId(by api: HackerNews.API.Stories, range: ClosedRange<Int>) -> AnyPublisher<[Int], Error> {
         let url = URL(string: api.urlString)!
         return session
             .dataTaskPublisher(for: url)
-            .retry(3)
-            .tryMap { [unowned self] response in
-                try decoder.decode([Item].self, from: response.data)
+            .map(\.data)
+            .decode(type: [Int].self, decoder: decoder)
+            .compactMap { ids in
+                Array(ids[range])
             }
-            .receive(on: DispatchQueue.main)
+            .eraseToAnyPublisher()
+    }
+
+    public func getStories(withIds ids: [Int]) -> AnyPublisher<[Item], Error> {
+        ids.publisher
+            .flatMap(getItem)
+            .collect()
+            .eraseToAnyPublisher()
+    }
+
+    public func getTopStories(limit: Int? = 50) -> AnyPublisher<[Item], Error> {
+        getStoriesId(by: .top, range: 0...limit!)
+            .flatMap(getStories)
             .eraseToAnyPublisher()
     }
 }

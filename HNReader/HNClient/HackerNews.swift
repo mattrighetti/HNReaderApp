@@ -26,20 +26,13 @@ struct HackerNews {
         }
 
         /// HackerNews Stories REST API methods
-        enum Stories {
+        enum Stories: String {
             case top
             case new
             case best
             
             public var urlString: String {
-                switch self {
-                case .top:
-                    return "\(HackerNews.endpoint)/topstories.json"
-                case .best:
-                    return "\(HackerNews.endpoint)/beststories.json"
-                case .new:
-                    return "\(HackerNews.endpoint)/newstories.json"
-                }
+                "\(HackerNews.endpoint)/\(self.rawValue)stories.json"
             }
         }
 

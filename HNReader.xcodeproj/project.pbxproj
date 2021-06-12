@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		3307126A428DB719906660C2 /* HackerNewsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 330710C56EDE2FA6193B5CCE /* HackerNewsTests.swift */; };
+		330713D3016ED410AFD53FDF /* TopStoriesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3307147A30B9051D95FFFB20 /* TopStoriesViewModel.swift */; };
 		33071902CB84EABE552F457C /* HackerNewsClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3307122925D90F30B0863D9A /* HackerNewsClientTests.swift */; };
 		C9D0937726741BBE002CC786 /* HNReaderApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9D0937626741BBE002CC786 /* HNReaderApp.swift */; };
 		C9D0937926741BBE002CC786 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9D0937826741BBE002CC786 /* HomeView.swift */; };
@@ -44,6 +45,7 @@
 /* Begin PBXFileReference section */
 		330710C56EDE2FA6193B5CCE /* HackerNewsTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HackerNewsTests.swift; sourceTree = "<group>"; };
 		3307122925D90F30B0863D9A /* HackerNewsClientTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HackerNewsClientTests.swift; sourceTree = "<group>"; };
+		3307147A30B9051D95FFFB20 /* TopStoriesViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TopStoriesViewModel.swift; sourceTree = "<group>"; };
 		C9D0937326741BBE002CC786 /* HNReader.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HNReader.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C9D0937626741BBE002CC786 /* HNReaderApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HNReaderApp.swift; sourceTree = "<group>"; };
 		C9D0937826741BBE002CC786 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
@@ -178,6 +180,7 @@
 			isa = PBXGroup;
 			children = (
 				C9E9BCFC2674C80E001B4E19 /* AppState.swift */,
+				3307147A30B9051D95FFFB20 /* TopStoriesViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -207,6 +210,8 @@
 			dependencies = (
 			);
 			name = HNReader;
+			packageProductDependencies = (
+			);
 			productName = HNReader;
 			productReference = C9D0937326741BBE002CC786 /* HNReader.app */;
 			productType = "com.apple.product-type.application";
@@ -278,6 +283,8 @@
 				Base,
 			);
 			mainGroup = C9D0936A26741BBE002CC786;
+			packageReferences = (
+			);
 			productRefGroup = C9D0937426741BBE002CC786 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -329,6 +336,7 @@
 				C9E9BCFF2674CB6C001B4E19 /* HackerNewsClient.swift in Sources */,
 				C9E9BD012674D007001B4E19 /* HackerNews.swift in Sources */,
 				C9D0937726741BBE002CC786 /* HNReaderApp.swift in Sources */,
+				330713D3016ED410AFD53FDF /* TopStoriesViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
