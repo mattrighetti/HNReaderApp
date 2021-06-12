@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		C9D0937726741BBE002CC786 /* HNReaderApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9D0937626741BBE002CC786 /* HNReaderApp.swift */; };
-		C9D0937926741BBE002CC786 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9D0937826741BBE002CC786 /* ContentView.swift */; };
+		C9D0937926741BBE002CC786 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9D0937826741BBE002CC786 /* HomeView.swift */; };
 		C9D0937B26741BBF002CC786 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C9D0937A26741BBF002CC786 /* Assets.xcassets */; };
 		C9D0937E26741BBF002CC786 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C9D0937D26741BBF002CC786 /* Preview Assets.xcassets */; };
 		C9D0938026741BBF002CC786 /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9D0937F26741BBF002CC786 /* Persistence.swift */; };
@@ -16,6 +16,10 @@
 		C9D0938F26741BC0002CC786 /* HNReaderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9D0938E26741BC0002CC786 /* HNReaderTests.swift */; };
 		C9D0939A26741BC0002CC786 /* HNReaderUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9D0939926741BC0002CC786 /* HNReaderUITests.swift */; };
 		C9D093AC26741C25002CC786 /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9D093AB26741C25002CC786 /* Item.swift */; };
+		C9E9BCFD2674C80E001B4E19 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9E9BCFC2674C80E001B4E19 /* AppState.swift */; };
+		C9E9BCFF2674CB6C001B4E19 /* HackerNewsClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9E9BCFE2674CB6C001B4E19 /* HackerNewsClient.swift */; };
+		C9E9BD012674D007001B4E19 /* HackerNews.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9E9BD002674D007001B4E19 /* HackerNews.swift */; };
+		C9E9BD032674D095001B4E19 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9E9BD022674D095001B4E19 /* User.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -38,7 +42,7 @@
 /* Begin PBXFileReference section */
 		C9D0937326741BBE002CC786 /* HNReader.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HNReader.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C9D0937626741BBE002CC786 /* HNReaderApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HNReaderApp.swift; sourceTree = "<group>"; };
-		C9D0937826741BBE002CC786 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		C9D0937826741BBE002CC786 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		C9D0937A26741BBF002CC786 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		C9D0937D26741BBF002CC786 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		C9D0937F26741BBF002CC786 /* Persistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
@@ -52,6 +56,10 @@
 		C9D0939926741BC0002CC786 /* HNReaderUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HNReaderUITests.swift; sourceTree = "<group>"; };
 		C9D0939B26741BC0002CC786 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C9D093AB26741C25002CC786 /* Item.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Item.swift; sourceTree = "<group>"; };
+		C9E9BCFC2674C80E001B4E19 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
+		C9E9BCFE2674CB6C001B4E19 /* HackerNewsClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HackerNewsClient.swift; sourceTree = "<group>"; };
+		C9E9BD002674D007001B4E19 /* HackerNews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HackerNews.swift; sourceTree = "<group>"; };
+		C9E9BD022674D095001B4E19 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -146,7 +154,7 @@
 		C9D093A726741BE1002CC786 /* View */ = {
 			isa = PBXGroup;
 			children = (
-				C9D0937826741BBE002CC786 /* ContentView.swift */,
+				C9D0937826741BBE002CC786 /* HomeView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -155,6 +163,7 @@
 			isa = PBXGroup;
 			children = (
 				C9D093AB26741C25002CC786 /* Item.swift */,
+				C9E9BD022674D095001B4E19 /* User.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -162,6 +171,7 @@
 		C9D093A926741BF6002CC786 /* ViewModel */ = {
 			isa = PBXGroup;
 			children = (
+				C9E9BCFC2674C80E001B4E19 /* AppState.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -169,6 +179,8 @@
 		C9D093AA26741BFD002CC786 /* HNClient */ = {
 			isa = PBXGroup;
 			children = (
+				C9E9BCFE2674CB6C001B4E19 /* HackerNewsClient.swift */,
+				C9E9BD002674D007001B4E19 /* HackerNews.swift */,
 			);
 			path = HNClient;
 			sourceTree = "<group>";
@@ -304,8 +316,12 @@
 			files = (
 				C9D093AC26741C25002CC786 /* Item.swift in Sources */,
 				C9D0938026741BBF002CC786 /* Persistence.swift in Sources */,
-				C9D0937926741BBE002CC786 /* ContentView.swift in Sources */,
+				C9D0937926741BBE002CC786 /* HomeView.swift in Sources */,
+				C9E9BCFD2674C80E001B4E19 /* AppState.swift in Sources */,
 				C9D0938326741BBF002CC786 /* HNReader.xcdatamodeld in Sources */,
+				C9E9BD032674D095001B4E19 /* User.swift in Sources */,
+				C9E9BCFF2674CB6C001B4E19 /* HackerNewsClient.swift in Sources */,
+				C9E9BD012674D007001B4E19 /* HackerNews.swift in Sources */,
 				C9D0937726741BBE002CC786 /* HNReaderApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

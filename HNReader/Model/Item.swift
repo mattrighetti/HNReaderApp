@@ -8,7 +8,7 @@
 import Foundation
 
 /**
- Stories, comments, jobs, Ask HNs and even polls are just items. They're identified by their ids, which are unique integers.
+ Stories, comments, jobs, Ask HNs and even polls are items. They're identified by their ids, which are unique integers.
 
  For example, a story: https://hacker-news.firebaseio.com/v0/item/8863.json?print=pretty
  ```json
@@ -25,28 +25,28 @@ import Foundation
  }
  ```
  */
-struct Item: Decodable {
-    let id: UUID
-    let deleted: Bool?
-    let type: ItemType?
-    let by: String?
-    let time: Int?
-    let text: String?
-    let dead: Bool?
-    let parent: UUID?
-    let poll: Bool?
-    let kids: [UUID]?
-    let url: String?
-    let score: Int?
-    let title: String?
-    let parts: Int?
-    let descendants: Int?
+public struct Item: Decodable {
+    public let id: UUID
+    public let deleted: Bool?
+    public let type: ItemType?
+    public let by: String?
+    public let time: Int?
+    public let text: String?
+    public let dead: Bool?
+    public let parent: UUID?
+    public let poll: Bool?
+    public let kids: [UUID]?
+    public let url: String?
+    public let score: Int?
+    public let title: String?
+    public let parts: Int?
+    public let descendants: Int?
 }
 
-enum ItemType: String, Decodable {
-    case poll = "poll"
-    case job = "job"
-    case story = "story"
-    case comment = "comment"
-    case pollopt = "pollopt"
+public enum ItemType: String, Decodable {
+    case poll
+    case job
+    case story
+    case comment
+    case pollopt
 }
