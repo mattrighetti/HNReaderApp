@@ -10,11 +10,12 @@ import SwiftUI
 @main
 struct HNReaderApp: App {
     let persistenceController = PersistenceController.shared
+    let appState = AppState()
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
-                .environment(\.managedObjectContext, persistenceController.container.viewContext)
+            HomeView()
+                .environmentObject(appState)
         }
     }
 }
