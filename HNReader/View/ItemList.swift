@@ -19,6 +19,9 @@ struct ItemList: View {
                 ForEach(viewModel.stories, id: \.id) { item in
                     ItemCell(item: item)
                         .padding(.horizontal)
+                        .onTapGesture {
+                            NSWorkspace.shared.open(URL(string: item.url!)!)
+                        }
                 }
                 .redacted(reason: viewModel.fetching ? .placeholder : [])
             }

@@ -23,12 +23,12 @@ struct ItemCell: View {
                     .foregroundColor(.blue)
             }
             
-            if let text = item.text {
-                HTMLText(text: text)
-                    .font(.body)
-                    .lineLimit(3)
-                    .multilineTextAlignment(.leading)
-            }
+//            if let text = item.text {
+//                HTMLText(text: text)
+//                    .font(.body)
+//                    .lineLimit(3)
+//                    .multilineTextAlignment(.leading)
+//            }
             
             HStack {
                 if let score = item.score {
