@@ -30,6 +30,9 @@ struct HackerNews {
             case top
             case new
             case best
+            case ask
+            case job
+            case show
             
             public var urlString: String {
                 "\(HackerNews.endpoint)/\(self.rawValue)stories.json"

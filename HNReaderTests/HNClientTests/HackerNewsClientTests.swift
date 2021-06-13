@@ -69,41 +69,13 @@ class HackerNewsClientTests: XCTestCase {
         XCTAssertEqual(item!.id, 27348900)
     }
 
-    func testGetStoriesId() throws {
-        var ids: [Int]?
-        var error: Error?
-        let expectation = self.expectation(description: "getStoriesIds")
-
-        HackerNewsClient.shared
-            .getStoriesId(by: .top, range: 0...29)
-            .sink(receiveCompletion: { completion in
-                switch completion {
-                case .finished:
-                    break
-                case .failure(let err):
-                    error = err
-                }
-
-                expectation.fulfill()
-            }, receiveValue: { responseIds in
-                ids = responseIds
-            })
-            .store(in: &cancellables)
-
-        waitForExpectations(timeout: 5)
-
-        XCTAssertNil(error)
-        XCTAssertNotNil(ids)
-        XCTAssertEqual(30, ids?.count)
-    }
-
     func testGetTopStories() throws {
         var stories: [Item]?
         var error: Error?
         let expectation = self.expectation(description: "bestStoriesGet")
 
         HackerNewsClient.shared
-            .getTopStories(limit: 100)
+            .getStories(by: .top, limit: 100)
             .sink(receiveCompletion: { completion in
                 switch completion {
                 case .finished:

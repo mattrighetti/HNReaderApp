@@ -6,19 +6,48 @@
 //
 
 import SwiftUI
+import OSLog
 
 struct ItemList: View {
-    @ObservedObject var viewModel = TopStoriesViewModel()
+    @EnvironmentObject var appState: AppState
+    @StateObject var viewModel = ItemListViewModel()
+    @State private var itemLimitSelection: Int = 1
+    private var itemLimitOptions: [Int] = [25, 50, 100]
     
     var body: some View {
         ScrollView {
             LazyVStack(alignment: .leading) {
-                ForEach(viewModel.stories, id: \.id) { item in
-                    ItemCell(item: item)
+                ForEach(viewModel.storiesIds, id: \.self) { itemId in
+                    ItemCell(itemId: itemId)
                         .padding(.horizontal)
                 }
             }
             .padding(.vertical)
+        }
+        .onAppear {
+            viewModel.currentNewsSelection = appState.newsSelection
+        }
+        .onChange(of: appState.newsSelection, perform: fetchItems)
+        .toolbar {
+            Picker("Limit", selection: $itemLimitSelection) {
+                ForEach(itemLimitOptions.indices, id: \.self) { index in
+                    Text("\(itemLimitOptions[index])")
+                            .tag(index)
+                }
+            }
+            .pickerStyle(SegmentedPickerStyle())
+            
+            Button(action: viewModel.refreshStories) {
+                Label("Refresh news", systemImage: "arrow.counterclockwise.circle")
+            }
+        }
+        .navigationTitle("Hacker News")
+    }
+
+    private func fetchItems(by category: HackerNews.API.Stories) {
+        if category != viewModel.currentNewsSelection {
+            NSLog("changing category from \(viewModel.currentNewsSelection) to \(category)")
+            viewModel.currentNewsSelection = category
         }
     }
 }

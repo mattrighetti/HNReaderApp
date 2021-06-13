@@ -30,14 +30,14 @@
 			<key>orderHint</key>
 			<integer>1</integer>
 		</dict>
-		<key>HackerNewsClientTests.testGetStoriesId.xcscheme</key>
+		<key>HackerNewsClientTests.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false />
 			<key>orderHint</key>
 			<integer>4</integer>
 		</dict>
-		<key>HackerNewsClientTests.testGetTopStories.xcscheme</key>
+		<key>ItemTests.testItemDateIntervalFormatter.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false />
@@ -51,14 +51,14 @@
 			<key>orderHint</key>
 			<integer>6</integer>
 		</dict>
-		<key>HackerNewsTests.testStoriesApiUrlString.xcscheme</key>
+		<key>ItemTests.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false />
 			<key>orderHint</key>
 			<integer>7</integer>
 		</dict>
-		<key>HackerNewsClientTests.xcscheme</key>
+		<key>DateTests.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false />

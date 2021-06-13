@@ -44,15 +44,12 @@ class HackerNewsClient {
     ///   - `top`
     ///   - `best`
     ///   - `new`
-    public func getStoriesId(by api: HackerNews.API.Stories, range: ClosedRange<Int>) -> AnyPublisher<[Int], Error> {
+    public func getStoriesId(by api: HackerNews.API.Stories) -> AnyPublisher<[Int], Error> {
         let url = URL(string: api.urlString)!
         return session
             .dataTaskPublisher(for: url)
             .map(\.data)
             .decode(type: [Int].self, decoder: decoder)
-            .compactMap { ids in
-                Array(ids[range])
-            }
             .eraseToAnyPublisher()
     }
 
@@ -63,8 +60,8 @@ class HackerNewsClient {
             .eraseToAnyPublisher()
     }
 
-    public func getTopStories(limit: Int? = 50) -> AnyPublisher<[Item], Error> {
-        getStoriesId(by: .top, range: 0...limit!)
+    public func getStories(by category: HackerNews.API.Stories, limit: Int? = 50) -> AnyPublisher<[Item], Error> {
+        getStoriesId(by: category)
             .flatMap(getStories)
             .eraseToAnyPublisher()
     }
