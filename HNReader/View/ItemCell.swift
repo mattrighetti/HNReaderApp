@@ -23,6 +23,8 @@ struct ItemCell: View {
             Text(item?.title ?? "No title")
                 .font(.system(.title, design: .rounded))
                 .fontWeight(.bold)
+                .redacted(reason: item?.title != nil ? [] : .placeholder)
+
             
             if let host = item?.urlHost {
                 Text(host)

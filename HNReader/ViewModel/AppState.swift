@@ -13,20 +13,22 @@ class AppState: ObservableObject {
             switch newValue {
             case .top:
                 newsSelection = .top
-            case .comment:
-                newsSelection = nil
+            case .ask:
+                newsSelection = .ask
+            case .show:
+                newsSelection = .show
+            case .best:
+                newsSelection = .best
+            case .new:
+                newsSelection = .new
             case .job:
                 newsSelection = .job
-            case .past:
-                newsSelection = nil
-            case .some(.saved):
-                newsSelection = nil
             default:
                 break
             }
         }
     }
-    @Published var newsSelection: HackerNews.API.Stories? = nil
+    @Published var newsSelection: HackerNews.API.Stories = .top
 
     // Sidebar categories abstraction
     enum SidebarSelection: String, Equatable, CaseIterable {
@@ -35,18 +37,18 @@ class AppState: ObservableObject {
         case show = "Show"
         case saved = "Saved"
         case job = "Job"
-        case past = "Past"
-        case comment = "Comments"
+        case best = "Best"
+        case new = "Newest"
         
         var iconName: String {
             switch self {
             case .top: return "flame"
             case .ask: return "person.fill.questionmark"
+            case .new: return "paperplane"
             case .show: return "eye.circle"
+            case .best: return "rosette"
             case .saved: return "bookmark"
             case .job: return "briefcase"
-            case .past: return "clock"
-            case .comment: return "text.bubble"
             }
         }
     }

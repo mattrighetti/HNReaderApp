@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import OSLog
 
 struct ItemList: View {
     @EnvironmentObject var appState: AppState
@@ -16,30 +17,22 @@ struct ItemList: View {
     var body: some View {
         ScrollView {
             LazyVStack(alignment: .leading) {
-                ForEach(viewModel.storiesIds, id: \.self) { item in
-                    ItemCell(itemId: item)
+                ForEach(viewModel.storiesIds, id: \.self) { itemId in
+                    ItemCell(itemId: itemId)
                         .padding(.horizontal)
                 }
             }
             .padding(.vertical)
         }
         .onAppear {
-            if let selection = appState.newsSelection {
-                viewModel.currentNewsSelection = selection
-            } else {
-                appState.sidebarSelection = .top
-            }
+            viewModel.currentNewsSelection = appState.newsSelection
         }
-        .onReceive(appState.$newsSelection, perform: { newValue in
-            if let newValue = newValue,
-               viewModel.currentNewsSelection != newValue {
-                viewModel.currentNewsSelection = newValue
-            }
-        })
+        .onChange(of: appState.newsSelection, perform: fetchItems)
         .toolbar {
             Picker("Limit", selection: $itemLimitSelection) {
                 ForEach(itemLimitOptions.indices, id: \.self) { index in
-                    Text("\(itemLimitOptions[index])").tag(index)
+                    Text("\(itemLimitOptions[index])")
+                            .tag(index)
                 }
             }
             .pickerStyle(SegmentedPickerStyle())
@@ -49,6 +42,13 @@ struct ItemList: View {
             }
         }
         .navigationTitle("Hacker News")
+    }
+
+    private func fetchItems(by category: HackerNews.API.Stories) {
+        if category != viewModel.currentNewsSelection {
+            NSLog("changing category from \(viewModel.currentNewsSelection) to \(category)")
+            viewModel.currentNewsSelection = category
+        }
     }
 }
 
