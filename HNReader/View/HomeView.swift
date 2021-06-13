@@ -25,7 +25,7 @@ struct Sidebar: View {
             Section(header: Text("Categories")) {
                 ForEach(AppState.SidebarSelection.allCases, id: \.self) { selectionItem in
                     Label(selectionItem.rawValue, systemImage: selectionItem.iconName)
-                        .tag(selectionItem.rawValue)
+                        .tag(selectionItem)
                 }
             }
         }

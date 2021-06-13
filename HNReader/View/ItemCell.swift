@@ -24,7 +24,7 @@ struct ItemCell: View {
             }
             
             if let text = item.text {
-                Text(text)
+                HTMLText(text: text)
                     .font(.body)
                     .lineLimit(3)
                     .multilineTextAlignment(.leading)
@@ -38,15 +38,15 @@ struct ItemCell: View {
                         .fontWeight(.bold)
                 }
                 
-                if let by = item.by {
-                    Text(by)
-                        .font(.system(.callout, design: .rounded))
+                HStack(spacing: 2) {
+                    Text("Posted by")
                         .foregroundColor(.gray)
-                } else {
-                    Text("anonymous")
-                        .font(.system(.callout, design: .rounded))
-                        .foregroundColor(.gray)
+                    Text("\(item.by ?? "anonymous")")
+                        .foregroundColor(.yellow)
+                        .fontWeight(.bold)
+                        .redacted(reason: item.by != nil ? [] : .placeholder)
                 }
+                .font(.system(.callout, design: .rounded))
                 
                 Spacer()
             }

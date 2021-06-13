@@ -63,8 +63,8 @@ class HackerNewsClient {
             .eraseToAnyPublisher()
     }
 
-    public func getTopStories(limit: Int? = 50) -> AnyPublisher<[Item], Error> {
-        getStoriesId(by: .top, range: 0...limit!)
+    public func getStories(by category: HackerNews.API.Stories, limit: Int? = 50) -> AnyPublisher<[Item], Error> {
+        getStoriesId(by: category, range: 0...limit!)
             .flatMap(getStories)
             .eraseToAnyPublisher()
     }

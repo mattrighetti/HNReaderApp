@@ -8,7 +8,10 @@
 import SwiftUI
 
 struct ItemList: View {
-    @ObservedObject var viewModel = ItemListViewModel()
+    @EnvironmentObject var appState: AppState
+    @StateObject var viewModel = ItemListViewModel()
+    @State private var itemLimitSelection: Int = 1
+    private var itemLimitOptions: [Int] = [25, 50, 100]
     
     var body: some View {
         ScrollView {
@@ -17,16 +20,36 @@ struct ItemList: View {
                     ItemCell(item: item)
                         .padding(.horizontal)
                 }
+                .redacted(reason: viewModel.fetching ? .placeholder : [])
             }
             .padding(.vertical)
         }
+        .onAppear {
+            if let selection = appState.newsSelection {
+                viewModel.currentNewsSelection = selection
+            } else {
+                appState.sidebarSelection = .top
+            }
+        }
+        .onReceive(appState.$newsSelection, perform: { newValue in
+            if let newValue = newValue,
+               viewModel.currentNewsSelection != newValue {
+                viewModel.currentNewsSelection = newValue
+            }
+        })
         .toolbar {
+            Picker("Limit", selection: $itemLimitSelection) {
+                ForEach(itemLimitOptions.indices, id: \.self) { index in
+                    Text("\(itemLimitOptions[index])").tag(index)
+                }
+            }
+            .pickerStyle(SegmentedPickerStyle())
+            
             Button(action: viewModel.refreshStories) {
                 Label("Refresh news", systemImage: "arrow.counterclockwise.circle")
             }
         }
         .navigationTitle("Hacker News")
-        .navigationSubtitle("by mattrighetti")
     }
 }
 
