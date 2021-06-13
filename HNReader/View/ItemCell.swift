@@ -20,18 +20,8 @@ struct ItemCell: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 5) {
-            Text(item?.title ?? "No title")
-                .font(.system(.title, design: .rounded))
-                .fontWeight(.bold)
-                .redacted(reason: item?.title != nil ? [] : .placeholder)
-
-            
-            if let host = item?.urlHost {
-                Text(host)
-                    .font(.callout)
-                    .fontWeight(.semibold)
-                    .foregroundColor(.blue)
-            }
+            TitleView()
+            HostText()
             
 //            if let text = item.text {
 //                HTMLText(text: text)
@@ -41,29 +31,8 @@ struct ItemCell: View {
 //            }
             
             HStack {
-                if let score = item?.score {
-                    Text("\(score)")
-                        .font(.system(.callout, design: .rounded))
-                        .foregroundColor(.orange)
-                        .fontWeight(.bold)
-                }
-                
-                HStack {
-                    Text("•")
-                        .padding(.horizontal, 1)
-                    Text("Posted by")
-                        .foregroundColor(.gray)
-                    Text("\(item?.by ?? "anonymous")")
-                        .foregroundColor(.yellow)
-                        .fontWeight(.bold)
-                        .redacted(reason: item?.by != nil ? [] : .placeholder)
-                    Text("•")
-                        .padding(.horizontal, 1)
-                    Text("\(item?.timeStringRepresentation ?? "")")
-                        .foregroundColor(.gray)
-                }
-                .font(.system(.callout, design: .rounded))
-                
+                ScoreText()
+                AuthorText()
                 Spacer()
             }
         }
@@ -81,6 +50,79 @@ struct ItemCell: View {
                 NSWorkspace.shared.open(url)
             }
         }
+    }
+
+    @ViewBuilder
+    private func TitleView() -> some View {
+        if let item = item {
+            Text(item.title ?? "No title")
+                .font(.system(.title, design: .rounded))
+                .fontWeight(.bold)
+        } else {
+            Text("No title")
+                .font(.system(.title, design: .rounded))
+                .fontWeight(.bold)
+                .redacted(reason: .placeholder)
+        }
+    }
+
+    @ViewBuilder
+    private func HostText() -> some View {
+        if let item = item {
+            Text(item.urlHost ?? "")
+                .font(.callout)
+                .fontWeight(.semibold)
+                .foregroundColor(.blue)
+        } else {
+            Text("No url")
+                .font(.callout)
+                .fontWeight(.semibold)
+                .foregroundColor(.blue)
+                .redacted(reason: .placeholder)
+        }
+    }
+
+    @ViewBuilder
+    private func ScoreText() -> some View {
+        if let item = item {
+            Text("\(item.score ?? 0)")
+                .font(.system(.callout, design: .rounded))
+                .foregroundColor(.orange)
+                .fontWeight(.bold)
+        } else {
+            Text("0")
+                .font(.system(.callout, design: .rounded))
+                .foregroundColor(.orange)
+                .fontWeight(.bold)
+                .redacted(reason: .placeholder)
+        }
+    }
+
+    @ViewBuilder
+    private func AuthorText() -> some View {
+        HStack {
+            Text("•")
+                .padding(.horizontal, 1)
+            Text("Posted by")
+                .foregroundColor(.gray)
+            if let item = item {
+                Text("\(item.by ?? "anonymous")")
+                    .foregroundColor(.yellow)
+                    .fontWeight(.bold)
+            } else {
+                Text("No author")
+                    .redacted(reason: .placeholder)
+            }
+            Text("•")
+                .padding(.horizontal, 1)
+            if let item = item {
+                Text("\(item.timeStringRepresentation ?? "")")
+                    .foregroundColor(.gray)
+            } else {
+                Text("").redacted(reason: .placeholder)
+            }
+        }
+        .font(.system(.callout, design: .rounded))
     }
 
     private func fetchItem() {

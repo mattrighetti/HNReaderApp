@@ -29,6 +29,17 @@ struct ItemList: View {
         }
         .onChange(of: appState.newsSelection, perform: fetchItems)
         .toolbar {
+            MaxItemPicker(enabled: false)
+            Button(action: viewModel.refreshStories) {
+                Label("Refresh news", systemImage: "arrow.counterclockwise.circle")
+            }
+        }
+        .navigationTitle("Hacker News")
+    }
+
+    @ViewBuilder
+    private func MaxItemPicker(enabled: Bool) -> some View {
+        if enabled {
             Picker("Limit", selection: $itemLimitSelection) {
                 ForEach(itemLimitOptions.indices, id: \.self) { index in
                     Text("\(itemLimitOptions[index])")
@@ -36,12 +47,9 @@ struct ItemList: View {
                 }
             }
             .pickerStyle(SegmentedPickerStyle())
-            
-            Button(action: viewModel.refreshStories) {
-                Label("Refresh news", systemImage: "arrow.counterclockwise.circle")
-            }
+        } else {
+            EmptyView()
         }
-        .navigationTitle("Hacker News")
     }
 
     private func fetchItems(by category: HackerNews.API.Stories) {
