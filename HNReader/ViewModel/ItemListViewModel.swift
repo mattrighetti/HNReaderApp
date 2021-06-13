@@ -4,34 +4,40 @@
 
 import Combine
 import SwiftUI
+import OSLog
 
 class ItemListViewModel: ObservableObject {
-    @Published var fetching: Bool = false
     @Published var currentNewsSelection: HackerNews.API.Stories = .top {
         willSet {
+            NSLog("triggering fetchStories with selection \(newValue)")
             fetchStories(by: newValue)
         }
     }
-    @Published var stories:[Item] = []
+    @Published var storiesIds: [Int] = [] {
+        willSet {
+            NSLog("storiesIds has been updated, current values: \(newValue)")
+        }
+    }
     public var subscriptions = Set<AnyCancellable>()
     
     public func fetchStories(by category: HackerNews.API.Stories) {
-        fetching.toggle()
-        HackerNewsClient.shared.getStories(by: category)
+        HackerNewsClient.shared.getStoriesId(by: category)
             .receive(on: DispatchQueue.main)
-            .sink(receiveCompletion: { [weak self] completion in
+            .sink(receiveCompletion: { completion in
                 switch completion {
                 case .failure(let error):
-                    print(error)
+                    NSLog("encountered error while completing fetch task: \(error)")
                 case .finished:
-                    self?.fetching.toggle()
+                    NSLog("completion successful")
+                    break
                 }
-            }, receiveValue: { [weak self] items in
-                self?.stories = items.sorted(by: { $0.score! > $1.score! })
+            }, receiveValue: { [unowned self] itemIds in
+                NSLog("assigning itemIds to viewModel published value")
+                storiesIds = itemIds
             })
             .store(in: &subscriptions)
     }
-    
+
     public func refreshStories() {
         fetchStories(by: currentNewsSelection)
     }

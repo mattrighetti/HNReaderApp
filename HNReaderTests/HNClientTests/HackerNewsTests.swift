@@ -19,8 +19,10 @@ class HackerNewsTests: XCTestCase {
     }
 
     func testStoriesApiUrlString() throws {
-        XCTAssertEqual("https://hacker-news.firebaseio.com/v0/beststories.json", HackerNews.API.Stories.best.urlString)
         XCTAssertEqual("https://hacker-news.firebaseio.com/v0/topstories.json", HackerNews.API.Stories.top.urlString)
         XCTAssertEqual("https://hacker-news.firebaseio.com/v0/newstories.json", HackerNews.API.Stories.new.urlString)
+        XCTAssertEqual("https://hacker-news.firebaseio.com/v0/beststories.json", HackerNews.API.Stories.best.urlString)
+        XCTAssertEqual("https://hacker-news.firebaseio.com/v0/askstories.json", HackerNews.API.Stories.ask.urlString)
+        XCTAssertEqual("https://hacker-news.firebaseio.com/v0/showstories.json", HackerNews.API.Stories.show.urlString)
     }
 }
