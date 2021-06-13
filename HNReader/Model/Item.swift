@@ -53,6 +53,10 @@ public struct Item: Decodable {
             return nil
         }
     }
+
+    public var timeStringRepresentation: String? {
+        Date().timeElapsedStringRepresentation(since: Date(timeIntervalSince1970: TimeInterval(time!)))
+    }
 }
 
 public enum ItemType: String, Decodable {

@@ -38,13 +38,19 @@ struct ItemCell: View {
                         .fontWeight(.bold)
                 }
                 
-                HStack(spacing: 2) {
+                HStack {
+                    Text("•")
+                        .padding(.horizontal, 1)
                     Text("Posted by")
                         .foregroundColor(.gray)
                     Text("\(item.by ?? "anonymous")")
                         .foregroundColor(.yellow)
                         .fontWeight(.bold)
                         .redacted(reason: item.by != nil ? [] : .placeholder)
+                    Text("•")
+                        .padding(.horizontal, 1)
+                    Text("\(item.timeStringRepresentation ?? "")")
+                        .foregroundColor(.gray)
                 }
                 .font(.system(.callout, design: .rounded))
                 

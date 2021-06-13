@@ -103,7 +103,7 @@ class HackerNewsClientTests: XCTestCase {
         let expectation = self.expectation(description: "bestStoriesGet")
 
         HackerNewsClient.shared
-            .getTopStories(limit: 100)
+            .getStories(by: .top, limit: 100)
             .sink(receiveCompletion: { completion in
                 switch completion {
                 case .finished:
