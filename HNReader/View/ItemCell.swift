@@ -8,15 +8,23 @@
 import SwiftUI
 
 struct ItemCell: View {
-    var item: Item
-    
+    var itemId: Int
+    let itemDownloader: ItemDownloader
+
+    @State var item: Item?
+
+    init(itemId: Int) {
+        self.itemId = itemId
+        itemDownloader = DefaultItemDownloader(itemId: itemId)
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 5) {
-            Text(item.title!)
+            Text(item?.title ?? "No title")
                 .font(.system(.title, design: .rounded))
                 .fontWeight(.bold)
             
-            if let host = item.urlHost {
+            if let host = item?.urlHost {
                 Text(host)
                     .font(.callout)
                     .fontWeight(.semibold)
@@ -31,7 +39,7 @@ struct ItemCell: View {
 //            }
             
             HStack {
-                if let score = item.score {
+                if let score = item?.score {
                     Text("\(score)")
                         .font(.system(.callout, design: .rounded))
                         .foregroundColor(.orange)
@@ -43,13 +51,13 @@ struct ItemCell: View {
                         .padding(.horizontal, 1)
                     Text("Posted by")
                         .foregroundColor(.gray)
-                    Text("\(item.by ?? "anonymous")")
+                    Text("\(item?.by ?? "anonymous")")
                         .foregroundColor(.yellow)
                         .fontWeight(.bold)
-                        .redacted(reason: item.by != nil ? [] : .placeholder)
+                        .redacted(reason: item?.by != nil ? [] : .placeholder)
                     Text("•")
                         .padding(.horizontal, 1)
-                    Text("\(item.timeStringRepresentation ?? "")")
+                    Text("\(item?.timeStringRepresentation ?? "")")
                         .foregroundColor(.gray)
                 }
                 .font(.system(.callout, design: .rounded))
@@ -60,12 +68,37 @@ struct ItemCell: View {
         .padding()
         .background(Color.black.opacity(0.3))
         .cornerRadius(10)
+        .onAppear {
+            if item == nil {
+                fetchItem()
+            }
+        }
+        .onTapGesture {
+            if let item = item {
+                guard let url = URL(string: item.url!) else { return }
+                NSWorkspace.shared.open(url)
+            }
+        }
+    }
+
+    private func fetchItem() {
+        let cacheKey = itemId
+        if let cachedItem = ItemCache.shared.getItem(for: cacheKey) {
+            self.item = cachedItem
+        } else {
+            itemDownloader.downloadItem(completion: { item in
+                guard let item = item else { return }
+                ItemCache.shared.cache(item, for: cacheKey)
+                DispatchQueue.main.async {
+                    self.item = item
+                }
+            })
+        }
     }
 }
 
 struct ItemCell_Previews: PreviewProvider {
     static var previews: some View {
-        let item = Item(id: 749324, deleted: false, type: .story, by: "mattrighetti", time: 1623530984811, text: "This is a pretty long title if I have to say", dead: false, parent: nil, poll: false, kids: nil, url: "https://www.hdblog.it", score: 42, title: "Ops, this was the intended title", parts: nil, descendants: nil)
-        ItemCell(item: item)
+        ItemCell(itemId: 27492268)
     }
 }

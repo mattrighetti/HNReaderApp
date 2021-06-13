@@ -16,14 +16,10 @@ struct ItemList: View {
     var body: some View {
         ScrollView {
             LazyVStack(alignment: .leading) {
-                ForEach(viewModel.stories, id: \.id) { item in
-                    ItemCell(item: item)
+                ForEach(viewModel.storiesIds, id: \.self) { item in
+                    ItemCell(itemId: item)
                         .padding(.horizontal)
-                        .onTapGesture {
-                            NSWorkspace.shared.open(URL(string: item.url!)!)
-                        }
                 }
-                .redacted(reason: viewModel.fetching ? .placeholder : [])
             }
             .padding(.vertical)
         }

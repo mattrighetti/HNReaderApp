@@ -6,28 +6,26 @@ import Combine
 import SwiftUI
 
 class ItemListViewModel: ObservableObject {
-    @Published var fetching: Bool = false
     @Published var currentNewsSelection: HackerNews.API.Stories = .top {
         willSet {
             fetchStories(by: newValue)
         }
     }
-    @Published var stories:[Item] = []
+    @Published var storiesIds:[Int] = []
     public var subscriptions = Set<AnyCancellable>()
     
     public func fetchStories(by category: HackerNews.API.Stories) {
-        fetching.toggle()
-        HackerNewsClient.shared.getStories(by: category)
+        HackerNewsClient.shared.getStoriesId(by: currentNewsSelection, range: nil)
             .receive(on: DispatchQueue.main)
-            .sink(receiveCompletion: { [weak self] completion in
+            .sink(receiveCompletion: { completion in
                 switch completion {
                 case .failure(let error):
                     print(error)
                 case .finished:
-                    self?.fetching.toggle()
+                    break
                 }
-            }, receiveValue: { [weak self] items in
-                self?.stories = items.sorted(by: { $0.score! > $1.score! })
+            }, receiveValue: { [weak self] itemIds in
+                self?.storiesIds = itemIds
             })
             .store(in: &subscriptions)
     }
