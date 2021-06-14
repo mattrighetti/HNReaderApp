@@ -56,7 +56,6 @@ class AppState: ObservableObject {
         case top = "Top"
         case ask = "Ask"
         case show = "Show"
-        case saved = "Saved"
         case job = "Job"
         case best = "Best"
         case new = "Newest"
@@ -68,7 +67,6 @@ class AppState: ObservableObject {
             case .new: return "paperplane"
             case .show: return "eye.circle"
             case .best: return "rosette"
-            case .saved: return "bookmark"
             case .job: return "briefcase"
             }
         }
