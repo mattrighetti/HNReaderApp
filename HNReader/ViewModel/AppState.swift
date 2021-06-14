@@ -6,8 +6,10 @@
 //
 
 import Combine
+import SwiftUI
 
 class AppState: ObservableObject {
+    @AppStorage("displayMode") var displayMode: DisplayMode = .system
     @Published var sidebarSelection: SidebarSelection? = SidebarSelection.top {
         willSet {
             switch newValue {
@@ -30,6 +32,25 @@ class AppState: ObservableObject {
     }
     @Published var newsSelection: HackerNews.API.Stories = .top
 
+    func getColorScheme() -> ColorScheme {
+        switch displayMode {
+        case .dark: return .dark
+        case .light: return .light
+        case .system: return .dark
+        }
+    }
+
+    func setColorScheme(_ colorScheme: ColorScheme) {
+        switch colorScheme {
+        case .dark:
+            displayMode = .dark
+        case .light:
+            displayMode = .light
+        @unknown default:
+            break
+        }
+    }
+
     // Sidebar categories abstraction
     enum SidebarSelection: String, Equatable, CaseIterable {
         case top = "Top"
@@ -51,5 +72,11 @@ class AppState: ObservableObject {
             case .job: return "briefcase"
             }
         }
+    }
+
+    enum DisplayMode: Int {
+        case system = 0
+        case dark = 1
+        case light = 2
     }
 }
