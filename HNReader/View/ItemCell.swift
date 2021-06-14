@@ -11,6 +11,7 @@ struct ItemCell: View {
     var itemId: Int
     let itemDownloader: ItemDownloader
 
+    @Environment(\.colorScheme) var colorScheme
     @State var item: Item?
 
     init(itemId: Int) {
@@ -37,7 +38,7 @@ struct ItemCell: View {
             }
         }
         .padding()
-        .background(Color.black.opacity(0.3))
+        .background(colorScheme == .dark ? Color.black.opacity(0.3) : Color.white)
         .cornerRadius(10)
         .onAppear {
             if item == nil {
