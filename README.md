@@ -11,8 +11,6 @@ The application is still in beta for the moment and needs optimizations. When th
 
 [Download HNReader](https://github.com/mattrighetti/HNReaderApp/releases/download/v0.1/HNReader.dmg)
 
-[Temporary source code repo](https://github.com/mattrighetti/HNReader)
-
 ## Application preview
 ### Dark mode
 <img width="1021" alt="Screenshot 2021-06-14 at 18 14 16" src="https://user-images.githubusercontent.com/16304728/121924591-56078f80-cd3c-11eb-899f-a19b3176cea1.png">
