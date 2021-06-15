@@ -9,7 +9,7 @@ You can report any issue and suggest/request new features in the [issue](https:/
 
 The application is still in beta for the moment and needs optimizations. When the time come I will release it to AppStore and on `brew`.
 
-[Download HNReader](https://github.com/mattrighetti/HNReaderApp/releases/download/v0.1/HNReader.dmg)
+[Download HNReader](https://github.com/mattrighetti/HNReaderApp/releases/download/v0.1-beta/HNReader.dmg)
 
 ## Application preview
 ### Dark mode
