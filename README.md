@@ -9,7 +9,11 @@ You can report any issue and suggest/request new features in the [issue](https:/
 
 The application is still in beta for the moment and needs optimizations. When the time come I will release it to AppStore and on `brew`.
 
-[Download HNReader](https://github.com/mattrighetti/HNReaderApp/releases/download/v0.1-beta/HNReader.dmg)
+<p align="center">
+<a href="https://apps.apple.com/it/app/hnews-reader/id1572480416?l=en&mt=12">
+<img src="resources/appstore.png" height="50px" />
+</a>
+</p>
 
 ## Application preview
 ### Dark mode
