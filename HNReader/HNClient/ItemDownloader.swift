@@ -5,21 +5,11 @@
 import Foundation
 
 protocol ItemDownloader {
-    var cacheKey: Int { get }
-    func downloadItem(completion: @escaping (Item?) -> Void)
+    func downloadItem(itemId: Int, completion: @escaping (Item?) -> Void)
 }
 
 class DefaultItemDownloader: ItemDownloader {
-    let itemId: Int
-    var cacheKey: Int {
-        itemId
-    }
-
-    init(itemId: Int) {
-        self.itemId = itemId
-    }
-
-    func downloadItem(completion: @escaping (Item?) -> ()) {
+    func downloadItem(itemId: Int, completion: @escaping (Item?) -> ()) {
         guard let url = URL(string: HackerNews.API.Item.id(itemId).urlString) else { return }
         let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
             if let data = data {

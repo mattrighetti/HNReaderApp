@@ -7,6 +7,7 @@
 
 import Foundation
 import Combine
+import Alamofire
 
 /// HackerNews Client that exposes methods to get users, items and stories from https://news.ycombinator.com
 class HackerNewsClient {
@@ -64,5 +65,35 @@ class HackerNewsClient {
         getStoriesId(by: category)
             .flatMap(getStories)
             .eraseToAnyPublisher()
+    }
+    
+    /// Recursively fetches comments and all its childrens
+    public func getComments(commentsIds: [Int], completionHandler: @escaping (Bool, [Comment]) -> Void) {
+        var returnComments : [Comment] = []
+                
+        let commentsGroup = DispatchGroup()
+        for commentId in commentsIds {
+            commentsGroup.enter()
+            let itemUrl = HackerNews.API.Item.id(commentId).urlString
+            AF.request(itemUrl).responseJSON { response in
+                if let commentJSON = try! response.result.get() as? NSDictionary {
+                    let commentObject = Comment.init(json: commentJSON)
+                    commentObject.getComments(completionHandler: { (success) in
+                        returnComments.append(commentObject)
+                        commentsGroup.leave()
+                    })
+                } else {
+                    commentsGroup.leave()
+                }
+            }
+        }
+        
+        commentsGroup.notify(queue: .main) {
+            returnComments.sort {a, b in
+                commentsIds.firstIndex(of: a.id!)! < commentsIds.firstIndex(of: b.id!)!
+            }
+            
+            completionHandler(true, returnComments)
+        }
     }
 }

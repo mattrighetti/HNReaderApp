@@ -16,24 +16,28 @@ struct ItemCell: View {
 
     init(itemId: Int) {
         self.itemId = itemId
-        itemDownloader = DefaultItemDownloader(itemId: itemId)
+        itemDownloader = DefaultItemDownloader()
     }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 5) {
             TitleView()
-            HostText()
+                .onTapGesture {
+                    if let item = item {
+                        if let url = item.url {
+                            NSWorkspace.shared.open(URL(string: url)!)
+                        } else {
+                            NSWorkspace.shared.open(URL(string: "https://news.ycombinator.com/item?id=" + String(describing: itemId))!)
+                        }
+                    }
+                }
             
-//            if let text = item.text {
-//                HTMLText(text: text)
-//                    .font(.body)
-//                    .lineLimit(3)
-//                    .multilineTextAlignment(.leading)
-//            }
+            HostText()
             
             HStack {
                 ScoreText()
                 AuthorText()
+                CommentsCountText()
                 Spacer()
             }
         }
@@ -43,12 +47,6 @@ struct ItemCell: View {
         .onAppear {
             if item == nil {
                 fetchItem()
-            }
-        }
-        .onTapGesture {
-            if let item = item {
-                guard let url = URL(string: item.url!) else { return }
-                NSWorkspace.shared.open(url)
             }
         }
     }
@@ -125,13 +123,24 @@ struct ItemCell: View {
         }
         .font(.system(.callout, design: .rounded))
     }
+    
+    @ViewBuilder
+    private func CommentsCountText() -> some View {
+        if let item = self.item {
+            if let kids = item.kids {
+                Text("\(kids.count) threads")
+            } else {
+                Text("no comments")
+            }
+        }
+    }
 
     private func fetchItem() {
         let cacheKey = itemId
         if let cachedItem = ItemCache.shared.getItem(for: cacheKey) {
             self.item = cachedItem
         } else {
-            itemDownloader.downloadItem(completion: { item in
+            itemDownloader.downloadItem(itemId: cacheKey, completion: { item in
                 guard let item = item else { return }
                 ItemCache.shared.cache(item, for: cacheKey)
                 DispatchQueue.main.async {
