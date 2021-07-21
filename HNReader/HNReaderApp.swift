@@ -14,11 +14,11 @@ struct HNReaderApp: App {
 
     private var displayModeBind: Binding<ColorScheme> {
         Binding<ColorScheme>(
-                get: { appState.getColorScheme() },
-                set: {
-                    appState.setColorScheme($0)
-                    displayMode = $0
-                }
+            get: { appState.getColorScheme() },
+            set: {
+                appState.setColorScheme($0)
+                displayMode = $0
+            }
         )
     }
     @State var displayMode: ColorScheme?
@@ -44,8 +44,7 @@ struct HNReaderApp: App {
                     .frame(maxWidth: 100)
                 }
             }
-            .frame(minHeight: 100)
-            .frame(minWidth: 300)
+            .frame(minWidth: 300, minHeight: 100)
             .preferredColorScheme(displayMode)
         }
     }

@@ -8,21 +8,23 @@
 import SwiftUI
 import OSLog
 
-struct ItemList: View {
+struct StoryList: View {
     @EnvironmentObject var appState: AppState
     @StateObject var viewModel = ItemListViewModel()
-    @State private var itemLimitSelection: Int = 1
-    private var itemLimitOptions: [Int] = [25, 50, 100]
+    @State var itemLimitSelection: Int = 1
+    @Binding var selectedItem: Int?
+    var itemLimitOptions: [Int] = [25, 50, 100]
     
     var body: some View {
-        ScrollView {
-            LazyVStack(alignment: .leading) {
-                ForEach(viewModel.storiesIds, id: \.self) { itemId in
-                    ItemCell(itemId: itemId)
-                        .padding(.horizontal)
-                }
+        List {
+            ForEach(viewModel.storiesIds, id: \.self) { itemId in
+                NavigationLink(
+                    destination: DetailStoryView(itemId: itemId),
+                    label: {
+                        ItemCell(itemId: itemId)
+                    }
+                )
             }
-            .padding(.vertical)
         }
         .onAppear {
             viewModel.currentNewsSelection = appState.newsSelection
@@ -62,6 +64,7 @@ struct ItemList: View {
 
 struct ItemList_Previews: PreviewProvider {
     static var previews: some View {
-        ItemList()
+        StoryList(selectedItem: .constant(nil))
+            .environmentObject(AppState())
     }
 }
