@@ -60,7 +60,7 @@ struct DetailStoryView: View {
     @ViewBuilder
     func CommentsSection() -> some View {
         if fetching {
-            Text("Fetching")
+            LoadingCircle()
         } else {
             if let comments = comments {
                 VStack(alignment: .leading) {
@@ -92,6 +92,11 @@ struct DetailStoryView: View {
                 
                 DispatchQueue.main.async {
                     self.comments = flattenComments.compactMap { $0 } as? [Comment]
+                    if let comments = self.comments {
+                        for comment in comments {
+                            comment.text = String(htmlEncodedString: comment.text ?? "Empty comment")
+                        }
+                    }
                     self.fetching = false
                 }
             }

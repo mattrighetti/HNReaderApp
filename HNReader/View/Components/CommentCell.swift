@@ -18,7 +18,7 @@ struct CommentCell: View {
                 .foregroundColor(.yellow)
             
             HStack {
-                HTMLText(text: comment.text ?? "Empty comment")
+                Text(comment.text!)
                 Spacer()
             }
         }
