@@ -63,7 +63,7 @@ struct DetailStoryView: View {
             LoadingCircle()
         } else {
             if let comments = comments {
-                VStack(alignment: .leading) {
+                LazyVStack(alignment: .leading) {
                     ForEach(comments, id: \.self) { comment in
                         CommentCell(comment: comment)
                             .padding(.leading, 50 * CGFloat(comment.indentLevel))

@@ -13,6 +13,7 @@ struct ItemCell: View {
 
     @Environment(\.colorScheme) var colorScheme
     @State var item: Item?
+    @State private var isHovering: Bool = false
 
     init(itemId: Int) {
         self.itemId = itemId
@@ -22,11 +23,13 @@ struct ItemCell: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 5) {
             TitleView()
+                .onHover(perform: updateHoverStatus)
                 .onTapGesture {
                     if let item = item {
                         if let url = item.url {
                             NSWorkspace.shared.open(URL(string: url)!)
                         } else {
+                            // TODO apply this logic directly in struct
                             NSWorkspace.shared.open(URL(string: "https://news.ycombinator.com/item?id=" + String(describing: itemId))!)
                         }
                     }
@@ -147,6 +150,17 @@ struct ItemCell: View {
                     self.item = item
                 }
             })
+        }
+    }
+    
+    private func updateHoverStatus(hovering: Bool) -> Void {
+        self.isHovering.toggle()
+        DispatchQueue.main.async {
+            if (self.isHovering) {
+                NSCursor.pointingHand.push()
+            } else {
+                NSCursor.pop()
+            }
         }
     }
 }
