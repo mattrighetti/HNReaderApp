@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import HackerNews
 
 struct CommentCell: View {
     let comment: Comment
@@ -18,7 +19,7 @@ struct CommentCell: View {
                 .foregroundColor(.yellow)
             
             HStack {
-                Text(comment.text!)
+                Text(comment.text ?? "Empty comment")
                 Spacer()
             }
         }
@@ -28,8 +29,8 @@ struct CommentCell: View {
     }
 }
 
-struct CommentCell_Previews: PreviewProvider {
-    static var previews: some View {
-        CommentCell(comment: Comment())
-    }
-}
+//struct CommentCell_Previews: PreviewProvider {
+//    static var previews: some View {
+//        CommentCell(comment: Comment)
+//    }
+//}

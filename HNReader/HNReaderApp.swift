@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import HackerNews
 
 @main
 struct HNReaderApp: App {

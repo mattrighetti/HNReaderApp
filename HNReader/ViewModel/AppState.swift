@@ -6,6 +6,7 @@
 //
 
 import Combine
+import HackerNews
 import SwiftUI
 
 class AppState: ObservableObject {

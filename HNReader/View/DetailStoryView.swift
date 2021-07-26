@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import HackerNews
 
 struct DetailStoryView: View {
     var itemId: Int
@@ -14,6 +15,9 @@ struct DetailStoryView: View {
     @State var item: Item?
     @State var fetching: Bool = false
     @State var comments: [Comment]?
+    @State var fetched: Int = 0
+    @State var showMore: Bool = true
+    var fetchStep: Int = 10
     
     init(itemId: Int) {
         self.itemId = itemId
@@ -22,7 +26,9 @@ struct DetailStoryView: View {
     var body: some View {
         ScrollView {
             ItemSection().padding()
-            CommentsSection().padding()
+            LoadingView(condition: .init(get: { self.fetching && self.comments == nil }, set: { _ in return })) {
+                CommentsSection().padding()
+            }
         }.onAppear {
             self.item = ItemCache.shared.getItem(for: self.itemId)
             fetchComments()
@@ -32,7 +38,7 @@ struct DetailStoryView: View {
     @ViewBuilder
     func ItemSection() -> some View {
         switch self.item?.type {
-        case .story:
+        case .story, .job:
             StorySection()
         default:
             Text("No view available for this element with id: \(self.itemId)")
@@ -59,47 +65,81 @@ struct DetailStoryView: View {
     
     @ViewBuilder
     func CommentsSection() -> some View {
-        if fetching {
-            LoadingCircle()
+        if let comments = comments {
+            VStack(alignment: .leading) {
+                ForEach(comments, id: \.id) { comment in
+                    CommentCell(comment: comment)
+                        .padding(.leading, 50 * CGFloat(comment.indentLevel!))
+                }
+                if showMore {
+                    Button("More...", action: {
+                        fetchComments()
+                    })
+                    .padding(.top, 5)
+                }
+            }
         } else {
-            if let comments = comments {
-                LazyVStack(alignment: .leading) {
-                    ForEach(comments, id: \.self) { comment in
-                        CommentCell(comment: comment)
-                            .padding(.leading, 50 * CGFloat(comment.indentLevel))
-                    }
-                }
-            } else {
-                VStack {
-                    Spacer()
-                    Image("NoComments")
-                        .resizable()
-                        .frame(width: 400, height: 400, alignment: .center)
-                    Spacer()
-                }
+            VStack {
+                Spacer()
+                Image("NoComments")
+                    .resizable()
+                    .frame(width: 400, height: 400, alignment: .center)
+                Spacer()
             }
         }
     }
     
     private func fetchComments() {
         if let commentsId = item?.kids {
-            self.fetching = true
-            HackerNewsClient.shared.getComments(commentsIds: commentsId) { _, comments in
+            self.fetching.toggle()
+            let subarray = commentsId.slice(from: fetched, next: 10)
+            HackerNewsClient.shared.getComments(commentsIds: subarray.0) { _, comments in
                 var flattenComments = [Any]()
                 for comment in comments {
                     flattenComments += comment.flattenedComments() as! Array<Any>
                 }
                 
                 DispatchQueue.main.async {
-                    self.comments = flattenComments.compactMap { $0 } as? [Comment]
-                    if let comments = self.comments {
-                        for comment in comments {
-                            comment.text = String(htmlEncodedString: comment.text ?? "Empty comment")
-                        }
-                    }
-                    self.fetching = false
+                    pushComments(comments: flattenComments.compactMap { $0 } as? [Comment], disableMoreButton: subarray.1)
+                    self.fetching.toggle()
                 }
             }
+        }
+    }
+    
+    private func pushComments(comments: [Comment]?, disableMoreButton: Bool) {
+        guard comments != nil else { return }
+        
+        for comment in comments! {
+            comment.text = String(htmlEncodedString: comment.text ?? "Empty comment")
+        }
+        
+        if self.comments == nil {
+            self.comments = [Comment]()
+        }
+        
+        self.comments?.append(contentsOf: comments!)
+        self.fetched += 10
+        if disableMoreButton {
+            self.showMore.toggle()
+        }
+    }
+}
+
+struct LoadingView<Content: View>: View {
+    @Binding var condition: Bool
+    let content: Content
+    
+    init(condition: Binding<Bool>, @ViewBuilder content: () -> Content) {
+        self._condition = condition
+        self.content = content()
+    }
+    
+    var body: some View {
+        if condition {
+            LoadingCircle()
+        } else {
+            content
         }
     }
 }

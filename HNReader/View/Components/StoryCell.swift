@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import HackerNews
 
 struct ItemCell: View {
     var itemId: Int
