@@ -15,14 +15,10 @@ The application is still in beta for the moment and needs optimizations. When th
 </a>
 </p>
 
-[Temporary source code repo](https://github.com/mattrighetti/HNReader)
-
 ## Application preview
 ### Dark mode
-<img width="1021" alt="Screenshot 2021-06-14 at 18 14 16" src="https://user-images.githubusercontent.com/16304728/121924591-56078f80-cd3c-11eb-899f-a19b3176cea1.png">
-
-### Light mode
-<img width="1021" alt="Screenshot 2021-06-14 at 21 13 59" src="https://user-images.githubusercontent.com/16304728/121946681-77c14080-cd55-11eb-88c0-1457ac45ecd0.png">
+<img width="1021" alt="Screenshot 2021-06-14 at 18 14 16" src="resources/main.png">
+<img width="1021" alt="Screenshot 2021-06-14 at 18 14 16" src="resources/mainwithdetailview.png">
 
 ## License
 [MIT](LICENSE) or [APACHE 2.0](LICENSE)

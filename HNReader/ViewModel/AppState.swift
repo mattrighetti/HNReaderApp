@@ -10,7 +10,7 @@ import HackerNews
 import SwiftUI
 
 class AppState: ObservableObject {
-    @AppStorage("displayMode") var displayMode: DisplayMode = .system
+    @AppStorage("displayMode") var displayMode: DisplayMode = .dark
     @Published var sidebarSelection: SidebarSelection? = SidebarSelection.top {
         willSet {
             switch newValue {
