@@ -4,7 +4,7 @@
 
 import Combine
 import SwiftUI
-import OSLog
+import HackerNews
 
 class ItemListViewModel: ObservableObject {
     @Published var currentNewsSelection: HackerNews.API.Stories = .top {
@@ -13,22 +13,13 @@ class ItemListViewModel: ObservableObject {
         }
     }
     @Published var storiesIds: [Int] = []
-    public var subscriptions = Set<AnyCancellable>()
     
     public func fetchStories(by category: HackerNews.API.Stories) {
-        HackerNewsClient.shared.getStoriesId(by: category)
-            .receive(on: DispatchQueue.main)
-            .sink(receiveCompletion: { completion in
-                switch completion {
-                case .failure(let error):
-                    NSLog("encountered error while completing fetch task: \(error)")
-                case .finished:
-                    break
-                }
-            }, receiveValue: { [unowned self] itemIds in
-                storiesIds = itemIds
-            })
-            .store(in: &subscriptions)
+        HackerNewsFirebaseClient.shared.getStoriesIds(category) { ids in
+            DispatchQueue.main.async {
+                self.storiesIds = ids
+            }
+        }
     }
 
     public func refreshStories() {

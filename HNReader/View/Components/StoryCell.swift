@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import HackerNews
 
 struct ItemCell: View {
     var itemId: Int
@@ -13,27 +14,34 @@ struct ItemCell: View {
 
     @Environment(\.colorScheme) var colorScheme
     @State var item: Item?
+    @State private var isHovering: Bool = false
 
     init(itemId: Int) {
         self.itemId = itemId
-        itemDownloader = DefaultItemDownloader(itemId: itemId)
+        itemDownloader = DefaultItemDownloader()
     }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 5) {
             TitleView()
-            HostText()
+                .onHover(perform: updateHoverStatus)
+                .onTapGesture {
+                    if let item = item {
+                        if let url = item.url {
+                            NSWorkspace.shared.open(URL(string: url)!)
+                        } else {
+                            // TODO apply this logic directly in struct
+                            NSWorkspace.shared.open(URL(string: "https://news.ycombinator.com/item?id=" + String(describing: itemId))!)
+                        }
+                    }
+                }
             
-//            if let text = item.text {
-//                HTMLText(text: text)
-//                    .font(.body)
-//                    .lineLimit(3)
-//                    .multilineTextAlignment(.leading)
-//            }
+            HostText()
             
             HStack {
                 ScoreText()
                 AuthorText()
+                CommentsCountText()
                 Spacer()
             }
         }
@@ -45,23 +53,17 @@ struct ItemCell: View {
                 fetchItem()
             }
         }
-        .onTapGesture {
-            if let item = item {
-                guard let url = URL(string: item.url!) else { return }
-                NSWorkspace.shared.open(url)
-            }
-        }
     }
 
     @ViewBuilder
     private func TitleView() -> some View {
         if let item = item {
             Text(item.title ?? "No title")
-                .font(.system(.title, design: .rounded))
+                .font(.system(size: 15.0))
                 .fontWeight(.bold)
         } else {
             Text("No title")
-                .font(.system(.title, design: .rounded))
+                .font(.system(size: 15.0))
                 .fontWeight(.bold)
                 .redacted(reason: .placeholder)
         }
@@ -71,12 +73,12 @@ struct ItemCell: View {
     private func HostText() -> some View {
         if let item = item {
             Text(item.urlHost ?? "")
-                .font(.callout)
+                .font(.system(size: 10.0))
                 .fontWeight(.semibold)
                 .foregroundColor(.blue)
         } else {
             Text("No url")
-                .font(.callout)
+                .font(.system(size: 10.0))
                 .fontWeight(.semibold)
                 .foregroundColor(.blue)
                 .redacted(reason: .placeholder)
@@ -87,12 +89,12 @@ struct ItemCell: View {
     private func ScoreText() -> some View {
         if let item = item {
             Text("\(item.score ?? 0)")
-                .font(.system(.callout, design: .rounded))
+                .font(.system(size: 10.0))
                 .foregroundColor(.orange)
                 .fontWeight(.bold)
         } else {
             Text("0")
-                .font(.system(.callout, design: .rounded))
+                .font(.system(size: 10.0))
                 .foregroundColor(.orange)
                 .fontWeight(.bold)
                 .redacted(reason: .placeholder)
@@ -106,24 +108,27 @@ struct ItemCell: View {
                 .padding(.horizontal, 1)
             Text("Posted by")
                 .foregroundColor(.gray)
-            if let item = item {
-                Text("\(item.by ?? "anonymous")")
-                    .foregroundColor(.yellow)
-                    .fontWeight(.bold)
-            } else {
-                Text("No author")
-                    .redacted(reason: .placeholder)
-            }
+            
+            OptionalText(item?.by?.description, other: "unknown user")
+                .foregroundColor(.yellow)
+            
             Text("•")
                 .padding(.horizontal, 1)
-            if let item = item {
-                Text("\(item.timeStringRepresentation ?? "")")
-                    .foregroundColor(.gray)
+        }
+        .font(.system(size: 10.0, weight: .bold, design: .rounded))
+    }
+    
+    @ViewBuilder
+    private func CommentsCountText() -> some View {
+        if let item = self.item {
+            if let descendants = item.descendants {
+                Text("\(descendants) comments")
+                    .font(.system(size: 10.0))
             } else {
-                Text("").redacted(reason: .placeholder)
+                Text("no comments")
+                    .font(.system(size: 10.0))
             }
         }
-        .font(.system(.callout, design: .rounded))
     }
 
     private func fetchItem() {
@@ -131,13 +136,42 @@ struct ItemCell: View {
         if let cachedItem = ItemCache.shared.getItem(for: cacheKey) {
             self.item = cachedItem
         } else {
-            itemDownloader.downloadItem(completion: { item in
+            itemDownloader.downloadItem(itemId: cacheKey, completion: { item in
                 guard let item = item else { return }
                 ItemCache.shared.cache(item, for: cacheKey)
                 DispatchQueue.main.async {
                     self.item = item
                 }
             })
+        }
+    }
+    
+    private func updateHoverStatus(hovering: Bool) -> Void {
+        self.isHovering.toggle()
+        DispatchQueue.main.async {
+            if (self.isHovering) {
+                NSCursor.pointingHand.push()
+            } else {
+                NSCursor.pop()
+            }
+        }
+    }
+}
+
+struct OptionalText<Content: StringProtocol>: View {
+    let content: Content?
+    let other: String
+    
+    init(_ content: Content?, other: String) {
+        self.content = content
+        self.other = other
+    }
+    
+    var body: some View {
+        if let content = content {
+            Text(content)
+        } else {
+            Text(other)
         }
     }
 }

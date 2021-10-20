@@ -6,28 +6,37 @@
 //
 
 import SwiftUI
+import HackerNews
 import OSLog
 
-struct ItemList: View {
+struct StoryList: View {
     @EnvironmentObject var appState: AppState
     @StateObject var viewModel = ItemListViewModel()
-    @State private var itemLimitSelection: Int = 1
-    private var itemLimitOptions: [Int] = [25, 50, 100]
+    @State var itemLimitSelection: Int = 1
+    @Binding var selectedItem: Int?
+    var itemLimitOptions: [Int] = [25, 50, 100]
     
     var body: some View {
-        ScrollView {
-            LazyVStack(alignment: .leading) {
+        ScrollViewReader { proxy in
+            List {
                 ForEach(viewModel.storiesIds, id: \.self) { itemId in
-                    ItemCell(itemId: itemId)
-                        .padding(.horizontal)
+                    NavigationLink(
+                        destination: DetailStoryView(itemId: itemId),
+                        label: {
+                            ItemCell(itemId: itemId)
+                        }
+                    ).id(itemId)
                 }
-            }
-            .padding(.vertical)
+            }.onChange(of: appState.newsSelection, perform: { value in
+                fetchItems(by: value)
+                withAnimation {
+                    proxy.scrollTo(viewModel.storiesIds.first)
+                }
+            })
         }
         .onAppear {
             viewModel.currentNewsSelection = appState.newsSelection
         }
-        .onChange(of: appState.newsSelection, perform: fetchItems)
         .toolbar {
             MaxItemPicker(enabled: false)
             Button(action: viewModel.refreshStories) {
@@ -62,6 +71,7 @@ struct ItemList: View {
 
 struct ItemList_Previews: PreviewProvider {
     static var previews: some View {
-        ItemList()
+        StoryList(selectedItem: .constant(nil))
+            .environmentObject(AppState())
     }
 }

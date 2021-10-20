@@ -94,7 +94,6 @@ class HackerNewsClientTests: XCTestCase {
 
         XCTAssertNil(error)
         XCTAssertNotNil(stories)
-        print(stories)
         XCTAssertFalse(stories!.isEmpty)
     }
 }
