@@ -15,7 +15,7 @@ class ItemListViewModel: ObservableObject {
     @Published var storiesIds: [Int] = []
     
     public func fetchStories(by category: HackerNews.API.Stories) {
-        HackerNewsClient.shared.getStoriesId(by: category) { ids in
+        HackerNewsFirebaseClient.shared.getStoriesIds(category) { ids in
             DispatchQueue.main.async {
                 self.storiesIds = ids
             }

@@ -15,9 +15,9 @@ struct DetailStoryView: View {
     @State var item: Item?
     @State var fetching: Bool = false
     @State var comments: [Comment]?
-    @State var fetched: Int = 0
-    @State var showMore: Bool = true
-    var fetchStep: Int = 10
+    @State var nextPage: Int = 1
+    @State var showMore: Bool = false
+    let dispatchQueue = DispatchQueue(label: "CommentScrapingThreadQueue", qos: .background)
     
     init(itemId: Int) {
         self.itemId = itemId
@@ -25,9 +25,17 @@ struct DetailStoryView: View {
     
     var body: some View {
         ScrollView {
-            ItemSection().padding()
-            LoadingView(condition: .init(get: { self.fetching && self.comments == nil }, set: { _ in return })) {
-                CommentsSection().padding()
+            ItemSection()
+                .padding()
+            
+            LoadingView(
+                condition: .init(
+                    get: { self.fetching && self.comments == nil },
+                    set: { _ in return }
+                )
+            ) {
+                CommentsSection()
+                    .padding()
             }
         }.onAppear {
             self.item = ItemCache.shared.getItem(for: self.itemId)
@@ -53,11 +61,23 @@ struct DetailStoryView: View {
                 .fixedSize(horizontal: false, vertical: true)
                 .padding(.vertical, 5)
             
+            if let text = item?.text {
+                Text(html: text)
+                    .font(.body)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .padding(.vertical, 5)
+            }
+            
             HStack {
-                Text("Posted by \(item?.by ?? "")")
+                Text("Posted by ")
+                    .font(.system(.callout, design: .rounded))
+                    .foregroundColor(.gray)
+                
+                Text(item?.by ?? "")
                     .font(.system(.callout, design: .rounded))
                     .foregroundColor(.yellow)
                     .fontWeight(.bold)
+                
                 Spacer()
             }
         }
@@ -69,7 +89,7 @@ struct DetailStoryView: View {
             VStack(alignment: .leading) {
                 ForEach(comments, id: \.id) { comment in
                     CommentCell(comment: comment)
-                        .padding(.leading, 50 * CGFloat(comment.indentLevel!))
+                        .padding(.leading, 20 * CGFloat(comment.indentLevel))
                 }
                 if showMore {
                     Button("More...", action: {
@@ -90,39 +110,41 @@ struct DetailStoryView: View {
     }
     
     private func fetchComments() {
-        if let commentsId = item?.kids {
-            self.fetching.toggle()
-            let subarray = commentsId.slice(from: fetched, next: 10)
-            HackerNewsClient.shared.getComments(commentsIds: subarray.0) { _, comments in
-                var flattenComments = [Any]()
-                for comment in comments {
-                    flattenComments += comment.flattenedComments() as! Array<Any>
-                }
-                
+        guard item!.kids != nil else { return }
+        self.fetching.toggle()
+        dispatchQueue.async {
+            HackerNewsScraperClient.shared.getComments(forItemId: item!.id, page: self.nextPage) { success, comments, hasMore in
                 DispatchQueue.main.async {
-                    pushComments(comments: flattenComments.compactMap { $0 } as? [Comment], disableMoreButton: subarray.1)
+                    self.showMore = hasMore
+                    self.nextPage += 1
+                    
+                    if self.comments == nil {
+                        self.comments = comments
+                    } else {
+                        self.comments!.append(contentsOf: comments)
+                    }
+                    
                     self.fetching.toggle()
                 }
             }
         }
     }
     
-    private func pushComments(comments: [Comment]?, disableMoreButton: Bool) {
-        guard comments != nil else { return }
-        
-        for comment in comments! {
-            comment.text = String(htmlEncodedString: comment.text ?? "Empty comment")
+    private func parseToNSAttributedString(string: String) -> NSAttributedString? {
+        guard let data = string.data(using: .utf8) else {
+            return nil
         }
-        
-        if self.comments == nil {
-            self.comments = [Comment]()
+
+        let options: [NSAttributedString.DocumentReadingOptionKey: Any] = [
+            .documentType: NSAttributedString.DocumentType.html,
+            .characterEncoding: String.Encoding.utf8.rawValue
+        ]
+
+        guard let attributedString = try? NSAttributedString(data: data, options: options, documentAttributes: nil) else {
+            return nil
         }
-        
-        self.comments?.append(contentsOf: comments!)
-        self.fetched += 10
-        if disableMoreButton {
-            self.showMore.toggle()
-        }
+
+        return attributedString
     }
 }
 

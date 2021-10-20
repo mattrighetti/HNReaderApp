@@ -9,6 +9,7 @@ import SwiftUI
 import CoreData
 
 struct HomeView: View {
+    @EnvironmentObject var appState: AppState
     @State var selectedItem: Int? = nil
     
     var body: some View {

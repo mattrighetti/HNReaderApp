@@ -59,11 +59,11 @@ struct ItemCell: View {
     private func TitleView() -> some View {
         if let item = item {
             Text(item.title ?? "No title")
-                .font(.system(.title, design: .rounded))
+                .font(.system(size: 15.0))
                 .fontWeight(.bold)
         } else {
             Text("No title")
-                .font(.system(.title, design: .rounded))
+                .font(.system(size: 15.0))
                 .fontWeight(.bold)
                 .redacted(reason: .placeholder)
         }
@@ -73,12 +73,12 @@ struct ItemCell: View {
     private func HostText() -> some View {
         if let item = item {
             Text(item.urlHost ?? "")
-                .font(.callout)
+                .font(.system(size: 10.0))
                 .fontWeight(.semibold)
                 .foregroundColor(.blue)
         } else {
             Text("No url")
-                .font(.callout)
+                .font(.system(size: 10.0))
                 .fontWeight(.semibold)
                 .foregroundColor(.blue)
                 .redacted(reason: .placeholder)
@@ -89,12 +89,12 @@ struct ItemCell: View {
     private func ScoreText() -> some View {
         if let item = item {
             Text("\(item.score ?? 0)")
-                .font(.system(.callout, design: .rounded))
+                .font(.system(size: 10.0))
                 .foregroundColor(.orange)
                 .fontWeight(.bold)
         } else {
             Text("0")
-                .font(.system(.callout, design: .rounded))
+                .font(.system(size: 10.0))
                 .foregroundColor(.orange)
                 .fontWeight(.bold)
                 .redacted(reason: .placeholder)
@@ -108,33 +108,25 @@ struct ItemCell: View {
                 .padding(.horizontal, 1)
             Text("Posted by")
                 .foregroundColor(.gray)
-            if let item = item {
-                Text("\(item.by ?? "anonymous")")
-                    .foregroundColor(.yellow)
-                    .fontWeight(.bold)
-            } else {
-                Text("No author")
-                    .redacted(reason: .placeholder)
-            }
+            
+            OptionalText(item?.by?.description, other: "unknown user")
+                .foregroundColor(.yellow)
+            
             Text("•")
                 .padding(.horizontal, 1)
-            if let item = item {
-                Text("\(item.timeStringRepresentation ?? "")")
-                    .foregroundColor(.gray)
-            } else {
-                Text("").redacted(reason: .placeholder)
-            }
         }
-        .font(.system(.callout, design: .rounded))
+        .font(.system(size: 10.0, weight: .bold, design: .rounded))
     }
     
     @ViewBuilder
     private func CommentsCountText() -> some View {
         if let item = self.item {
-            if let kids = item.kids {
-                Text("\(kids.count) threads")
+            if let descendants = item.descendants {
+                Text("\(descendants) comments")
+                    .font(.system(size: 10.0))
             } else {
                 Text("no comments")
+                    .font(.system(size: 10.0))
             }
         }
     }
@@ -162,6 +154,24 @@ struct ItemCell: View {
             } else {
                 NSCursor.pop()
             }
+        }
+    }
+}
+
+struct OptionalText<Content: StringProtocol>: View {
+    let content: Content?
+    let other: String
+    
+    init(_ content: Content?, other: String) {
+        self.content = content
+        self.other = other
+    }
+    
+    var body: some View {
+        if let content = content {
+            Text(content)
+        } else {
+            Text(other)
         }
     }
 }

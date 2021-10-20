@@ -11,6 +11,6 @@ protocol ItemDownloader {
 
 class DefaultItemDownloader: ItemDownloader {
     func downloadItem(itemId: Int, completion: @escaping (Item?) -> ()) {
-        HackerNewsClient.shared.getItem(withId: itemId, completionHandler: completion)
+        HackerNewsFirebaseClient.shared.getItem(withId: itemId, completionHandler: completion)
     }
 }

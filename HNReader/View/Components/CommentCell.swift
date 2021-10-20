@@ -17,9 +17,12 @@ struct CommentCell: View {
             Text(comment.by ?? "")
                 .font(.system(.body, design: .rounded))
                 .foregroundColor(.yellow)
+                .padding(.bottom, 3)
             
             HStack {
-                Text(comment.text ?? "Empty comment")
+                Text(html: comment.text ?? "[deleted]")
+                    .textSelection(.enabled)
+                    .foregroundColor(.white)
                 Spacer()
             }
         }
@@ -28,9 +31,3 @@ struct CommentCell: View {
         .cornerRadius(10)
     }
 }
-
-//struct CommentCell_Previews: PreviewProvider {
-//    static var previews: some View {
-//        CommentCell(comment: Comment)
-//    }
-//}

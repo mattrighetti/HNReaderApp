@@ -17,20 +17,26 @@ struct StoryList: View {
     var itemLimitOptions: [Int] = [25, 50, 100]
     
     var body: some View {
-        List {
-            ForEach(viewModel.storiesIds, id: \.self) { itemId in
-                NavigationLink(
-                    destination: DetailStoryView(itemId: itemId),
-                    label: {
-                        ItemCell(itemId: itemId)
-                    }
-                )
-            }
+        ScrollViewReader { proxy in
+            List {
+                ForEach(viewModel.storiesIds, id: \.self) { itemId in
+                    NavigationLink(
+                        destination: DetailStoryView(itemId: itemId),
+                        label: {
+                            ItemCell(itemId: itemId)
+                        }
+                    ).id(itemId)
+                }
+            }.onChange(of: appState.newsSelection, perform: { value in
+                fetchItems(by: value)
+                withAnimation {
+                    proxy.scrollTo(viewModel.storiesIds.first)
+                }
+            })
         }
         .onAppear {
             viewModel.currentNewsSelection = appState.newsSelection
         }
-        .onChange(of: appState.newsSelection, perform: fetchItems)
         .toolbar {
             MaxItemPicker(enabled: false)
             Button(action: viewModel.refreshStories) {
