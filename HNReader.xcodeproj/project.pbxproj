@@ -19,6 +19,7 @@
 		C93F99B6267554F00046F870 /* StoryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C93F99B5267554F00046F870 /* StoryCell.swift */; };
 		C93F99B8267557FC0046F870 /* StoryList.swift in Sources */ = {isa = PBXBuildFile; fileRef = C93F99B7267557FC0046F870 /* StoryList.swift */; };
 		C96E398D27209B6200A01435 /* +Text.swift in Sources */ = {isa = PBXBuildFile; fileRef = C96E398C27209B6200A01435 /* +Text.swift */; };
+		C99B65B527F5C9E400C7581F /* HNScraper in Frameworks */ = {isa = PBXBuildFile; productRef = C99B65B427F5C9E400C7581F /* HNScraper */; };
 		C9B58794267C153C005E0A50 /* DetailStoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9B58793267C153C005E0A50 /* DetailStoryView.swift */; };
 		C9B83DDF26A8808900036AC6 /* CommentCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9B83DDE26A8808900036AC6 /* CommentCell.swift */; };
 		C9B83DE926A8A23C00036AC6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C9B83DE826A8A23C00036AC6 /* Assets.xcassets */; };
@@ -65,6 +66,7 @@
 		C93F99B7267557FC0046F870 /* StoryList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryList.swift; sourceTree = "<group>"; };
 		C96E398B272092E600A01435 /* HackerNews */ = {isa = PBXFileReference; lastKnownFileType = folder; name = HackerNews; path = ../HackerNews; sourceTree = "<group>"; };
 		C96E398C27209B6200A01435 /* +Text.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "+Text.swift"; sourceTree = "<group>"; };
+		C99B665227F5CA2400C7581F /* HNScraper */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = HNScraper; path = ../HNScraper; sourceTree = "<group>"; };
 		C9B58793267C153C005E0A50 /* DetailStoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailStoryView.swift; sourceTree = "<group>"; };
 		C9B83DDE26A8808900036AC6 /* CommentCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentCell.swift; sourceTree = "<group>"; };
 		C9B83DE826A8A23C00036AC6 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -94,6 +96,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C91636D626AB2EFE009CECFB /* HackerNews in Frameworks */,
+				C99B65B527F5C9E400C7581F /* HNScraper in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -163,6 +166,7 @@
 		C9D0936A26741BBE002CC786 = {
 			isa = PBXGroup;
 			children = (
+				C99B665227F5CA2400C7581F /* HNScraper */,
 				C96E398B272092E600A01435 /* HackerNews */,
 				C9D0937526741BBE002CC786 /* HNReader */,
 				C9D0938D26741BC0002CC786 /* HNReaderTests */,
@@ -275,6 +279,7 @@
 			name = HNReader;
 			packageProductDependencies = (
 				C91636D526AB2EFE009CECFB /* HackerNews */,
+				C99B65B427F5C9E400C7581F /* HNScraper */,
 			);
 			productName = HNReader;
 			productReference = C9D0937326741BBE002CC786 /* HNReader.app */;
@@ -349,6 +354,7 @@
 			mainGroup = C9D0936A26741BBE002CC786;
 			packageReferences = (
 				C91636D426AB2EFE009CECFB /* XCRemoteSwiftPackageReference "HackerNews" */,
+				C99B65B327F5C9E400C7581F /* XCRemoteSwiftPackageReference "HNScraper" */,
 			);
 			productRefGroup = C9D0937426741BBE002CC786 /* Products */;
 			projectDirPath = "";
@@ -499,7 +505,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 11.3;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -554,7 +560,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 11.3;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = macosx;
@@ -751,6 +757,14 @@
 				minimumVersion = 1.0.1;
 			};
 		};
+		C99B65B327F5C9E400C7581F /* XCRemoteSwiftPackageReference "HNScraper" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/mattrighetti/HNScraper";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.3.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -758,6 +772,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = C91636D426AB2EFE009CECFB /* XCRemoteSwiftPackageReference "HackerNews" */;
 			productName = HackerNews;
+		};
+		C99B65B427F5C9E400C7581F /* HNScraper */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C99B65B327F5C9E400C7581F /* XCRemoteSwiftPackageReference "HNScraper" */;
+			productName = HNScraper;
 		};
 /* End XCSwiftPackageProductDependency section */
 

@@ -5,8 +5,10 @@
 //  Created by Mattia Righetti on 18/06/21.
 //
 
+import os
 import SwiftUI
 import HackerNews
+import HNScraper
 
 struct DetailStoryView: View {
     var itemId: Int
@@ -14,7 +16,7 @@ struct DetailStoryView: View {
     @Environment(\.colorScheme) var colorScheme
     @State var item: Item?
     @State var fetching: Bool = false
-    @State var comments: [Comment]?
+    @State var comments: [HNComment]?
     @State var nextPage: Int = 1
     @State var showMore: Bool = false
     let dispatchQueue = DispatchQueue(label: "CommentScrapingThreadQueue", qos: .background)
@@ -89,7 +91,7 @@ struct DetailStoryView: View {
             VStack(alignment: .leading) {
                 ForEach(comments, id: \.id) { comment in
                     CommentCell(comment: comment)
-                        .padding(.leading, 20 * CGFloat(comment.indentLevel))
+                        .padding(.leading, 20 * CGFloat(comment.level))
                 }
                 if showMore {
                     Button("More...", action: {
@@ -113,19 +115,9 @@ struct DetailStoryView: View {
         guard item!.kids != nil else { return }
         self.fetching.toggle()
         dispatchQueue.async {
-            HackerNewsScraperClient.shared.getComments(forItemId: item!.id, page: self.nextPage) { success, comments, hasMore in
-                DispatchQueue.main.async {
-                    self.showMore = hasMore
-                    self.nextPage += 1
-                    
-                    if self.comments == nil {
-                        self.comments = comments
-                    } else {
-                        self.comments!.append(contentsOf: comments)
-                    }
-                    
-                    self.fetching.toggle()
-                }
+            HNScraper.shared.getPost(ById: "\(item!.id)", buildHierarchy: false) { post, comments, error in
+                guard error == nil else { return }
+                self.comments = comments
             }
         }
     }

@@ -33,20 +33,5 @@ struct HNReaderApp: App {
                 .preferredColorScheme(displayMode)
                 .environmentObject(appState)
         }
-
-//        Settings {
-//            VStack {
-//                Form {
-//                    Picker(selection: displayModeBind, label: Text("Theme")) {
-//                        Text("Dark").tag(ColorScheme.dark)
-//                        Text("Light").tag(ColorScheme.light)
-//                    }
-//                    .pickerStyle(SegmentedPickerStyle())
-//                    .frame(maxWidth: 100)
-//                }
-//            }
-//            .frame(minWidth: 300, minHeight: 100)
-//            .preferredColorScheme(displayMode)
-//        }
     }
 }

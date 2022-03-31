@@ -6,15 +6,15 @@
 //
 
 import SwiftUI
-import HackerNews
+import HNScraper
 
 struct CommentCell: View {
-    let comment: Comment
+    let comment: HNComment
     @Environment(\.colorScheme) var colorScheme
     
     var body: some View {
         VStack(alignment: .leading) {
-            Text(comment.by ?? "")
+            Text(comment.username ?? "")
                 .font(.system(.body, design: .rounded))
                 .foregroundColor(.yellow)
                 .padding(.bottom, 3)

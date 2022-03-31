@@ -21,14 +21,15 @@ struct LoadingCircle: View {
                 .stroke(Color.green.opacity(0.7), style: .init(lineWidth: 7, lineCap: .round))
                 .frame(width: 50, height: 50)
                 .rotationEffect(Angle(degrees: isLoading ? 360 : 0))
-                .animation(
-                    Animation
-                        .linear(duration: 1)
-                        .repeatForever(autoreverses: false)
-                )
                 .onAppear() {
                     self.isLoading = true
                 }
+                .animation(
+                    Animation
+                        .linear(duration: 1)
+                        .repeatForever(autoreverses: false),
+                    value: 1
+                )
         }
         .frame(width: 70, height: 70)
     }
