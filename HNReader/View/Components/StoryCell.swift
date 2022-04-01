@@ -40,7 +40,11 @@ struct ItemCell: View {
             
             HStack {
                 ScoreText()
-                AuthorText()
+                
+                Text(item?.by ?? "unknown user")
+                    .foregroundColor(.yellow)
+                    .font(.system(size: 10.0, weight: .bold, design: .rounded))
+                
                 CommentsCountText()
                 Spacer()
             }
@@ -72,10 +76,19 @@ struct ItemCell: View {
     @ViewBuilder
     private func HostText() -> some View {
         if let item = item {
-            Text(item.urlHost ?? "")
-                .font(.system(size: 10.0))
-                .fontWeight(.semibold)
-                .foregroundColor(.blue)
+            HStack {
+//                AsyncImage(url: URL(string: "https://\(item.urlHost ?? "")/favicon.ico")!, scale: 1) { image in
+//                    image.resizable().aspectRatio(contentMode: .fit).frame(width: 15, height: 15)
+//                } placeholder: {
+//                    Color.gray.opacity(0.3)
+//                }
+//                .frame(width: 15, height: 15)
+                
+                Text(item.urlHost ?? "")
+                    .font(.system(size: 10.0))
+                    .fontWeight(.semibold)
+                    .foregroundColor(.blue)
+            }
         } else {
             Text("No url")
                 .font(.system(size: 10.0))
@@ -100,32 +113,12 @@ struct ItemCell: View {
                 .redacted(reason: .placeholder)
         }
     }
-
-    @ViewBuilder
-    private func AuthorText() -> some View {
-        HStack {
-            Text("•")
-                .padding(.horizontal, 1)
-            Text("Posted by")
-                .foregroundColor(.gray)
-            
-            OptionalText(item?.by?.description, other: "unknown user")
-                .foregroundColor(.yellow)
-            
-            Text("•")
-                .padding(.horizontal, 1)
-        }
-        .font(.system(size: 10.0, weight: .bold, design: .rounded))
-    }
     
     @ViewBuilder
     private func CommentsCountText() -> some View {
         if let item = self.item {
             if let descendants = item.descendants {
                 Text("\(descendants) comments")
-                    .font(.system(size: 10.0))
-            } else {
-                Text("no comments")
                     .font(.system(size: 10.0))
             }
         }

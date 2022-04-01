@@ -18,13 +18,12 @@
 		C91636D626AB2EFE009CECFB /* HackerNews in Frameworks */ = {isa = PBXBuildFile; productRef = C91636D526AB2EFE009CECFB /* HackerNews */; };
 		C93F99B6267554F00046F870 /* StoryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C93F99B5267554F00046F870 /* StoryCell.swift */; };
 		C93F99B8267557FC0046F870 /* StoryList.swift in Sources */ = {isa = PBXBuildFile; fileRef = C93F99B7267557FC0046F870 /* StoryList.swift */; };
-		C96E398D27209B6200A01435 /* +Text.swift in Sources */ = {isa = PBXBuildFile; fileRef = C96E398C27209B6200A01435 /* +Text.swift */; };
 		C99B65B527F5C9E400C7581F /* HNScraper in Frameworks */ = {isa = PBXBuildFile; productRef = C99B65B427F5C9E400C7581F /* HNScraper */; };
+		C99B665527F6670B00C7581F /* HTMLString in Frameworks */ = {isa = PBXBuildFile; productRef = C99B665427F6670B00C7581F /* HTMLString */; };
 		C9B58794267C153C005E0A50 /* DetailStoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9B58793267C153C005E0A50 /* DetailStoryView.swift */; };
 		C9B83DDF26A8808900036AC6 /* CommentCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9B83DDE26A8808900036AC6 /* CommentCell.swift */; };
 		C9B83DE926A8A23C00036AC6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C9B83DE826A8A23C00036AC6 /* Assets.xcassets */; };
 		C9B83DEB26A8A76800036AC6 /* +NSTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9B83DEA26A8A76800036AC6 /* +NSTextField.swift */; };
-		C9B83DED26A8ACD000036AC6 /* LoadingCircle.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9B83DEC26A8ACD000036AC6 /* LoadingCircle.swift */; };
 		C9B83DEF26A8AF4A00036AC6 /* +String.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9B83DEE26A8AF4A00036AC6 /* +String.swift */; };
 		C9C75DBE26B03FF000892071 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C9C75DBD26B03FF000892071 /* GoogleService-Info.plist */; };
 		C9D0937726741BBE002CC786 /* HNReaderApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9D0937626741BBE002CC786 /* HNReaderApp.swift */; };
@@ -65,13 +64,11 @@
 		C93F99B5267554F00046F870 /* StoryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryCell.swift; sourceTree = "<group>"; };
 		C93F99B7267557FC0046F870 /* StoryList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryList.swift; sourceTree = "<group>"; };
 		C96E398B272092E600A01435 /* HackerNews */ = {isa = PBXFileReference; lastKnownFileType = folder; name = HackerNews; path = ../HackerNews; sourceTree = "<group>"; };
-		C96E398C27209B6200A01435 /* +Text.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "+Text.swift"; sourceTree = "<group>"; };
 		C99B665227F5CA2400C7581F /* HNScraper */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = HNScraper; path = ../HNScraper; sourceTree = "<group>"; };
 		C9B58793267C153C005E0A50 /* DetailStoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailStoryView.swift; sourceTree = "<group>"; };
 		C9B83DDE26A8808900036AC6 /* CommentCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentCell.swift; sourceTree = "<group>"; };
 		C9B83DE826A8A23C00036AC6 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		C9B83DEA26A8A76800036AC6 /* +NSTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "+NSTextField.swift"; sourceTree = "<group>"; };
-		C9B83DEC26A8ACD000036AC6 /* LoadingCircle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingCircle.swift; sourceTree = "<group>"; };
 		C9B83DEE26A8AF4A00036AC6 /* +String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "+String.swift"; sourceTree = "<group>"; };
 		C9C75DBD26B03FF000892071 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		C9D0937326741BBE002CC786 /* HNReader.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HNReader.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -96,6 +93,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C91636D626AB2EFE009CECFB /* HackerNews in Frameworks */,
+				C99B665527F6670B00C7581F /* HTMLString in Frameworks */,
 				C99B65B527F5C9E400C7581F /* HNScraper in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -123,7 +121,6 @@
 				3307159309D438EFAA1259C7 /* +Date.swift */,
 				C9B83DEA26A8A76800036AC6 /* +NSTextField.swift */,
 				C9B83DEE26A8AF4A00036AC6 /* +String.swift */,
-				C96E398C27209B6200A01435 /* +Text.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -158,7 +155,6 @@
 			children = (
 				C93F99B5267554F00046F870 /* StoryCell.swift */,
 				C9B83DDE26A8808900036AC6 /* CommentCell.swift */,
-				C9B83DEC26A8ACD000036AC6 /* LoadingCircle.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -280,6 +276,7 @@
 			packageProductDependencies = (
 				C91636D526AB2EFE009CECFB /* HackerNews */,
 				C99B65B427F5C9E400C7581F /* HNScraper */,
+				C99B665427F6670B00C7581F /* HTMLString */,
 			);
 			productName = HNReader;
 			productReference = C9D0937326741BBE002CC786 /* HNReader.app */;
@@ -355,6 +352,7 @@
 			packageReferences = (
 				C91636D426AB2EFE009CECFB /* XCRemoteSwiftPackageReference "HackerNews" */,
 				C99B65B327F5C9E400C7581F /* XCRemoteSwiftPackageReference "HNScraper" */,
+				C99B665327F6670A00C7581F /* XCRemoteSwiftPackageReference "HTMLString" */,
 			);
 			productRefGroup = C9D0937426741BBE002CC786 /* Products */;
 			projectDirPath = "";
@@ -414,8 +412,6 @@
 				33071F1C64D4742E1F947FAA /* ItemDownloader.swift in Sources */,
 				3307147AB95F03650FC40B97 /* ItemCache.swift in Sources */,
 				C9B83DDF26A8808900036AC6 /* CommentCell.swift in Sources */,
-				C9B83DED26A8ACD000036AC6 /* LoadingCircle.swift in Sources */,
-				C96E398D27209B6200A01435 /* +Text.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -765,6 +761,14 @@
 				minimumVersion = 0.3.0;
 			};
 		};
+		C99B665327F6670A00C7581F /* XCRemoteSwiftPackageReference "HTMLString" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/alexisakers/HTMLString";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 6.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -777,6 +781,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = C99B65B327F5C9E400C7581F /* XCRemoteSwiftPackageReference "HNScraper" */;
 			productName = HNScraper;
+		};
+		C99B665427F6670B00C7581F /* HTMLString */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C99B665327F6670A00C7581F /* XCRemoteSwiftPackageReference "HTMLString" */;
+			productName = HTMLString;
 		};
 /* End XCSwiftPackageProductDependency section */
 

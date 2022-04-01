@@ -74,12 +74,12 @@
         }
       },
       {
-        "package": "HNScraper",
-        "repositoryURL": "https://github.com/mattrighetti/HNScraper",
+        "package": "HTMLString",
+        "repositoryURL": "https://github.com/alexisakers/HTMLString",
         "state": {
           "branch": null,
-          "revision": "1bfd07d1eef31a1af70b329316efad2ba260993b",
-          "version": "0.3.0"
+          "revision": "04613a3b0f40a91e554b5174c0a10657f1a26357",
+          "version": "6.0.1"
         }
       },
       {
