@@ -19,13 +19,14 @@ struct StoryList: View {
     var body: some View {
         ScrollViewReader { proxy in
             List {
-                ForEach(viewModel.storiesIds, id: \.self) { itemId in
+                ForEach(Array(zip(viewModel.storiesIds.indices, viewModel.storiesIds)), id: \.1) { (index, itemId) in
                     NavigationLink(
                         destination: DetailStoryView(itemId: itemId),
                         label: {
-                            ItemCell(itemId: itemId)
+                            ItemCell(index: index, itemId: itemId)
                         }
-                    ).id(itemId)
+                    )
+                    .id(itemId)
                 }
             }.onChange(of: appState.newsSelection, perform: { value in
                 fetchItems(by: value)

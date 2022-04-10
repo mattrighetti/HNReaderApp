@@ -9,6 +9,7 @@ import SwiftUI
 import HackerNews
 
 struct ItemCell: View {
+    var index: Int
     var itemId: Int
     let itemDownloader: ItemDownloader
 
@@ -16,7 +17,8 @@ struct ItemCell: View {
     @State var item: Item?
     @State private var isHovering: Bool = false
 
-    init(itemId: Int) {
+    init(index: Int, itemId: Int) {
+        self.index = index
         self.itemId = itemId
         itemDownloader = DefaultItemDownloader()
     }
@@ -62,7 +64,7 @@ struct ItemCell: View {
     @ViewBuilder
     private func TitleView() -> some View {
         if let item = item {
-            Text(item.title ?? "No title")
+            Text("\(index). " + (item.title ?? "No title"))
                 .font(.system(size: 15.0))
                 .fontWeight(.bold)
         } else {
@@ -171,6 +173,6 @@ struct OptionalText<Content: StringProtocol>: View {
 
 struct ItemCell_Previews: PreviewProvider {
     static var previews: some View {
-        ItemCell(itemId: 27492268)
+        ItemCell(index: 10, itemId: 27492268)
     }
 }
