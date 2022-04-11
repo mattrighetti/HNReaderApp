@@ -25,29 +25,29 @@ struct ItemCell: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 5) {
+            HostText()
+            
             TitleView()
                 .onHover(perform: updateHoverStatus)
-                .onTapGesture {
-                    if let item = item {
-                        if let url = item.url {
-                            NSWorkspace.shared.open(URL(string: url)!)
-                        } else {
-                            // TODO apply this logic directly in struct
-                            NSWorkspace.shared.open(URL(string: "https://news.ycombinator.com/item?id=" + String(describing: itemId))!)
-                        }
-                    }
-                }
-            
-            HostText()
             
             HStack {
                 ScoreText()
                 
-                Text(item?.by ?? "unknown user")
-                    .foregroundColor(.yellow)
-                    .font(.system(size: 10.0, weight: .bold, design: .rounded))
+                Link(destination: URL(string: "https://news.ycombinator.com/user?id=\(item?.by ?? "")")!, label: {
+                    Label(item?.by ?? "unknown user", systemImage: "person")
+                        .font(.system(size: 10.0, weight: .regular, design: .rounded))
+                        .foregroundColor(.white)
+                        .opacity(0.5)
+                        .onHover(perform: updateHoverStatus)
+                })
                 
                 CommentsCountText()
+                
+                Label(item?.relativeTime ?? "", systemImage: "clock")
+                    .font(.system(size: 10.0, weight: .regular, design: .rounded))
+                    .foregroundColor(.white)
+                    .opacity(0.5)
+                
                 Spacer()
             }
         }
@@ -64,7 +64,7 @@ struct ItemCell: View {
     @ViewBuilder
     private func TitleView() -> some View {
         if let item = item {
-            Text("\(index). " + (item.title ?? "No title"))
+            Text(item.title ?? "No title")
                 .font(.system(size: 15.0))
                 .fontWeight(.bold)
         } else {
@@ -79,17 +79,15 @@ struct ItemCell: View {
     private func HostText() -> some View {
         if let item = item {
             HStack {
-//                AsyncImage(url: URL(string: "https://\(item.urlHost ?? "")/favicon.ico")!, scale: 1) { image in
-//                    image.resizable().aspectRatio(contentMode: .fit).frame(width: 15, height: 15)
-//                } placeholder: {
-//                    Color.gray.opacity(0.3)
-//                }
-//                .frame(width: 15, height: 15)
-                
-                Text(item.urlHost ?? "")
+                Text(String(index) + ".")
                     .font(.system(size: 10.0))
                     .fontWeight(.semibold)
-                    .foregroundColor(.blue)
+                
+                Link(destination: item.getUrl()) {
+                    Text(item.urlHost ?? "")
+                        .font(.system(size: 10.0, weight: .semibold))
+                        .foregroundColor(.blue)
+                }
             }
         } else {
             Text("No url")
@@ -120,8 +118,14 @@ struct ItemCell: View {
     private func CommentsCountText() -> some View {
         if let item = self.item {
             if let descendants = item.descendants {
-                Text("\(descendants) comments")
-                    .font(.system(size: 10.0))
+                Label(title: {
+                    Text(String(descendants))
+                        .font(.system(size: 10.0))
+                }, icon: {
+                    Image(systemName: "message")
+                        .foregroundColor(.white)
+                })
+                .opacity(0.5)
             }
         }
     }

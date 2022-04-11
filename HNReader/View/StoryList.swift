@@ -23,7 +23,7 @@ struct StoryList: View {
                     NavigationLink(
                         destination: DetailStoryView(itemId: itemId),
                         label: {
-                            ItemCell(index: index, itemId: itemId)
+                            ItemCell(index: index + 1, itemId: itemId)
                         }
                     )
                     .id(itemId)

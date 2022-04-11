@@ -19,6 +19,7 @@ struct DetailStoryView: View {
     @State var comments: [HNComment]?
     @State var nextPage: Int = 1
     @State var showMore: Bool = false
+    @State private var isHovering: Bool = false
     let dispatchQueue = DispatchQueue(label: "CommentScrapingThreadQueue", qos: .background)
     
     init(itemId: Int) {
@@ -71,26 +72,15 @@ struct DetailStoryView: View {
                     .padding(.vertical, 5)
             }
             
-            HStack {
-                Text("Posted by ")
-                    .font(.system(.callout, design: .rounded))
-                    .foregroundColor(.gray)
-                
-                Text(item?.by ?? "")
-                    .font(.system(.callout, design: .rounded))
-                    .foregroundColor(.yellow)
-                    .fontWeight(.bold)
-                
-                Spacer()
-            }
+            Link(destination: URL(string: "https://news.ycombinator.com/user?id=\(item?.by ?? "")")!, label: {
+                Label(item?.by ?? "unknown user", systemImage: "person")
+                    .font(.system(size: 13, weight: .bold, design: .rounded))
+                    .foregroundColor(.white)
+                    .opacity(0.5)
+                    .onHover(perform: updateHoverStatus)
+            })
             
-            HStack {
-                Button("Open on HN") {
-                    NSWorkspace.shared.open(URL(string: "https://news.ycombinator.com/item?id=\(item!.id)")!)
-                }
-                
-                Spacer()
-            }
+            LinkButtonsSection()
         }
     }
     
@@ -123,6 +113,55 @@ struct DetailStoryView: View {
         }
     }
     
+    @ViewBuilder
+    func LinkButtonsSection() -> some View {
+        if item?.url != nil {
+            HStack {
+                Link(destination: item!.getUrl()) {
+                    Text("Open article")
+                        .padding(.horizontal)
+                        .padding(.vertical, 5)
+                        .background(
+                            RoundedRectangle(cornerRadius: 5)
+                                .strokeBorder(Color.white, lineWidth: 2)
+                        )
+                }
+                .foregroundColor(.white)
+                .onHover(perform: updateHoverStatus)
+                
+                Link(destination: URL(string: "https://news.ycombinator.com/item?id=\(item!.id)")!) {
+                    Text("Open on HN")
+                        .padding(.horizontal)
+                        .padding(.vertical, 5)
+                        .background(
+                            RoundedRectangle(cornerRadius: 5)
+                                .strokeBorder(Color.white, lineWidth: 2)
+                        )
+                }
+                .foregroundColor(.white)
+                .onHover(perform: updateHoverStatus)
+                
+                Spacer()
+            }
+        } else {
+            HStack {
+                Link(destination: URL(string: "https://news.ycombinator.com/item?id=\(item!.id)")!) {
+                    Text("Open on HN")
+                        .padding(.horizontal)
+                        .padding(.vertical, 5)
+                        .background(
+                            RoundedRectangle(cornerRadius: 5)
+                                .strokeBorder(Color.white, lineWidth: 2)
+                        )
+                }
+                .foregroundColor(.white)
+                .onHover(perform: updateHoverStatus)
+                
+                Spacer()
+            }
+        }
+    }
+    
     private func fetchComments() {
         guard item!.kids != nil else { return }
         
@@ -140,6 +179,17 @@ struct DetailStoryView: View {
                     }
                     self.comments = Array(comments[1 ..< comments.count - 1])
                 }
+            }
+        }
+    }
+    
+    private func updateHoverStatus(hovering: Bool) -> Void {
+        self.isHovering.toggle()
+        DispatchQueue.main.async {
+            if (self.isHovering) {
+                NSCursor.pointingHand.push()
+            } else {
+                NSCursor.pop()
             }
         }
     }

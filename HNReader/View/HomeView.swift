@@ -15,7 +15,10 @@ struct HomeView: View {
     var body: some View {
         NavigationView {
             Sidebar()
-            StoryList(selectedItem: $selectedItem).frame(minWidth: 400)
+            
+            StoryList(selectedItem: $selectedItem)
+                .frame(minWidth: 400)
+            
             SelectStoryPlaceholderImage()
         }
     }
