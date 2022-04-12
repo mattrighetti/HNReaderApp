@@ -72,15 +72,29 @@ struct DetailStoryView: View {
                     .padding(.vertical, 5)
             }
             
-            Link(destination: URL(string: "https://news.ycombinator.com/user?id=\(item?.by ?? "")")!, label: {
-                Label(item?.by ?? "unknown user", systemImage: "person")
-                    .font(.system(size: 13, weight: .bold, design: .rounded))
+            LinkButtonsSection()
+                .padding(.vertical, 5)
+            
+            HStack {
+                if let score = item?.score {
+                    Label(String(score), systemImage: "rosette")
+                        .font(.system(size: 13, weight: .semibold, design: .rounded))
+                        .foregroundColor(.orange)
+                }
+                
+                Link(destination: URL(string: "https://news.ycombinator.com/user?id=\(item?.by ?? "")")!, label: {
+                    Label(item?.by ?? "unknown user", systemImage: "person")
+                        .font(.system(size: 13, weight: .semibold, design: .rounded))
+                        .foregroundColor(.white)
+                        .opacity(0.5)
+                        .onHover(perform: updateHoverStatus)
+                })
+                
+                Label(item?.relativeTime ?? "", systemImage: "clock")
+                    .font(.system(size: 13, weight: .semibold, design: .rounded))
                     .foregroundColor(.white)
                     .opacity(0.5)
-                    .onHover(perform: updateHoverStatus)
-            })
-            
-            LinkButtonsSection()
+            }
         }
     }
     
@@ -89,7 +103,7 @@ struct DetailStoryView: View {
         if let comments = comments {
             VStack(alignment: .leading) {
                 ForEach(0..<comments.count) { i in
-                    CommentCell(comment: comments[i], highlightBorder: comments[i].username == item?.by)
+                    CommentCell(comment: comments[i], isOp: comments[i].username == item?.by)
                         .padding(.leading, 20 * CGFloat(comments[i].level))
                 }
                 

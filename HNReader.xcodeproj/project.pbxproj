@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		3307109CEEE15ACDD7B88CFE /* HackerNewsClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33071E538EC434DF1A245518 /* HackerNewsClientTests.swift */; };
 		330710FDACC9DEEBEC56011F /* ItemTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33071EEBE46634E658582AE3 /* ItemTests.swift */; };
-		330711A9216E762026AF98A0 /* +Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3307159309D438EFAA1259C7 /* +Date.swift */; };
 		330713D3016ED410AFD53FDF /* ItemListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3307147A30B9051D95FFFB20 /* ItemListViewModel.swift */; };
 		3307147AB95F03650FC40B97 /* ItemCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33071CD8B451FE700B64F387 /* ItemCache.swift */; };
 		330718D415D21296AA14E7CA /* HackerNewsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33071291447141A6D31E671B /* HackerNewsTests.swift */; };
@@ -19,11 +18,9 @@
 		C93F99B6267554F00046F870 /* ItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C93F99B5267554F00046F870 /* ItemCell.swift */; };
 		C93F99B8267557FC0046F870 /* StoryList.swift in Sources */ = {isa = PBXBuildFile; fileRef = C93F99B7267557FC0046F870 /* StoryList.swift */; };
 		C99B65B527F5C9E400C7581F /* HNScraper in Frameworks */ = {isa = PBXBuildFile; productRef = C99B65B427F5C9E400C7581F /* HNScraper */; };
-		C99B665527F6670B00C7581F /* HTMLString in Frameworks */ = {isa = PBXBuildFile; productRef = C99B665427F6670B00C7581F /* HTMLString */; };
 		C9B58794267C153C005E0A50 /* DetailStoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9B58793267C153C005E0A50 /* DetailStoryView.swift */; };
 		C9B83DDF26A8808900036AC6 /* CommentCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9B83DDE26A8808900036AC6 /* CommentCell.swift */; };
 		C9B83DE926A8A23C00036AC6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C9B83DE826A8A23C00036AC6 /* Assets.xcassets */; };
-		C9B83DEB26A8A76800036AC6 /* +NSTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9B83DEA26A8A76800036AC6 /* +NSTextField.swift */; };
 		C9B83DEF26A8AF4A00036AC6 /* +String.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9B83DEE26A8AF4A00036AC6 /* +String.swift */; };
 		C9C75DBE26B03FF000892071 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C9C75DBD26B03FF000892071 /* GoogleService-Info.plist */; };
 		C9D0937726741BBE002CC786 /* HNReaderApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9D0937626741BBE002CC786 /* HNReaderApp.swift */; };
@@ -55,7 +52,6 @@
 /* Begin PBXFileReference section */
 		33071291447141A6D31E671B /* HackerNewsTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HackerNewsTests.swift; sourceTree = "<group>"; };
 		3307147A30B9051D95FFFB20 /* ItemListViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ItemListViewModel.swift; sourceTree = "<group>"; };
-		3307159309D438EFAA1259C7 /* +Date.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "+Date.swift"; sourceTree = "<group>"; };
 		33071B0E5439D8D207CB68F4 /* +DateTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "+DateTests.swift"; sourceTree = "<group>"; };
 		33071CD8B451FE700B64F387 /* ItemCache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ItemCache.swift; sourceTree = "<group>"; };
 		33071D0E5913DB91DDDBDADB /* ItemDownloader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ItemDownloader.swift; sourceTree = "<group>"; };
@@ -68,7 +64,6 @@
 		C9B58793267C153C005E0A50 /* DetailStoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailStoryView.swift; sourceTree = "<group>"; };
 		C9B83DDE26A8808900036AC6 /* CommentCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentCell.swift; sourceTree = "<group>"; };
 		C9B83DE826A8A23C00036AC6 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		C9B83DEA26A8A76800036AC6 /* +NSTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "+NSTextField.swift"; sourceTree = "<group>"; };
 		C9B83DEE26A8AF4A00036AC6 /* +String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "+String.swift"; sourceTree = "<group>"; };
 		C9C75DBD26B03FF000892071 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		C9D0937326741BBE002CC786 /* HNReader.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HNReader.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -93,7 +88,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				C91636D626AB2EFE009CECFB /* HackerNews in Frameworks */,
-				C99B665527F6670B00C7581F /* HTMLString in Frameworks */,
 				C99B65B527F5C9E400C7581F /* HNScraper in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -118,8 +112,6 @@
 		3307153CA4CBEF847DCF967F /* Utils */ = {
 			isa = PBXGroup;
 			children = (
-				3307159309D438EFAA1259C7 /* +Date.swift */,
-				C9B83DEA26A8A76800036AC6 /* +NSTextField.swift */,
 				C9B83DEE26A8AF4A00036AC6 /* +String.swift */,
 			);
 			path = Utils;
@@ -276,7 +268,6 @@
 			packageProductDependencies = (
 				C91636D526AB2EFE009CECFB /* HackerNews */,
 				C99B65B427F5C9E400C7581F /* HNScraper */,
-				C99B665427F6670B00C7581F /* HTMLString */,
 			);
 			productName = HNReader;
 			productReference = C9D0937326741BBE002CC786 /* HNReader.app */;
@@ -352,7 +343,6 @@
 			packageReferences = (
 				C91636D426AB2EFE009CECFB /* XCRemoteSwiftPackageReference "HackerNews" */,
 				C99B65B327F5C9E400C7581F /* XCRemoteSwiftPackageReference "HNScraper" */,
-				C99B665327F6670A00C7581F /* XCRemoteSwiftPackageReference "HTMLString" */,
 			);
 			productRefGroup = C9D0937426741BBE002CC786 /* Products */;
 			projectDirPath = "";
@@ -397,7 +387,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C9B83DEB26A8A76800036AC6 /* +NSTextField.swift in Sources */,
 				C9D0938026741BBF002CC786 /* Persistence.swift in Sources */,
 				C9D0937926741BBE002CC786 /* HomeView.swift in Sources */,
 				C93F99B6267554F00046F870 /* ItemCell.swift in Sources */,
@@ -407,7 +396,6 @@
 				C9B83DEF26A8AF4A00036AC6 /* +String.swift in Sources */,
 				C9D0937726741BBE002CC786 /* HNReaderApp.swift in Sources */,
 				330713D3016ED410AFD53FDF /* ItemListViewModel.swift in Sources */,
-				330711A9216E762026AF98A0 /* +Date.swift in Sources */,
 				C9B58794267C153C005E0A50 /* DetailStoryView.swift in Sources */,
 				33071F1C64D4742E1F947FAA /* ItemDownloader.swift in Sources */,
 				3307147AB95F03650FC40B97 /* ItemCache.swift in Sources */,
@@ -574,7 +562,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 6;
 				DEVELOPMENT_ASSET_PATHS = "\"HNReader/Preview Content\"";
 				DEVELOPMENT_TEAM = H89RFW5UZ6;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -585,7 +573,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 12.0;
-				MARKETING_VERSION = 1.1.0;
+				MARKETING_VERSION = 1.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.mattrighetti.HNReader;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -601,7 +589,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 6;
 				DEVELOPMENT_ASSET_PATHS = "\"HNReader/Preview Content\"";
 				DEVELOPMENT_TEAM = H89RFW5UZ6;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -612,7 +600,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 12.0;
-				MARKETING_VERSION = 1.1.0;
+				MARKETING_VERSION = 1.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.mattrighetti.HNReader;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -761,14 +749,6 @@
 				minimumVersion = 0.3.0;
 			};
 		};
-		C99B665327F6670A00C7581F /* XCRemoteSwiftPackageReference "HTMLString" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/alexisakers/HTMLString";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 6.0.0;
-			};
-		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -781,11 +761,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = C99B65B327F5C9E400C7581F /* XCRemoteSwiftPackageReference "HNScraper" */;
 			productName = HNScraper;
-		};
-		C99B665427F6670B00C7581F /* HTMLString */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = C99B665327F6670A00C7581F /* XCRemoteSwiftPackageReference "HTMLString" */;
-			productName = HTMLString;
 		};
 /* End XCSwiftPackageProductDependency section */
 

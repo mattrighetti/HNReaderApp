@@ -74,15 +74,6 @@
         }
       },
       {
-        "package": "HTMLString",
-        "repositoryURL": "https://github.com/alexisakers/HTMLString",
-        "state": {
-          "branch": null,
-          "revision": "04613a3b0f40a91e554b5174c0a10657f1a26357",
-          "version": "6.0.1"
-        }
-      },
-      {
         "package": "leveldb",
         "repositoryURL": "https://github.com/firebase/leveldb.git",
         "state": {

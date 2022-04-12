@@ -12,12 +12,12 @@ class ItemListViewModel: ObservableObject {
             fetchStories(by: newValue)
         }
     }
-    @Published var storiesIds: [Int] = []
+    @Published var enumeratedStories: [(Int, Int)] = []
     
     public func fetchStories(by category: HackerNews.API.Stories) {
         HackerNewsFirebaseClient.shared.getStoriesIds(category) { ids in
             DispatchQueue.main.async {
-                self.storiesIds = ids
+                self.enumeratedStories = Array(ids.enumerated())
             }
         }
     }

@@ -41,14 +41,14 @@ struct ItemCell: View {
                         .onHover(perform: updateHoverStatus)
                 })
                 
+                Spacer()
+                
                 CommentsCountText()
                 
                 Label(item?.relativeTime ?? "", systemImage: "clock")
                     .font(.system(size: 10.0, weight: .regular, design: .rounded))
                     .foregroundColor(.white)
                     .opacity(0.5)
-                
-                Spacer()
             }
         }
         .padding()

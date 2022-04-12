@@ -19,7 +19,7 @@ struct StoryList: View {
     var body: some View {
         ScrollViewReader { proxy in
             List {
-                ForEach(Array(zip(viewModel.storiesIds.indices, viewModel.storiesIds)), id: \.1) { (index, itemId) in
+                ForEach(viewModel.enumeratedStories, id: \.1) { (index, itemId) in
                     NavigationLink(
                         destination: DetailStoryView(itemId: itemId),
                         label: {
@@ -31,7 +31,7 @@ struct StoryList: View {
             }.onChange(of: appState.newsSelection, perform: { value in
                 fetchItems(by: value)
                 withAnimation {
-                    proxy.scrollTo(viewModel.storiesIds.first)
+                    proxy.scrollTo(viewModel.enumeratedStories.first!.1)
                 }
             })
         }
