@@ -69,11 +69,11 @@ struct DetailStoryView: View {
                 Text(text.htmlParsed)
                     .font(.body)
                     .fixedSize(horizontal: false, vertical: true)
-                    .padding(.vertical, 5)
+                    .padding(.bottom, 5)
             }
             
             LinkButtonsSection()
-                .padding(.vertical, 5)
+                .padding(.bottom, 5)
             
             HStack {
                 if let score = item?.score {
