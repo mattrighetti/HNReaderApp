@@ -64,7 +64,6 @@ struct StoryList: View {
 
     private func fetchItems(by category: HackerNews.API.Stories) {
         if category != viewModel.currentNewsSelection {
-            NSLog("changing category from \(viewModel.currentNewsSelection) to \(category)")
             viewModel.currentNewsSelection = category
         }
     }

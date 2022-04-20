@@ -51,9 +51,7 @@ struct ItemCell: View {
                     .opacity(0.5)
             }
         }
-        .padding()
-        .background(colorScheme == .dark ? Color.black.opacity(0.3) : Color.white)
-        .cornerRadius(10)
+        .padding(5)
         .onAppear {
             if item == nil {
                 fetchItem()
