@@ -11,7 +11,6 @@ import HNScraper
 struct CommentCell: View {
     let comment: HNComment
     var isOp: Bool
-    @Environment(\.colorScheme) var colorScheme
     
     var body: some View {
         VStack(alignment: .leading) {
@@ -45,7 +44,7 @@ struct CommentCell: View {
             }
         }
         .padding()
-        .background(colorScheme == .dark ? Color.black.opacity(0.3) : Color.white)
+        .background(Color.black.opacity(0.3))
         .cornerRadius(10)
     }
 }

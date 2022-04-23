@@ -30,9 +30,7 @@ struct StoryList: View {
                 }
             }.onChange(of: appState.newsSelection, perform: { value in
                 fetchItems(by: value)
-                withAnimation {
-                    proxy.scrollTo(viewModel.enumeratedStories.first!.1)
-                }
+                proxy.scrollTo(viewModel.enumeratedStories.first!.1)
             })
         }
         .onAppear {

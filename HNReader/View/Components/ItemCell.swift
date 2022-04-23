@@ -13,9 +13,7 @@ struct ItemCell: View {
     var itemId: Int
     let itemDownloader: ItemDownloader
 
-    @Environment(\.colorScheme) var colorScheme
     @State var item: Item?
-    @State private var isHovering: Bool = false
 
     init(index: Int, itemId: Int) {
         self.index = index
@@ -28,7 +26,6 @@ struct ItemCell: View {
             HostText()
             
             TitleView()
-                .onHover(perform: updateHoverStatus)
             
             HStack {
                 ScoreText()
@@ -38,7 +35,6 @@ struct ItemCell: View {
                         .font(.system(size: 10.0, weight: .regular, design: .rounded))
                         .foregroundColor(.white)
                         .opacity(0.5)
-                        .onHover(perform: updateHoverStatus)
                 })
                 
                 Spacer()
@@ -140,17 +136,6 @@ struct ItemCell: View {
                     self.item = item
                 }
             })
-        }
-    }
-    
-    private func updateHoverStatus(hovering: Bool) -> Void {
-        self.isHovering.toggle()
-        DispatchQueue.main.async {
-            if (self.isHovering) {
-                NSCursor.pointingHand.push()
-            } else {
-                NSCursor.pop()
-            }
         }
     }
 }
