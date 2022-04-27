@@ -2,9 +2,9 @@
 // Created by Mattia Righetti on 12/06/21.
 //
 
-import XCTest
 import Combine
 @testable import HNReader
+import XCTest
 
 class HackerNewsClientTests: XCTestCase {
     private var cancellables: Set<AnyCancellable>!
@@ -25,10 +25,10 @@ class HackerNewsClientTests: XCTestCase {
                 switch completion {
                 case .finished:
                     break
-                case .failure(let err):
+                case let .failure(err):
                     error = err
                 }
-                
+
                 expectation.fulfill()
             }, receiveValue: { usr in
                 user = usr
@@ -47,12 +47,12 @@ class HackerNewsClientTests: XCTestCase {
         let expectation = self.expectation(description: "itemGet")
 
         HackerNewsClient.shared
-            .getItem(withId: 27348900)
+            .getItem(withId: 27_348_900)
             .sink(receiveCompletion: { completion in
                 switch completion {
                 case .finished:
                     break
-                case .failure(let err):
+                case let .failure(err):
                     error = err
                 }
 
@@ -66,7 +66,7 @@ class HackerNewsClientTests: XCTestCase {
 
         XCTAssertNil(error)
         XCTAssertNotNil(item)
-        XCTAssertEqual(item!.id, 27348900)
+        XCTAssertEqual(item!.id, 27_348_900)
     }
 
     func testGetTopStories() throws {
@@ -80,7 +80,7 @@ class HackerNewsClientTests: XCTestCase {
                 switch completion {
                 case .finished:
                     break
-                case .failure(let err):
+                case let .failure(err):
                     error = err
                 }
 

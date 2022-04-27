@@ -9,7 +9,7 @@ import SwiftUI
 
 struct Sidebar: View {
     @EnvironmentObject var appState: AppState
-    
+
     var body: some View {
         List(selection: $appState.sidebarSelection) {
             Section(header: Text("Categories")) {

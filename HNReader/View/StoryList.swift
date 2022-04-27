@@ -5,9 +5,9 @@
 //  Created by Mattia Righetti on 12/06/21.
 //
 
-import SwiftUI
 import HackerNews
 import OSLog
+import SwiftUI
 
 struct StoryList: View {
     @EnvironmentObject var appState: AppState
@@ -15,11 +15,11 @@ struct StoryList: View {
     @State var itemLimitSelection: Int = 1
     @Binding var selectedItem: Int?
     var itemLimitOptions: [Int] = [25, 50, 100]
-    
+
     var body: some View {
         ScrollViewReader { proxy in
             List {
-                ForEach(viewModel.enumeratedStories, id: \.1) { (index, itemId) in
+                ForEach(viewModel.enumeratedStories, id: \.1) { index, itemId in
                     NavigationLink(
                         destination: DetailStoryView(itemId: itemId),
                         label: {
@@ -51,7 +51,7 @@ struct StoryList: View {
             Picker("Limit", selection: $itemLimitSelection) {
                 ForEach(itemLimitOptions.indices, id: \.self) { index in
                     Text("\(itemLimitOptions[index])")
-                            .tag(index)
+                        .tag(index)
                 }
             }
             .pickerStyle(SegmentedPickerStyle())

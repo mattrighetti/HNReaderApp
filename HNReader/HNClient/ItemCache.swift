@@ -13,19 +13,18 @@ class StructWrapper<T>: NSObject {
     }
 }
 
-
 class ItemCache: NSCache<NSString, StructWrapper<Item>> {
     static let shared = ItemCache()
 
     func cache(_ item: Item, for key: Int) {
         let keyString = NSString(format: "%d", key)
         let itemWrapper = StructWrapper(item)
-        self.setObject(itemWrapper, forKey: keyString)
+        setObject(itemWrapper, forKey: keyString)
     }
 
     func getItem(for key: Int) -> Item? {
         let keyString = NSString(format: "%d", key)
-        let itemWrapper = self.object(forKey: keyString)
+        let itemWrapper = object(forKey: keyString)
         return itemWrapper?.value
     }
 }

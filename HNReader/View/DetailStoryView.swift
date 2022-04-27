@@ -5,14 +5,14 @@
 //  Created by Mattia Righetti on 18/06/21.
 //
 
-import os
-import SwiftUI
 import HackerNews
 import HNScraper
+import os
+import SwiftUI
 
 struct DetailStoryView: View {
     var itemId: Int
-    
+
     @Environment(\.colorScheme) var colorScheme
     @State var item: Item?
     @State var fetching: Bool = false
@@ -21,21 +21,21 @@ struct DetailStoryView: View {
     @State var showMore: Bool = false
     @State private var isHovering: Bool = false
     let dispatchQueue = DispatchQueue(label: "CommentScrapingThreadQueue", qos: .background)
-    
+
     init(itemId: Int) {
         self.itemId = itemId
     }
-    
+
     var body: some View {
         ScrollView {
             ItemSection()
                 .padding([.top, .leading, .trailing])
                 .padding(.bottom, 3)
-            
+
             LoadingView(
                 condition: .init(
                     get: { self.fetching && self.comments == nil },
-                    set: { _ in return }
+                    set: { _ in }
                 )
             ) {
                 CommentsSection()
@@ -46,17 +46,17 @@ struct DetailStoryView: View {
             fetchComments()
         }
     }
-    
+
     @ViewBuilder
     func ItemSection() -> some View {
-        switch self.item?.type {
+        switch item?.type {
         case .story, .job:
             StorySection()
         default:
-            Text("No view available for this element with id: \(self.itemId)")
+            Text("No view available for this element with id: \(itemId)")
         }
     }
-    
+
     @ViewBuilder
     func StorySection() -> some View {
         VStack(alignment: .leading) {
@@ -64,24 +64,24 @@ struct DetailStoryView: View {
                 .font(.system(size: 21, weight: .bold, design: .rounded))
                 .fixedSize(horizontal: false, vertical: true)
                 .padding(.vertical, 5)
-            
+
             if let text = item?.text {
-                Text(text.htmlParsed)
+                Text(text)
                     .font(.body)
                     .fixedSize(horizontal: false, vertical: true)
                     .padding(.bottom, 5)
             }
-            
+
             LinkButtonsSection()
                 .padding(.bottom, 5)
-            
+
             HStack {
                 if let score = item?.score {
                     Label(String(score), systemImage: "rosette")
                         .font(.system(size: 13, weight: .semibold, design: .rounded))
                         .foregroundColor(.orange)
                 }
-                
+
                 Link(destination: URL(string: "https://news.ycombinator.com/user?id=\(item?.by ?? "")")!, label: {
                     Label(item?.by ?? "unknown user", systemImage: "person")
                         .font(.system(size: 13, weight: .semibold, design: .rounded))
@@ -89,7 +89,7 @@ struct DetailStoryView: View {
                         .opacity(0.5)
                         .onHover(perform: updateHoverStatus)
                 })
-                
+
                 Label(item?.relativeTime ?? "", systemImage: "clock")
                     .font(.system(size: 13, weight: .semibold, design: .rounded))
                     .foregroundColor(.white)
@@ -97,16 +97,16 @@ struct DetailStoryView: View {
             }
         }
     }
-    
+
     @ViewBuilder
     func CommentsSection() -> some View {
         if let comments = comments {
             VStack(alignment: .leading) {
-                ForEach(0..<comments.count) { i in
+                ForEach(0 ..< comments.count) { i in
                     CommentCell(comment: comments[i], isOp: comments[i].username == item?.by)
                         .padding(.leading, 20 * CGFloat(comments[i].level))
                 }
-                
+
                 if showMore {
                     Button("More...") {
                         fetchComments()
@@ -126,7 +126,7 @@ struct DetailStoryView: View {
             }
         }
     }
-    
+
     @ViewBuilder
     func LinkButtonsSection() -> some View {
         if item?.url != nil {
@@ -142,7 +142,7 @@ struct DetailStoryView: View {
                 }
                 .foregroundColor(.white)
                 .onHover(perform: updateHoverStatus)
-                
+
                 Link(destination: URL(string: "https://news.ycombinator.com/item?id=\(item!.id)")!) {
                     Text("Open on HN")
                         .padding(.horizontal)
@@ -154,7 +154,7 @@ struct DetailStoryView: View {
                 }
                 .foregroundColor(.white)
                 .onHover(perform: updateHoverStatus)
-                
+
                 Spacer()
             }
         } else {
@@ -170,21 +170,21 @@ struct DetailStoryView: View {
                 }
                 .foregroundColor(.white)
                 .onHover(perform: updateHoverStatus)
-                
+
                 Spacer()
             }
         }
     }
-    
+
     private func fetchComments() {
         guard item!.kids != nil else { return }
-        
-        self.fetching.toggle()
-        
+
+        fetching.toggle()
+
         dispatchQueue.async {
             HNScraper.shared.getPost(ById: String(item!.id), buildHierarchy: false) { post, comments, error in
                 guard error == nil else { return }
-                
+
                 if post?.type == .defaultType {
                     self.comments = comments
                 } else {
@@ -196,11 +196,11 @@ struct DetailStoryView: View {
             }
         }
     }
-    
-    private func updateHoverStatus(hovering: Bool) -> Void {
-        self.isHovering.toggle()
+
+    private func updateHoverStatus(hovering _: Bool) {
+        isHovering.toggle()
         DispatchQueue.main.async {
-            if (self.isHovering) {
+            if self.isHovering {
                 NSCursor.pointingHand.push()
             } else {
                 NSCursor.pop()
@@ -212,12 +212,12 @@ struct DetailStoryView: View {
 struct LoadingView<Content: View>: View {
     @Binding var condition: Bool
     let content: Content
-    
+
     init(condition: Binding<Bool>, @ViewBuilder content: () -> Content) {
-        self._condition = condition
+        _condition = condition
         self.content = content()
     }
-    
+
     var body: some View {
         if condition {
             ProgressView()
@@ -229,6 +229,6 @@ struct LoadingView<Content: View>: View {
 
 struct ItemView_Previews: PreviewProvider {
     static var previews: some View {
-        DetailStoryView(itemId: 27545257)
+        DetailStoryView(itemId: 27_545_257)
     }
 }

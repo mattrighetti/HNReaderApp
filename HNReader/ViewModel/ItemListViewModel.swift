@@ -3,8 +3,8 @@
 //
 
 import Combine
-import SwiftUI
 import HackerNews
+import SwiftUI
 
 class ItemListViewModel: ObservableObject {
     @Published var currentNewsSelection: HackerNews.API.Stories = .top {
@@ -12,8 +12,9 @@ class ItemListViewModel: ObservableObject {
             fetchStories(by: newValue)
         }
     }
+
     @Published var enumeratedStories: [(Int, Int)] = []
-    
+
     public func fetchStories(by category: HackerNews.API.Stories) {
         HackerNewsFirebaseClient.shared.getStoriesIds(category) { ids in
             DispatchQueue.main.async {

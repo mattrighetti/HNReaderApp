@@ -31,6 +31,7 @@ class AppState: ObservableObject {
             }
         }
     }
+
     @Published var newsSelection: HackerNews.API.Stories = .top
 
     func getColorScheme() -> ColorScheme {
@@ -60,7 +61,7 @@ class AppState: ObservableObject {
         case job = "Job"
         case best = "Best"
         case new = "Newest"
-        
+
         var iconName: String {
             switch self {
             case .top: return "flame"

@@ -262,6 +262,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = C9D0939E26741BC0002CC786 /* Build configuration list for PBXNativeTarget "HNReader" */;
 			buildPhases = (
+				C936F68B28193935002B71A5 /* ShellScript */,
 				C9D0936F26741BBE002CC786 /* Sources */,
 				C9D0937026741BBE002CC786 /* Frameworks */,
 				C9D0937126741BBE002CC786 /* Resources */,
@@ -387,6 +388,26 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		C936F68B28193935002B71A5 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "swiftformat $SRCROOT\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		C9D0936F26741BBE002CC786 /* Sources */ = {

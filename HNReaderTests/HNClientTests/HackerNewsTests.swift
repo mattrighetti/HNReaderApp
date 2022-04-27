@@ -2,8 +2,8 @@
 // Created by Mattia Righetti on 12/06/21.
 //
 
-import XCTest
 @testable import HNReader
+import XCTest
 
 class HackerNewsTests: XCTestCase {
     func testItemApiUrlStrings() throws {
