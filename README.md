@@ -15,6 +15,13 @@ The application is still in beta for the moment and needs optimizations. When th
 </a>
 </p>
 
+<p align="center">
+<a href="https://testflight.apple.com/join/olHwTuxw">
+<img src="https://camo.githubusercontent.com/1b205ff428ce644c384c0db6811232f8ba6215292d15fc8ed54a927670ecca0f/68747470733a2f2f616e6f746865726c656e732e6170702f74657374666c696768742d62616467652e706e67" height="55px" />
+
+</a>
+</p>
+
 ## Application preview
 ### Dark mode
 <img width="1021" alt="Screenshot 2021-06-14 at 18 14 16" src="resources/main.png">
