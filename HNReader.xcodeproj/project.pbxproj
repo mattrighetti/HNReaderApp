@@ -23,8 +23,6 @@
 		C9D0937B26741BBF002CC786 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C9D0937A26741BBF002CC786 /* Assets.xcassets */; };
 		C9D0937E26741BBF002CC786 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C9D0937D26741BBF002CC786 /* Preview Assets.xcassets */; };
 		C9D0938026741BBF002CC786 /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9D0937F26741BBF002CC786 /* Persistence.swift */; };
-		C9D0938326741BBF002CC786 /* HNReader.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = C9D0938126741BBF002CC786 /* HNReader.xcdatamodeld */; };
-		C9D0939A26741BC0002CC786 /* HNReaderUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9D0939926741BC0002CC786 /* HNReaderUITests.swift */; };
 		C9D093AC26741C25002CC786 /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9D093AB26741C25002CC786 /* Item.swift */; };
 		C9E9BCFD2674C80E001B4E19 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9E9BCFC2674C80E001B4E19 /* AppState.swift */; };
 		C9E9BCFF2674CB6C001B4E19 /* HackerNewsClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9E9BCFE2674CB6C001B4E19 /* HackerNewsClient.swift */; };
@@ -34,13 +32,6 @@
 
 /* Begin PBXContainerItemProxy section */
 		C9D0938B26741BC0002CC786 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = C9D0936B26741BBE002CC786 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = C9D0937226741BBE002CC786;
-			remoteInfo = HNReader;
-		};
-		C9D0939626741BC0002CC786 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = C9D0936B26741BBE002CC786 /* Project object */;
 			proxyType = 1;
@@ -67,14 +58,10 @@
 		C9D0937A26741BBF002CC786 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		C9D0937D26741BBF002CC786 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		C9D0937F26741BBF002CC786 /* Persistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
-		C9D0938226741BBF002CC786 /* HNReader.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = HNReader.xcdatamodel; sourceTree = "<group>"; };
 		C9D0938426741BBF002CC786 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C9D0938526741BBF002CC786 /* HNReader.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = HNReader.entitlements; sourceTree = "<group>"; };
 		C9D0938A26741BC0002CC786 /* HNReaderTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HNReaderTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C9D0939026741BC0002CC786 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		C9D0939526741BC0002CC786 /* HNReaderUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HNReaderUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		C9D0939926741BC0002CC786 /* HNReaderUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HNReaderUITests.swift; sourceTree = "<group>"; };
-		C9D0939B26741BC0002CC786 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C9D093AB26741C25002CC786 /* Item.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Item.swift; sourceTree = "<group>"; };
 		C9E9BCFC2674C80E001B4E19 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
 		C9E9BCFE2674CB6C001B4E19 /* HackerNewsClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HackerNewsClient.swift; sourceTree = "<group>"; };
@@ -91,13 +78,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		C9D0938726741BC0002CC786 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		C9D0939226741BC0002CC786 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -153,7 +133,6 @@
 			children = (
 				C9D0937526741BBE002CC786 /* HNReader */,
 				C9D0938D26741BC0002CC786 /* HNReaderTests */,
-				C9D0939826741BC0002CC786 /* HNReaderUITests */,
 				C9D0937426741BBE002CC786 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -163,7 +142,6 @@
 			children = (
 				C9D0937326741BBE002CC786 /* HNReader.app */,
 				C9D0938A26741BC0002CC786 /* HNReaderTests.xctest */,
-				C9D0939526741BC0002CC786 /* HNReaderUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -180,7 +158,6 @@
 				C9D0937F26741BBF002CC786 /* Persistence.swift */,
 				C9D0938426741BBF002CC786 /* Info.plist */,
 				C9D0938526741BBF002CC786 /* HNReader.entitlements */,
-				C9D0938126741BBF002CC786 /* HNReader.xcdatamodeld */,
 				C9D0937C26741BBF002CC786 /* Preview Content */,
 				3307153CA4CBEF847DCF967F /* Utils */,
 			);
@@ -204,15 +181,6 @@
 				33071C911DD94AB17E409FD7 /* ModelTests */,
 			);
 			path = HNReaderTests;
-			sourceTree = "<group>";
-		};
-		C9D0939826741BC0002CC786 /* HNReaderUITests */ = {
-			isa = PBXGroup;
-			children = (
-				C9D0939926741BC0002CC786 /* HNReaderUITests.swift */,
-				C9D0939B26741BC0002CC786 /* Info.plist */,
-			);
-			path = HNReaderUITests;
 			sourceTree = "<group>";
 		};
 		C9D093A726741BE1002CC786 /* View */ = {
@@ -295,24 +263,6 @@
 			productReference = C9D0938A26741BC0002CC786 /* HNReaderTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		C9D0939426741BC0002CC786 /* HNReaderUITests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = C9D093A426741BC0002CC786 /* Build configuration list for PBXNativeTarget "HNReaderUITests" */;
-			buildPhases = (
-				C9D0939126741BC0002CC786 /* Sources */,
-				C9D0939226741BC0002CC786 /* Frameworks */,
-				C9D0939326741BC0002CC786 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				C9D0939726741BC0002CC786 /* PBXTargetDependency */,
-			);
-			name = HNReaderUITests;
-			productName = HNReaderUITests;
-			productReference = C9D0939526741BC0002CC786 /* HNReaderUITests.xctest */;
-			productType = "com.apple.product-type.bundle.ui-testing";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -326,10 +276,6 @@
 						CreatedOnToolsVersion = 12.5;
 					};
 					C9D0938926741BC0002CC786 = {
-						CreatedOnToolsVersion = 12.5;
-						TestTargetID = C9D0937226741BBE002CC786;
-					};
-					C9D0939426741BC0002CC786 = {
 						CreatedOnToolsVersion = 12.5;
 						TestTargetID = C9D0937226741BBE002CC786;
 					};
@@ -352,7 +298,6 @@
 			targets = (
 				C9D0937226741BBE002CC786 /* HNReader */,
 				C9D0938926741BC0002CC786 /* HNReaderTests */,
-				C9D0939426741BC0002CC786 /* HNReaderUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -374,13 +319,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		C9D0939326741BC0002CC786 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -394,7 +332,6 @@
 				C93F99B6267554F00046F870 /* ItemCell.swift in Sources */,
 				C93F99B8267557FC0046F870 /* ItemList.swift in Sources */,
 				C9E9BCFD2674C80E001B4E19 /* AppState.swift in Sources */,
-				C9D0938326741BBF002CC786 /* HNReader.xcdatamodeld in Sources */,
 				C9E9BD032674D095001B4E19 /* User.swift in Sources */,
 				C93F99BA267580CE0046F870 /* HTMLText.swift in Sources */,
 				C9E9BCFF2674CB6C001B4E19 /* HackerNewsClient.swift in Sources */,
@@ -418,14 +355,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		C9D0939126741BC0002CC786 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				C9D0939A26741BC0002CC786 /* HNReaderUITests.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -433,11 +362,6 @@
 			isa = PBXTargetDependency;
 			target = C9D0937226741BBE002CC786 /* HNReader */;
 			targetProxy = C9D0938B26741BC0002CC786 /* PBXContainerItemProxy */;
-		};
-		C9D0939726741BC0002CC786 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = C9D0937226741BBE002CC786 /* HNReader */;
-			targetProxy = C9D0939626741BC0002CC786 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -493,7 +417,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 11.3;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -548,7 +472,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 11.3;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = macosx;
@@ -562,23 +486,29 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = HNReader/HNReader.entitlements;
-				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"HNReader/Preview Content\"";
 				DEVELOPMENT_TEAM = H89RFW5UZ6;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = HNReader/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = HNReader;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 11.0;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.mattrighetti.HNReader;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
@@ -588,23 +518,29 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = HNReader/HNReader.entitlements;
-				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"HNReader/Preview Content\"";
 				DEVELOPMENT_TEAM = H89RFW5UZ6;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = HNReader/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = HNReader;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 11.0;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.mattrighetti.HNReader;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
@@ -653,46 +589,6 @@
 			};
 			name = Release;
 		};
-		C9D093A526741BC0002CC786 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				CODE_SIGN_STYLE = Automatic;
-				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = H89RFW5UZ6;
-				INFOPLIST_FILE = HNReaderUITests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-					"@loader_path/../Frameworks",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mattrighetti.HNReaderUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 5.0;
-				TEST_TARGET_NAME = HNReader;
-			};
-			name = Debug;
-		};
-		C9D093A626741BC0002CC786 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				CODE_SIGN_STYLE = Automatic;
-				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = H89RFW5UZ6;
-				INFOPLIST_FILE = HNReaderUITests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-					"@loader_path/../Frameworks",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mattrighetti.HNReaderUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 5.0;
-				TEST_TARGET_NAME = HNReader;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -723,29 +619,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		C9D093A426741BC0002CC786 /* Build configuration list for PBXNativeTarget "HNReaderUITests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				C9D093A526741BC0002CC786 /* Debug */,
-				C9D093A626741BC0002CC786 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 /* End XCConfigurationList section */
-
-/* Begin XCVersionGroup section */
-		C9D0938126741BBF002CC786 /* HNReader.xcdatamodeld */ = {
-			isa = XCVersionGroup;
-			children = (
-				C9D0938226741BBF002CC786 /* HNReader.xcdatamodel */,
-			);
-			currentVersion = C9D0938226741BBF002CC786 /* HNReader.xcdatamodel */;
-			path = HNReader.xcdatamodeld;
-			sourceTree = "<group>";
-			versionGroupType = wrapper.xcdatamodel;
-		};
-/* End XCVersionGroup section */
 	};
 	rootObject = C9D0936B26741BBE002CC786 /* Project object */;
 }
