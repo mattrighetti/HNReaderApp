@@ -23,28 +23,24 @@ struct ItemCell: View {
         HStack {
             VStack(alignment: .leading, spacing: 5) {
                 Text(item?.title ?? String(repeating: "-", count: 30))
-                    .font(.title2)
-                    .fontWeight(.semibold)
+                    .font(.custom("IBMPlexSerif-Bold", size: 17))
                     .redactIfNull(item)
 
                 Text(item?.urlHost ?? String(repeating: "-", count: 30))
-                    .font(.callout)
-                    .fontWeight(.light)
-                    .foregroundColor(.white)
+                    .font(.custom("IBMPlexSerif-Light", size: 12))
                     .redactIfNull(item)
 
                 HStack {
                     Text(item?.scoreString ?? String(repeating: "-", count: 3))
-                        .font(.callout)
-                        .fontWeight(.bold)
+                        .font(.custom("IBMPlexSerif-SemiBold", size: 12))
                         .redactIfNull(item)
 
                     Text("Posted by \(item?.by ?? "?")")
-                        .font(.callout)
+                        .font(.custom("IBMPlexSerif-Regular", size: 12))
                         .redactIfNull(item)
 
                     Text("\(item?.timeStringRepresentation ?? String(repeating: "-", count: 3))")
-                        .font(.callout)
+                        .font(.custom("IBMPlexSerif-Regular", size: 12))
                         .redactIfNull(item)
 
                     Spacer()
@@ -52,15 +48,16 @@ struct ItemCell: View {
             }
 
             HStack {
-                
+
                 ZStack {
                     RoundedRectangle(cornerRadius: 15)
                         .foregroundStyle(Color.gray.opacity(0.1))
                         .frame(width: 50, height: 50)
-                    
+
                     Label(title: {}, icon: {
                         Image(systemName: "bubble.left")
                     })
+                    .foregroundStyle(.primary)
                     .padding()
                 }
                 .frame(width: 50, height: 50)
@@ -79,15 +76,16 @@ struct ItemCell: View {
                         NSWorkspace.shared.open(url)
                     }
                 }
-                
+
                 ZStack {
                     RoundedRectangle(cornerRadius: 15)
                         .foregroundStyle(Color.gray.opacity(0.1))
                         .frame(width: 50, height: 50)
-                    
+
                     Label(title: {}, icon: {
-                        Image(systemName: "link")
+                        Image(systemName: "arrow.up.right")
                     })
+                    .foregroundStyle(.primary)
                     .padding()
                 }
                 .frame(width: 50, height: 50)

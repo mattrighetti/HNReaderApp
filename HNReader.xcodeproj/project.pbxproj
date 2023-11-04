@@ -16,6 +16,10 @@
 		330719203034BDB177F28C41 /* +DateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33071B0E5439D8D207CB68F4 /* +DateTests.swift */; };
 		33071F1C64D4742E1F947FAA /* ItemDownloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33071D0E5913DB91DDDBDADB /* ItemDownloader.swift */; };
 		5F109D592AF6F50D00AE6AF3 /* ConditionalRedactedModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F109D582AF6F50D00AE6AF3 /* ConditionalRedactedModifier.swift */; };
+		5F109D5F2AF704F700AE6AF3 /* IBMPlexSerif-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5F109D5B2AF704F700AE6AF3 /* IBMPlexSerif-Light.ttf */; };
+		5F109D602AF704F700AE6AF3 /* IBMPlexSerif-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5F109D5C2AF704F700AE6AF3 /* IBMPlexSerif-Bold.ttf */; };
+		5F109D612AF704F700AE6AF3 /* IBMPlexSerif-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5F109D5D2AF704F700AE6AF3 /* IBMPlexSerif-Regular.ttf */; };
+		5F109D622AF704F700AE6AF3 /* IBMPlexSerif-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5F109D5E2AF704F700AE6AF3 /* IBMPlexSerif-SemiBold.ttf */; };
 		C93F99B6267554F00046F870 /* ItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C93F99B5267554F00046F870 /* ItemCell.swift */; };
 		C93F99B8267557FC0046F870 /* ItemList.swift in Sources */ = {isa = PBXBuildFile; fileRef = C93F99B7267557FC0046F870 /* ItemList.swift */; };
 		C93F99BA267580CE0046F870 /* HTMLText.swift in Sources */ = {isa = PBXBuildFile; fileRef = C93F99B9267580CE0046F870 /* HTMLText.swift */; };
@@ -51,6 +55,10 @@
 		33071E538EC434DF1A245518 /* HackerNewsClientTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HackerNewsClientTests.swift; sourceTree = "<group>"; };
 		33071EEBE46634E658582AE3 /* ItemTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ItemTests.swift; sourceTree = "<group>"; };
 		5F109D582AF6F50D00AE6AF3 /* ConditionalRedactedModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConditionalRedactedModifier.swift; sourceTree = "<group>"; };
+		5F109D5B2AF704F700AE6AF3 /* IBMPlexSerif-Light.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "IBMPlexSerif-Light.ttf"; sourceTree = "<group>"; };
+		5F109D5C2AF704F700AE6AF3 /* IBMPlexSerif-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "IBMPlexSerif-Bold.ttf"; sourceTree = "<group>"; };
+		5F109D5D2AF704F700AE6AF3 /* IBMPlexSerif-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "IBMPlexSerif-Regular.ttf"; sourceTree = "<group>"; };
+		5F109D5E2AF704F700AE6AF3 /* IBMPlexSerif-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "IBMPlexSerif-SemiBold.ttf"; sourceTree = "<group>"; };
 		C93F99B5267554F00046F870 /* ItemCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemCell.swift; sourceTree = "<group>"; };
 		C93F99B7267557FC0046F870 /* ItemList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemList.swift; sourceTree = "<group>"; };
 		C93F99B9267580CE0046F870 /* HTMLText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTMLText.swift; sourceTree = "<group>"; };
@@ -122,6 +130,17 @@
 			path = ModelTests;
 			sourceTree = "<group>";
 		};
+		5F96E4AB2AF70C2C00593AD6 /* fonts */ = {
+			isa = PBXGroup;
+			children = (
+				5F109D5C2AF704F700AE6AF3 /* IBMPlexSerif-Bold.ttf */,
+				5F109D5B2AF704F700AE6AF3 /* IBMPlexSerif-Light.ttf */,
+				5F109D5D2AF704F700AE6AF3 /* IBMPlexSerif-Regular.ttf */,
+				5F109D5E2AF704F700AE6AF3 /* IBMPlexSerif-SemiBold.ttf */,
+			);
+			path = fonts;
+			sourceTree = "<group>";
+		};
 		C9926691267588B80035A88F /* Components */ = {
 			isa = PBXGroup;
 			children = (
@@ -151,6 +170,7 @@
 		C9D0937526741BBE002CC786 /* HNReader */ = {
 			isa = PBXGroup;
 			children = (
+				5F96E4AB2AF70C2C00593AD6 /* fonts */,
 				C9D093AA26741BFD002CC786 /* HNClient */,
 				C9D093A926741BF6002CC786 /* ViewModel */,
 				C9D093A826741BF0002CC786 /* Model */,
@@ -312,7 +332,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				C9D0937E26741BBF002CC786 /* Preview Assets.xcassets in Resources */,
+				5F109D612AF704F700AE6AF3 /* IBMPlexSerif-Regular.ttf in Resources */,
+				5F109D602AF704F700AE6AF3 /* IBMPlexSerif-Bold.ttf in Resources */,
+				5F109D622AF704F700AE6AF3 /* IBMPlexSerif-SemiBold.ttf in Resources */,
 				C9D0937B26741BBF002CC786 /* Assets.xcassets in Resources */,
+				5F109D5F2AF704F700AE6AF3 /* IBMPlexSerif-Light.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
