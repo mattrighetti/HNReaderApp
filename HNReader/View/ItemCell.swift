@@ -7,6 +7,11 @@
 
 import SwiftUI
 
+func nullableString(_ s: String?) -> String {
+    guard let s = s else { return "" }
+    return s
+}
+
 struct ItemCell: View {
     var itemId: Int
     let itemDownloader: ItemDownloader
@@ -26,20 +31,22 @@ struct ItemCell: View {
                     .font(.custom("IBMPlexSerif-Bold", size: 17))
                     .redactIfNull(item)
 
-                Text(item?.urlHost ?? String(repeating: "-", count: 30))
-                    .font(.custom("IBMPlexSerif-Light", size: 12))
-                    .redactIfNull(item)
+                if let url = item?.urlHost {
+                    Text(url)
+                        .font(.custom("IBMPlexSerif-Light", size: 12))
+                        .redactIfNull(item)
+                }
 
                 HStack {
-                    Text(item?.scoreString ?? String(repeating: "-", count: 3))
+                    Text(nullableString(item?.scoreString))
                         .font(.custom("IBMPlexSerif-SemiBold", size: 12))
                         .redactIfNull(item)
 
-                    Text("Posted by \(item?.by ?? "?")")
+                    Text("Posted by \(nullableString(item?.by))")
                         .font(.custom("IBMPlexSerif-Regular", size: 12))
                         .redactIfNull(item)
 
-                    Text("\(item?.timeStringRepresentation ?? String(repeating: "-", count: 3))")
+                    Text("\(nullableString(item?.timeStringRepresentation))")
                         .font(.custom("IBMPlexSerif-Regular", size: 12))
                         .redactIfNull(item)
 
@@ -85,24 +92,23 @@ struct ItemCell: View {
                     Label(title: {}, icon: {
                         Image(systemName: "arrow.up.right")
                     })
-                    .foregroundStyle(.primary)
+                    .foregroundStyle(item?.url != nil ? .primary : .tertiary)
                     .padding()
                 }
                 .frame(width: 50, height: 50)
                 .onHover { isHovered in
+                    guard item?.url == nil else { return }
                     DispatchQueue.main.async {
                         if (isHovered) {
-                            NSCursor.pointingHand.push()
+                            NSCursor.operationNotAllowed.push()
                         } else {
                             NSCursor.pop()
                         }
                     }
                 }
                 .onTapGesture {
-                    if let item = item {
-                        guard let url = URL(string: item.url!) else { return }
-                        NSWorkspace.shared.open(url)
-                    }
+                    guard let url = item?.url, let url = URL(string: url) else { return }
+                    NSWorkspace.shared.open(url)
                 }
             }.padding(.leading)
         }
