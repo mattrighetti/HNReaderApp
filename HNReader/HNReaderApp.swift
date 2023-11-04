@@ -26,11 +26,13 @@ struct HNReaderApp: App {
     var body: some Scene {
         WindowGroup {
             HomeView()
+                .frame(minWidth: 800, maxWidth: .infinity, minHeight: 500, maxHeight: .infinity)
                 .onAppear {
                     displayMode = appState.getColorScheme()
                 }
                 .preferredColorScheme(displayMode)
                 .environmentObject(appState)
+
         }
 
         Settings {
@@ -45,7 +47,7 @@ struct HNReaderApp: App {
                 }
             }
             .frame(minHeight: 100)
-            .frame(minWidth: 300)
+            .frame(minWidth: 100)
             .preferredColorScheme(displayMode)
         }
     }

@@ -15,19 +15,18 @@ struct ItemList: View {
     private var itemLimitOptions: [Int] = [25, 50, 100]
     
     var body: some View {
-        ScrollView {
-            LazyVStack(alignment: .leading) {
-                ForEach(viewModel.storiesIds, id: \.self) { itemId in
-                    ItemCell(itemId: itemId)
-                        .padding(.horizontal)
-                }
+        List {
+            ForEach(viewModel.storiesIds, id: \.self) { itemId in
+                ItemCell(itemId: itemId)
+                    .listRowSeparator(.hidden)
             }
-            .padding(.vertical)
         }
         .onAppear {
             viewModel.currentNewsSelection = appState.newsSelection
         }
-        .onChange(of: appState.newsSelection, perform: fetchItems)
+        .onChange(of: appState.newsSelection, {
+            fetchItems(by: appState.newsSelection)
+        })
         .toolbar {
             MaxItemPicker(enabled: false)
             Button(action: viewModel.refreshStories) {

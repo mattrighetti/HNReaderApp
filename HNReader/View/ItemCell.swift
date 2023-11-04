@@ -20,22 +20,93 @@ struct ItemCell: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 5) {
-            TitleView()
-            HostText()
-            
-//            if let text = item.text {
-//                HTMLText(text: text)
-//                    .font(.body)
-//                    .lineLimit(3)
-//                    .multilineTextAlignment(.leading)
-//            }
-            
-            HStack {
-                ScoreText()
-                AuthorText()
-                Spacer()
+        HStack {
+            VStack(alignment: .leading, spacing: 5) {
+                Text(item?.title ?? String(repeating: "-", count: 30))
+                    .font(.title2)
+                    .fontWeight(.semibold)
+                    .redactIfNull(item)
+
+                Text(item?.urlHost ?? String(repeating: "-", count: 30))
+                    .font(.callout)
+                    .fontWeight(.light)
+                    .foregroundColor(.white)
+                    .redactIfNull(item)
+
+                HStack {
+                    Text(item?.scoreString ?? String(repeating: "-", count: 3))
+                        .font(.callout)
+                        .fontWeight(.bold)
+                        .redactIfNull(item)
+
+                    Text("Posted by \(item?.by ?? "?")")
+                        .font(.callout)
+                        .redactIfNull(item)
+
+                    Text("\(item?.timeStringRepresentation ?? String(repeating: "-", count: 3))")
+                        .font(.callout)
+                        .redactIfNull(item)
+
+                    Spacer()
+                }
             }
+
+            HStack {
+                
+                ZStack {
+                    RoundedRectangle(cornerRadius: 15)
+                        .foregroundStyle(Color.gray.opacity(0.1))
+                        .frame(width: 50, height: 50)
+                    
+                    Label(title: {}, icon: {
+                        Image(systemName: "bubble.left")
+                    })
+                    .padding()
+                }
+                .frame(width: 50, height: 50)
+                .onHover { isHovered in
+                    DispatchQueue.main.async {
+                        if (isHovered) {
+                            NSCursor.pointingHand.push()
+                        } else {
+                            NSCursor.pop()
+                        }
+                    }
+                }
+                .onTapGesture {
+                    if let item = item {
+                        guard let url = URL(string: "https://news.ycombinator.com/item?id=\(item.id)") else { return }
+                        NSWorkspace.shared.open(url)
+                    }
+                }
+                
+                ZStack {
+                    RoundedRectangle(cornerRadius: 15)
+                        .foregroundStyle(Color.gray.opacity(0.1))
+                        .frame(width: 50, height: 50)
+                    
+                    Label(title: {}, icon: {
+                        Image(systemName: "link")
+                    })
+                    .padding()
+                }
+                .frame(width: 50, height: 50)
+                .onHover { isHovered in
+                    DispatchQueue.main.async {
+                        if (isHovered) {
+                            NSCursor.pointingHand.push()
+                        } else {
+                            NSCursor.pop()
+                        }
+                    }
+                }
+                .onTapGesture {
+                    if let item = item {
+                        guard let url = URL(string: item.url!) else { return }
+                        NSWorkspace.shared.open(url)
+                    }
+                }
+            }.padding(.leading)
         }
         .padding()
         .background(colorScheme == .dark ? Color.black.opacity(0.3) : Color.white)
@@ -45,85 +116,6 @@ struct ItemCell: View {
                 fetchItem()
             }
         }
-        .onTapGesture {
-            if let item = item {
-                guard let url = URL(string: item.url!) else { return }
-                NSWorkspace.shared.open(url)
-            }
-        }
-    }
-
-    @ViewBuilder
-    private func TitleView() -> some View {
-        if let item = item {
-            Text(item.title ?? "No title")
-                .font(.system(.title, design: .rounded))
-                .fontWeight(.bold)
-        } else {
-            Text("No title")
-                .font(.system(.title, design: .rounded))
-                .fontWeight(.bold)
-                .redacted(reason: .placeholder)
-        }
-    }
-
-    @ViewBuilder
-    private func HostText() -> some View {
-        if let item = item {
-            Text(item.urlHost ?? "")
-                .font(.callout)
-                .fontWeight(.semibold)
-                .foregroundColor(.blue)
-        } else {
-            Text("No url")
-                .font(.callout)
-                .fontWeight(.semibold)
-                .foregroundColor(.blue)
-                .redacted(reason: .placeholder)
-        }
-    }
-
-    @ViewBuilder
-    private func ScoreText() -> some View {
-        if let item = item {
-            Text("\(item.score ?? 0)")
-                .font(.system(.callout, design: .rounded))
-                .foregroundColor(.orange)
-                .fontWeight(.bold)
-        } else {
-            Text("0")
-                .font(.system(.callout, design: .rounded))
-                .foregroundColor(.orange)
-                .fontWeight(.bold)
-                .redacted(reason: .placeholder)
-        }
-    }
-
-    @ViewBuilder
-    private func AuthorText() -> some View {
-        HStack {
-            Text("•")
-                .padding(.horizontal, 1)
-            Text("Posted by")
-                .foregroundColor(.gray)
-            if let item = item {
-                Text("\(item.by ?? "anonymous")")
-                    .foregroundColor(.yellow)
-                    .fontWeight(.bold)
-            } else {
-                Text("No author")
-                    .redacted(reason: .placeholder)
-            }
-            Text("•")
-                .padding(.horizontal, 1)
-            if let item = item {
-                Text("\(item.timeStringRepresentation ?? "")")
-                    .foregroundColor(.gray)
-            } else {
-                Text("").redacted(reason: .placeholder)
-            }
-        }
-        .font(.system(.callout, design: .rounded))
     }
 
     private func fetchItem() {

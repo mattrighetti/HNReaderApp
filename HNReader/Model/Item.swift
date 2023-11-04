@@ -54,6 +54,11 @@ public struct Item: Decodable {
         }
     }
 
+    public var scoreString: String? {
+        guard let score = score else { return nil }
+        return "\(score)"
+    }
+
     public var timeStringRepresentation: String? {
         Date().timeElapsedStringRepresentation(since: Date(timeIntervalSince1970: TimeInterval(time!)))
     }
