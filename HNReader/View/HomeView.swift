@@ -9,24 +9,10 @@ import SwiftUI
 import CoreData
 
 struct HomeView: View {
-    @EnvironmentObject var appState: AppState
-    @State var selectedItem: Int? = nil
-    
     var body: some View {
         NavigationView {
             Sidebar()
-            StoryList(selectedItem: $selectedItem).frame(minWidth: 400)
-            SelectStoryPlaceholderImage()
-        }
-    }
-}
-
-struct SelectStoryPlaceholderImage: View {
-    var body: some View {
-        VStack {
-            Image("Select")
-                .resizable()
-                .frame(width: 400, height: 400, alignment: .center)
+            ItemList()
         }
     }
 }

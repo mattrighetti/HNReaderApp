@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 52;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -15,35 +15,28 @@
 		330718D415D21296AA14E7CA /* HackerNewsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33071291447141A6D31E671B /* HackerNewsTests.swift */; };
 		330719203034BDB177F28C41 /* +DateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33071B0E5439D8D207CB68F4 /* +DateTests.swift */; };
 		33071F1C64D4742E1F947FAA /* ItemDownloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33071D0E5913DB91DDDBDADB /* ItemDownloader.swift */; };
-		C91636D626AB2EFE009CECFB /* HackerNews in Frameworks */ = {isa = PBXBuildFile; productRef = C91636D526AB2EFE009CECFB /* HackerNews */; };
-		C93F99B6267554F00046F870 /* StoryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C93F99B5267554F00046F870 /* StoryCell.swift */; };
-		C93F99B8267557FC0046F870 /* StoryList.swift in Sources */ = {isa = PBXBuildFile; fileRef = C93F99B7267557FC0046F870 /* StoryList.swift */; };
-		C99B65B527F5C9E400C7581F /* HNScraper in Frameworks */ = {isa = PBXBuildFile; productRef = C99B65B427F5C9E400C7581F /* HNScraper */; };
-		C99B665527F6670B00C7581F /* HTMLString in Frameworks */ = {isa = PBXBuildFile; productRef = C99B665427F6670B00C7581F /* HTMLString */; };
-		C9B58794267C153C005E0A50 /* DetailStoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9B58793267C153C005E0A50 /* DetailStoryView.swift */; };
-		C9B83DDF26A8808900036AC6 /* CommentCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9B83DDE26A8808900036AC6 /* CommentCell.swift */; };
-		C9B83DE926A8A23C00036AC6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C9B83DE826A8A23C00036AC6 /* Assets.xcassets */; };
-		C9B83DEB26A8A76800036AC6 /* +NSTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9B83DEA26A8A76800036AC6 /* +NSTextField.swift */; };
-		C9B83DEF26A8AF4A00036AC6 /* +String.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9B83DEE26A8AF4A00036AC6 /* +String.swift */; };
-		C9C75DBE26B03FF000892071 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C9C75DBD26B03FF000892071 /* GoogleService-Info.plist */; };
+		5F109D592AF6F50D00AE6AF3 /* ConditionalRedactedModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F109D582AF6F50D00AE6AF3 /* ConditionalRedactedModifier.swift */; };
+		5F109D5F2AF704F700AE6AF3 /* IBMPlexSerif-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5F109D5B2AF704F700AE6AF3 /* IBMPlexSerif-Light.ttf */; };
+		5F109D602AF704F700AE6AF3 /* IBMPlexSerif-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5F109D5C2AF704F700AE6AF3 /* IBMPlexSerif-Bold.ttf */; };
+		5F109D612AF704F700AE6AF3 /* IBMPlexSerif-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5F109D5D2AF704F700AE6AF3 /* IBMPlexSerif-Regular.ttf */; };
+		5F109D622AF704F700AE6AF3 /* IBMPlexSerif-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5F109D5E2AF704F700AE6AF3 /* IBMPlexSerif-SemiBold.ttf */; };
+		C93F99B6267554F00046F870 /* ItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C93F99B5267554F00046F870 /* ItemCell.swift */; };
+		C93F99B8267557FC0046F870 /* ItemList.swift in Sources */ = {isa = PBXBuildFile; fileRef = C93F99B7267557FC0046F870 /* ItemList.swift */; };
+		C93F99BA267580CE0046F870 /* HTMLText.swift in Sources */ = {isa = PBXBuildFile; fileRef = C93F99B9267580CE0046F870 /* HTMLText.swift */; };
 		C9D0937726741BBE002CC786 /* HNReaderApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9D0937626741BBE002CC786 /* HNReaderApp.swift */; };
 		C9D0937926741BBE002CC786 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9D0937826741BBE002CC786 /* HomeView.swift */; };
+		C9D0937B26741BBF002CC786 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C9D0937A26741BBF002CC786 /* Assets.xcassets */; };
 		C9D0937E26741BBF002CC786 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C9D0937D26741BBF002CC786 /* Preview Assets.xcassets */; };
 		C9D0938026741BBF002CC786 /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9D0937F26741BBF002CC786 /* Persistence.swift */; };
-		C9D0938326741BBF002CC786 /* HNReader.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = C9D0938126741BBF002CC786 /* HNReader.xcdatamodeld */; };
-		C9D0939A26741BC0002CC786 /* HNReaderUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9D0939926741BC0002CC786 /* HNReaderUITests.swift */; };
+		C9D093AC26741C25002CC786 /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9D093AB26741C25002CC786 /* Item.swift */; };
 		C9E9BCFD2674C80E001B4E19 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9E9BCFC2674C80E001B4E19 /* AppState.swift */; };
+		C9E9BCFF2674CB6C001B4E19 /* HackerNewsClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9E9BCFE2674CB6C001B4E19 /* HackerNewsClient.swift */; };
+		C9E9BD012674D007001B4E19 /* HackerNews.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9E9BD002674D007001B4E19 /* HackerNews.swift */; };
+		C9E9BD032674D095001B4E19 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9E9BD022674D095001B4E19 /* User.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
 		C9D0938B26741BC0002CC786 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = C9D0936B26741BBE002CC786 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = C9D0937226741BBE002CC786;
-			remoteInfo = HNReader;
-		};
-		C9D0939626741BC0002CC786 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = C9D0936B26741BBE002CC786 /* Project object */;
 			proxyType = 1;
@@ -61,30 +54,29 @@
 		33071D0E5913DB91DDDBDADB /* ItemDownloader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ItemDownloader.swift; sourceTree = "<group>"; };
 		33071E538EC434DF1A245518 /* HackerNewsClientTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HackerNewsClientTests.swift; sourceTree = "<group>"; };
 		33071EEBE46634E658582AE3 /* ItemTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ItemTests.swift; sourceTree = "<group>"; };
-		C93F99B5267554F00046F870 /* StoryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryCell.swift; sourceTree = "<group>"; };
-		C93F99B7267557FC0046F870 /* StoryList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryList.swift; sourceTree = "<group>"; };
-		C96E398B272092E600A01435 /* HackerNews */ = {isa = PBXFileReference; lastKnownFileType = folder; name = HackerNews; path = ../HackerNews; sourceTree = "<group>"; };
-		C99B665227F5CA2400C7581F /* HNScraper */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = HNScraper; path = ../HNScraper; sourceTree = "<group>"; };
-		C9B58793267C153C005E0A50 /* DetailStoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailStoryView.swift; sourceTree = "<group>"; };
-		C9B83DDE26A8808900036AC6 /* CommentCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentCell.swift; sourceTree = "<group>"; };
-		C9B83DE826A8A23C00036AC6 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		C9B83DEA26A8A76800036AC6 /* +NSTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "+NSTextField.swift"; sourceTree = "<group>"; };
-		C9B83DEE26A8AF4A00036AC6 /* +String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "+String.swift"; sourceTree = "<group>"; };
-		C9C75DBD26B03FF000892071 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		5F109D582AF6F50D00AE6AF3 /* ConditionalRedactedModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConditionalRedactedModifier.swift; sourceTree = "<group>"; };
+		5F109D5B2AF704F700AE6AF3 /* IBMPlexSerif-Light.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "IBMPlexSerif-Light.ttf"; sourceTree = "<group>"; };
+		5F109D5C2AF704F700AE6AF3 /* IBMPlexSerif-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "IBMPlexSerif-Bold.ttf"; sourceTree = "<group>"; };
+		5F109D5D2AF704F700AE6AF3 /* IBMPlexSerif-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "IBMPlexSerif-Regular.ttf"; sourceTree = "<group>"; };
+		5F109D5E2AF704F700AE6AF3 /* IBMPlexSerif-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "IBMPlexSerif-SemiBold.ttf"; sourceTree = "<group>"; };
+		C93F99B5267554F00046F870 /* ItemCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemCell.swift; sourceTree = "<group>"; };
+		C93F99B7267557FC0046F870 /* ItemList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemList.swift; sourceTree = "<group>"; };
+		C93F99B9267580CE0046F870 /* HTMLText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTMLText.swift; sourceTree = "<group>"; };
 		C9D0937326741BBE002CC786 /* HNReader.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HNReader.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C9D0937626741BBE002CC786 /* HNReaderApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HNReaderApp.swift; sourceTree = "<group>"; };
 		C9D0937826741BBE002CC786 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		C9D0937A26741BBF002CC786 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		C9D0937D26741BBF002CC786 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		C9D0937F26741BBF002CC786 /* Persistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
-		C9D0938226741BBF002CC786 /* HNReader.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = HNReader.xcdatamodel; sourceTree = "<group>"; };
 		C9D0938426741BBF002CC786 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C9D0938526741BBF002CC786 /* HNReader.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = HNReader.entitlements; sourceTree = "<group>"; };
 		C9D0938A26741BC0002CC786 /* HNReaderTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HNReaderTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C9D0939026741BC0002CC786 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		C9D0939526741BC0002CC786 /* HNReaderUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HNReaderUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		C9D0939926741BC0002CC786 /* HNReaderUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HNReaderUITests.swift; sourceTree = "<group>"; };
-		C9D0939B26741BC0002CC786 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C9D093AB26741C25002CC786 /* Item.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Item.swift; sourceTree = "<group>"; };
 		C9E9BCFC2674C80E001B4E19 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
+		C9E9BCFE2674CB6C001B4E19 /* HackerNewsClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HackerNewsClient.swift; sourceTree = "<group>"; };
+		C9E9BD002674D007001B4E19 /* HackerNews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HackerNews.swift; sourceTree = "<group>"; };
+		C9E9BD022674D095001B4E19 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -92,20 +84,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C91636D626AB2EFE009CECFB /* HackerNews in Frameworks */,
-				C99B665527F6670B00C7581F /* HTMLString in Frameworks */,
-				C99B65B527F5C9E400C7581F /* HNScraper in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		C9D0938726741BC0002CC786 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		C9D0939226741BC0002CC786 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -119,8 +101,6 @@
 			isa = PBXGroup;
 			children = (
 				3307159309D438EFAA1259C7 /* +Date.swift */,
-				C9B83DEA26A8A76800036AC6 /* +NSTextField.swift */,
-				C9B83DEE26A8AF4A00036AC6 /* +String.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -150,11 +130,21 @@
 			path = ModelTests;
 			sourceTree = "<group>";
 		};
+		5F96E4AB2AF70C2C00593AD6 /* fonts */ = {
+			isa = PBXGroup;
+			children = (
+				5F109D5C2AF704F700AE6AF3 /* IBMPlexSerif-Bold.ttf */,
+				5F109D5B2AF704F700AE6AF3 /* IBMPlexSerif-Light.ttf */,
+				5F109D5D2AF704F700AE6AF3 /* IBMPlexSerif-Regular.ttf */,
+				5F109D5E2AF704F700AE6AF3 /* IBMPlexSerif-SemiBold.ttf */,
+			);
+			path = fonts;
+			sourceTree = "<group>";
+		};
 		C9926691267588B80035A88F /* Components */ = {
 			isa = PBXGroup;
 			children = (
-				C93F99B5267554F00046F870 /* StoryCell.swift */,
-				C9B83DDE26A8808900036AC6 /* CommentCell.swift */,
+				C93F99B9267580CE0046F870 /* HTMLText.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -162,11 +152,8 @@
 		C9D0936A26741BBE002CC786 = {
 			isa = PBXGroup;
 			children = (
-				C99B665227F5CA2400C7581F /* HNScraper */,
-				C96E398B272092E600A01435 /* HackerNews */,
 				C9D0937526741BBE002CC786 /* HNReader */,
 				C9D0938D26741BC0002CC786 /* HNReaderTests */,
-				C9D0939826741BC0002CC786 /* HNReaderUITests */,
 				C9D0937426741BBE002CC786 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -176,7 +163,6 @@
 			children = (
 				C9D0937326741BBE002CC786 /* HNReader.app */,
 				C9D0938A26741BC0002CC786 /* HNReaderTests.xctest */,
-				C9D0939526741BC0002CC786 /* HNReaderUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -184,16 +170,16 @@
 		C9D0937526741BBE002CC786 /* HNReader */ = {
 			isa = PBXGroup;
 			children = (
-				C9C75DBD26B03FF000892071 /* GoogleService-Info.plist */,
-				C9B83DE826A8A23C00036AC6 /* Assets.xcassets */,
+				5F96E4AB2AF70C2C00593AD6 /* fonts */,
 				C9D093AA26741BFD002CC786 /* HNClient */,
 				C9D093A926741BF6002CC786 /* ViewModel */,
+				C9D093A826741BF0002CC786 /* Model */,
 				C9D093A726741BE1002CC786 /* View */,
 				C9D0937626741BBE002CC786 /* HNReaderApp.swift */,
+				C9D0937A26741BBF002CC786 /* Assets.xcassets */,
 				C9D0937F26741BBF002CC786 /* Persistence.swift */,
 				C9D0938426741BBF002CC786 /* Info.plist */,
 				C9D0938526741BBF002CC786 /* HNReader.entitlements */,
-				C9D0938126741BBF002CC786 /* HNReader.xcdatamodeld */,
 				C9D0937C26741BBF002CC786 /* Preview Content */,
 				3307153CA4CBEF847DCF967F /* Utils */,
 			);
@@ -219,24 +205,25 @@
 			path = HNReaderTests;
 			sourceTree = "<group>";
 		};
-		C9D0939826741BC0002CC786 /* HNReaderUITests */ = {
-			isa = PBXGroup;
-			children = (
-				C9D0939926741BC0002CC786 /* HNReaderUITests.swift */,
-				C9D0939B26741BC0002CC786 /* Info.plist */,
-			);
-			path = HNReaderUITests;
-			sourceTree = "<group>";
-		};
 		C9D093A726741BE1002CC786 /* View */ = {
 			isa = PBXGroup;
 			children = (
 				C9D0937826741BBE002CC786 /* HomeView.swift */,
-				C93F99B7267557FC0046F870 /* StoryList.swift */,
+				C93F99B5267554F00046F870 /* ItemCell.swift */,
+				C93F99B7267557FC0046F870 /* ItemList.swift */,
 				C9926691267588B80035A88F /* Components */,
-				C9B58793267C153C005E0A50 /* DetailStoryView.swift */,
+				5F109D582AF6F50D00AE6AF3 /* ConditionalRedactedModifier.swift */,
 			);
 			path = View;
+			sourceTree = "<group>";
+		};
+		C9D093A826741BF0002CC786 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				C9D093AB26741C25002CC786 /* Item.swift */,
+				C9E9BD022674D095001B4E19 /* User.swift */,
+			);
+			path = Model;
 			sourceTree = "<group>";
 		};
 		C9D093A926741BF6002CC786 /* ViewModel */ = {
@@ -251,6 +238,8 @@
 		C9D093AA26741BFD002CC786 /* HNClient */ = {
 			isa = PBXGroup;
 			children = (
+				C9E9BCFE2674CB6C001B4E19 /* HackerNewsClient.swift */,
+				C9E9BD002674D007001B4E19 /* HackerNews.swift */,
 				33071D0E5913DB91DDDBDADB /* ItemDownloader.swift */,
 				33071CD8B451FE700B64F387 /* ItemCache.swift */,
 			);
@@ -274,9 +263,6 @@
 			);
 			name = HNReader;
 			packageProductDependencies = (
-				C91636D526AB2EFE009CECFB /* HackerNews */,
-				C99B65B427F5C9E400C7581F /* HNScraper */,
-				C99B665427F6670B00C7581F /* HTMLString */,
 			);
 			productName = HNReader;
 			productReference = C9D0937326741BBE002CC786 /* HNReader.app */;
@@ -300,41 +286,20 @@
 			productReference = C9D0938A26741BC0002CC786 /* HNReaderTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		C9D0939426741BC0002CC786 /* HNReaderUITests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = C9D093A426741BC0002CC786 /* Build configuration list for PBXNativeTarget "HNReaderUITests" */;
-			buildPhases = (
-				C9D0939126741BC0002CC786 /* Sources */,
-				C9D0939226741BC0002CC786 /* Frameworks */,
-				C9D0939326741BC0002CC786 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				C9D0939726741BC0002CC786 /* PBXTargetDependency */,
-			);
-			name = HNReaderUITests;
-			productName = HNReaderUITests;
-			productReference = C9D0939526741BC0002CC786 /* HNReaderUITests.xctest */;
-			productType = "com.apple.product-type.bundle.ui-testing";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
 		C9D0936B26741BBE002CC786 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				BuildIndependentTargetsInParallel = YES;
 				LastSwiftUpdateCheck = 1250;
-				LastUpgradeCheck = 1250;
+				LastUpgradeCheck = 1510;
 				TargetAttributes = {
 					C9D0937226741BBE002CC786 = {
 						CreatedOnToolsVersion = 12.5;
 					};
 					C9D0938926741BC0002CC786 = {
-						CreatedOnToolsVersion = 12.5;
-						TestTargetID = C9D0937226741BBE002CC786;
-					};
-					C9D0939426741BC0002CC786 = {
 						CreatedOnToolsVersion = 12.5;
 						TestTargetID = C9D0937226741BBE002CC786;
 					};
@@ -350,9 +315,6 @@
 			);
 			mainGroup = C9D0936A26741BBE002CC786;
 			packageReferences = (
-				C91636D426AB2EFE009CECFB /* XCRemoteSwiftPackageReference "HackerNews" */,
-				C99B65B327F5C9E400C7581F /* XCRemoteSwiftPackageReference "HNScraper" */,
-				C99B665327F6670A00C7581F /* XCRemoteSwiftPackageReference "HTMLString" */,
 			);
 			productRefGroup = C9D0937426741BBE002CC786 /* Products */;
 			projectDirPath = "";
@@ -360,7 +322,6 @@
 			targets = (
 				C9D0937226741BBE002CC786 /* HNReader */,
 				C9D0938926741BC0002CC786 /* HNReaderTests */,
-				C9D0939426741BC0002CC786 /* HNReaderUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -370,20 +331,16 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C9B83DE926A8A23C00036AC6 /* Assets.xcassets in Resources */,
-				C9C75DBE26B03FF000892071 /* GoogleService-Info.plist in Resources */,
 				C9D0937E26741BBF002CC786 /* Preview Assets.xcassets in Resources */,
+				5F109D612AF704F700AE6AF3 /* IBMPlexSerif-Regular.ttf in Resources */,
+				5F109D602AF704F700AE6AF3 /* IBMPlexSerif-Bold.ttf in Resources */,
+				5F109D622AF704F700AE6AF3 /* IBMPlexSerif-SemiBold.ttf in Resources */,
+				C9D0937B26741BBF002CC786 /* Assets.xcassets in Resources */,
+				5F109D5F2AF704F700AE6AF3 /* IBMPlexSerif-Light.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		C9D0938826741BC0002CC786 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		C9D0939326741BC0002CC786 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -397,21 +354,22 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C9B83DEB26A8A76800036AC6 /* +NSTextField.swift in Sources */,
+				C9D093AC26741C25002CC786 /* Item.swift in Sources */,
 				C9D0938026741BBF002CC786 /* Persistence.swift in Sources */,
 				C9D0937926741BBE002CC786 /* HomeView.swift in Sources */,
-				C93F99B6267554F00046F870 /* StoryCell.swift in Sources */,
-				C93F99B8267557FC0046F870 /* StoryList.swift in Sources */,
+				C93F99B6267554F00046F870 /* ItemCell.swift in Sources */,
+				5F109D592AF6F50D00AE6AF3 /* ConditionalRedactedModifier.swift in Sources */,
+				C93F99B8267557FC0046F870 /* ItemList.swift in Sources */,
 				C9E9BCFD2674C80E001B4E19 /* AppState.swift in Sources */,
-				C9D0938326741BBF002CC786 /* HNReader.xcdatamodeld in Sources */,
-				C9B83DEF26A8AF4A00036AC6 /* +String.swift in Sources */,
+				C9E9BD032674D095001B4E19 /* User.swift in Sources */,
+				C93F99BA267580CE0046F870 /* HTMLText.swift in Sources */,
+				C9E9BCFF2674CB6C001B4E19 /* HackerNewsClient.swift in Sources */,
+				C9E9BD012674D007001B4E19 /* HackerNews.swift in Sources */,
 				C9D0937726741BBE002CC786 /* HNReaderApp.swift in Sources */,
 				330713D3016ED410AFD53FDF /* ItemListViewModel.swift in Sources */,
 				330711A9216E762026AF98A0 /* +Date.swift in Sources */,
-				C9B58794267C153C005E0A50 /* DetailStoryView.swift in Sources */,
 				33071F1C64D4742E1F947FAA /* ItemDownloader.swift in Sources */,
 				3307147AB95F03650FC40B97 /* ItemCache.swift in Sources */,
-				C9B83DDF26A8808900036AC6 /* CommentCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -426,14 +384,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		C9D0939126741BC0002CC786 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				C9D0939A26741BC0002CC786 /* HNReaderUITests.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -442,11 +392,6 @@
 			target = C9D0937226741BBE002CC786 /* HNReader */;
 			targetProxy = C9D0938B26741BC0002CC786 /* PBXContainerItemProxy */;
 		};
-		C9D0939726741BC0002CC786 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = C9D0937226741BBE002CC786 /* HNReader */;
-			targetProxy = C9D0939626741BC0002CC786 /* PBXContainerItemProxy */;
-		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
@@ -454,6 +399,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -484,9 +430,11 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -501,7 +449,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -515,6 +463,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -545,9 +494,11 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -556,7 +507,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = macosx;
@@ -570,24 +521,30 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = HNReader/HNReader.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"HNReader/Preview Content\"";
 				DEVELOPMENT_TEAM = H89RFW5UZ6;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = HNReader/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = HNReader;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 12.0;
-				MARKETING_VERSION = 1.1.0;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.mattrighetti.HNReader;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
@@ -597,24 +554,30 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = HNReader/HNReader.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"HNReader/Preview Content\"";
 				DEVELOPMENT_TEAM = H89RFW5UZ6;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = HNReader/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = HNReader;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 12.0;
-				MARKETING_VERSION = 1.1.0;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.mattrighetti.HNReader;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
@@ -626,6 +589,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = H89RFW5UZ6;
 				INFOPLIST_FILE = HNReaderTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -648,6 +612,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = H89RFW5UZ6;
 				INFOPLIST_FILE = HNReaderTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -660,46 +625,6 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/HNReader.app/Contents/MacOS/HNReader";
-			};
-			name = Release;
-		};
-		C9D093A526741BC0002CC786 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				CODE_SIGN_STYLE = Automatic;
-				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = H89RFW5UZ6;
-				INFOPLIST_FILE = HNReaderUITests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-					"@loader_path/../Frameworks",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mattrighetti.HNReaderUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 5.0;
-				TEST_TARGET_NAME = HNReader;
-			};
-			name = Debug;
-		};
-		C9D093A626741BC0002CC786 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				CODE_SIGN_STYLE = Automatic;
-				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = H89RFW5UZ6;
-				INFOPLIST_FILE = HNReaderUITests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-					"@loader_path/../Frameworks",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mattrighetti.HNReaderUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 5.0;
-				TEST_TARGET_NAME = HNReader;
 			};
 			name = Release;
 		};
@@ -733,74 +658,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		C9D093A426741BC0002CC786 /* Build configuration list for PBXNativeTarget "HNReaderUITests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				C9D093A526741BC0002CC786 /* Debug */,
-				C9D093A626741BC0002CC786 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		C91636D426AB2EFE009CECFB /* XCRemoteSwiftPackageReference "HackerNews" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "file:///Users/matt/Developer/HackerNews";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.0.1;
-			};
-		};
-		C99B65B327F5C9E400C7581F /* XCRemoteSwiftPackageReference "HNScraper" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/mattrighetti/HNScraper";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.3.0;
-			};
-		};
-		C99B665327F6670A00C7581F /* XCRemoteSwiftPackageReference "HTMLString" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/alexisakers/HTMLString";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 6.0.0;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		C91636D526AB2EFE009CECFB /* HackerNews */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = C91636D426AB2EFE009CECFB /* XCRemoteSwiftPackageReference "HackerNews" */;
-			productName = HackerNews;
-		};
-		C99B65B427F5C9E400C7581F /* HNScraper */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = C99B65B327F5C9E400C7581F /* XCRemoteSwiftPackageReference "HNScraper" */;
-			productName = HNScraper;
-		};
-		C99B665427F6670B00C7581F /* HTMLString */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = C99B665327F6670A00C7581F /* XCRemoteSwiftPackageReference "HTMLString" */;
-			productName = HTMLString;
-		};
-/* End XCSwiftPackageProductDependency section */
-
-/* Begin XCVersionGroup section */
-		C9D0938126741BBF002CC786 /* HNReader.xcdatamodeld */ = {
-			isa = XCVersionGroup;
-			children = (
-				C9D0938226741BBF002CC786 /* HNReader.xcdatamodel */,
-			);
-			currentVersion = C9D0938226741BBF002CC786 /* HNReader.xcdatamodel */;
-			path = HNReader.xcdatamodeld;
-			sourceTree = "<group>";
-			versionGroupType = wrapper.xcdatamodel;
-		};
-/* End XCVersionGroup section */
 	};
 	rootObject = C9D0936B26741BBE002CC786 /* Project object */;
 }

@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import HackerNews
 
 class StructWrapper<T>: NSObject {
     let value: T
