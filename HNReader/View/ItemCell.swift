@@ -97,10 +97,13 @@ struct ItemCell: View {
                 }
                 .frame(width: 50, height: 50)
                 .onHover { isHovered in
-                    guard item?.url == nil else { return }
                     DispatchQueue.main.async {
                         if (isHovered) {
-                            NSCursor.operationNotAllowed.push()
+                            if item?.url == nil {
+                                NSCursor.operationNotAllowed.push()
+                            } else {
+                                NSCursor.pointingHand.push()
+                            }
                         } else {
                             NSCursor.pop()
                         }
@@ -113,7 +116,7 @@ struct ItemCell: View {
             }.padding(.leading)
         }
         .padding()
-        .background(colorScheme == .dark ? Color.black.opacity(0.3) : Color.white)
+        .background(colorScheme == .dark ? Color.black.opacity(0.3) : Color.gray.opacity(0.1))
         .cornerRadius(10)
         .onAppear {
             if item == nil {
