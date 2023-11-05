@@ -55,20 +55,7 @@ struct ItemCell: View {
             }
 
             HStack {
-
-                ZStack {
-                    RoundedRectangle(cornerRadius: 15)
-                        .foregroundStyle(Color.gray.opacity(0.1))
-                        .frame(width: 50, height: 50)
-
-                    Label(title: {}, icon: {
-                        Image(systemName: "bubble.left")
-                    })
-                    .foregroundStyle(.primary)
-                    .padding()
-                }
-                .frame(width: 50, height: 50)
-                .onHover { isHovered in
+                BgButton(icon: "bubble.left", minSize: CGSize(width: 50, height: 50), onHover: { isHovered in
                     DispatchQueue.main.async {
                         if (isHovered) {
                             NSCursor.pointingHand.push()
@@ -76,27 +63,14 @@ struct ItemCell: View {
                             NSCursor.pop()
                         }
                     }
-                }
-                .onTapGesture {
+                }, action: {
                     if let item = item {
                         guard let url = URL(string: "https://news.ycombinator.com/item?id=\(item.id)") else { return }
                         NSWorkspace.shared.open(url)
                     }
-                }
+                })
 
-                ZStack {
-                    RoundedRectangle(cornerRadius: 15)
-                        .foregroundStyle(Color.gray.opacity(0.1))
-                        .frame(width: 50, height: 50)
-
-                    Label(title: {}, icon: {
-                        Image(systemName: "arrow.up.right")
-                    })
-                    .foregroundStyle(item?.url != nil ? .primary : .tertiary)
-                    .padding()
-                }
-                .frame(width: 50, height: 50)
-                .onHover { isHovered in
+                BgButton(icon: "arrow.up.right", disabled: item?.url == nil, minSize: CGSize(width: 50, height: 50), onHover: { isHovered in
                     DispatchQueue.main.async {
                         if (isHovered) {
                             if item?.url == nil {
@@ -108,12 +82,12 @@ struct ItemCell: View {
                             NSCursor.pop()
                         }
                     }
-                }
-                .onTapGesture {
+                }, action: {
                     guard let url = item?.url, let url = URL(string: url) else { return }
                     NSWorkspace.shared.open(url)
-                }
-            }.padding(.leading)
+                })
+            }
+            .padding(.leading)
         }
         .padding()
         .background(colorScheme == .dark ? Color.black.opacity(0.3) : Color.gray.opacity(0.1))
