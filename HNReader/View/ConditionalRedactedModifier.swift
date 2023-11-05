@@ -32,7 +32,8 @@ extension View {
 
 #Preview {
     VStack {
-        Text("Some Text").redactIfNull(Optional<String>.none)
+        Text("Some Text")
+            .redactIfNull(Optional<String>.none)
     }
-    .frame(width: 500, height: 500)
+    .frame(width: 200, height: 100)
 }

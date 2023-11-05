@@ -141,8 +141,6 @@ struct ItemCell: View {
     }
 }
 
-struct ItemCell_Previews: PreviewProvider {
-    static var previews: some View {
-        ItemCell(itemId: 27492268)
-    }
+#Preview {
+    ItemCell(itemId: 27492268)
 }
