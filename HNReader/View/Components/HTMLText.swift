@@ -27,11 +27,9 @@ struct HTMLText: NSViewRepresentable {
     func updateNSView(_ nsView: NSViewType, context: Context) {}
 }
 
-struct HTMLText_Previews: PreviewProvider {
-    static var previews: some View {
-        HTMLText(text: """
-        string &lt;h1&gt;Krupal testing &lt;span style="font-weight:
-        bold;"&gt;Customer WYWO&lt;/span&gt;&lt;/h1&gt;
-        """)
-    }
+#Preview {
+    HTMLText(text: """
+    string &lt;h1&gt;Krupal testing &lt;span style="font-weight:
+    bold;"&gt;Customer WYWO&lt;/span&gt;&lt;/h1&gt;
+    """)
 }

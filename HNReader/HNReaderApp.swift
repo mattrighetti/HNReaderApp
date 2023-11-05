@@ -43,11 +43,11 @@ struct HNReaderApp: App {
                         Text("Light").tag(ColorScheme.light)
                     }
                     .pickerStyle(SegmentedPickerStyle())
-                    .frame(maxWidth: 100)
+                    .frame(maxWidth: 200)
                 }
             }
             .frame(minHeight: 100)
-            .frame(minWidth: 100)
+            .frame(minWidth: 300)
             .preferredColorScheme(displayMode)
         }
     }

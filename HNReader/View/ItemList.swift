@@ -32,6 +32,11 @@ struct ItemList: View {
             Button(action: viewModel.refreshStories) {
                 Label("Refresh news", systemImage: "arrow.counterclockwise.circle")
             }
+            Button(action: {
+                InfoView().openInWindow(title: "Info", sender: nil)
+            }, label: {
+                Label("Info", systemImage: "info.circle")
+            })
         }
         .navigationTitle("Hacker News")
     }
@@ -59,8 +64,6 @@ struct ItemList: View {
     }
 }
 
-struct ItemList_Previews: PreviewProvider {
-    static var previews: some View {
-        ItemList()
-    }
+#Preview {
+    ItemList()
 }
