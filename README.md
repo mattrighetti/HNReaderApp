@@ -17,10 +17,10 @@ The application is still in beta for the moment and needs optimizations. When th
 
 ## Application preview
 ### Dark mode
-<img width="1021" alt="Screenshot 2021-06-14 at 18 14 16" src="https://user-images.githubusercontent.com/16304728/121924591-56078f80-cd3c-11eb-899f-a19b3176cea1.png">
+<img width="1021" alt="dark mode" src="https://github.com/mattrighetti/HNReaderApp/assets/16304728/1ec1969d-dc20-47bb-b472-d6e20602ae73">
 
 ### Light mode
-<img width="1021" alt="Screenshot 2021-06-14 at 21 13 59" src="https://user-images.githubusercontent.com/16304728/121946681-77c14080-cd55-11eb-88c0-1457ac45ecd0.png">
+<img width="1021" alt="light mode" src="https://github.com/mattrighetti/HNReaderApp/assets/16304728/7fc6049a-69e6-435f-8f11-b3517befd2f6">
 
 ## License
 [MIT](LICENSE) or [APACHE 2.0](LICENSE)
