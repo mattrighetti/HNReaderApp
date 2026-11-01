@@ -1,54 +1,37 @@
-//
-//  HNReaderApp.swift
-//  HNReader
-//
-//  Created by Mattia Righetti on 12/06/21.
-//
-
 import SwiftUI
 
 @main
 struct HNReaderApp: App {
-    let persistenceController = PersistenceController.shared
-    let appState = AppState()
-
-    private var displayModeBind: Binding<ColorScheme> {
-        Binding<ColorScheme>(
-                get: { appState.getColorScheme() },
-                set: {
-                    appState.setColorScheme($0)
-                    displayMode = $0
-                }
-        )
-    }
-    @State var displayMode: ColorScheme?
+    @StateObject private var appState = AppState()
 
     var body: some Scene {
         WindowGroup {
             HomeView()
-                .frame(minWidth: 800, maxWidth: .infinity, minHeight: 500, maxHeight: .infinity)
-                .onAppear {
-                    displayMode = appState.getColorScheme()
-                }
-                .preferredColorScheme(displayMode)
+                .frame(minWidth: 1440, minHeight: 600)
+                .preferredColorScheme(appState.colorScheme)
                 .environmentObject(appState)
-
+                .tint(.orange)
+        }
+        .defaultSize(width: 1600, height: 820)
+        .windowResizability(.contentMinSize)
+        .commands {
+            CommandGroup(replacing: .help) {
+                Link("Hacker News", destination: URL(string: "https://news.ycombinator.com")!)
+            }
         }
 
         Settings {
-            VStack {
-                Form {
-                    Picker(selection: displayModeBind, label: Text("Theme")) {
-                        Text("Dark").tag(ColorScheme.dark)
-                        Text("Light").tag(ColorScheme.light)
+            Form {
+                Picker("Appearance", selection: $appState.displayMode) {
+                    ForEach(AppState.DisplayMode.allCases, id: \.rawValue) { mode in
+                        Text(mode.title).tag(mode)
                     }
-                    .pickerStyle(SegmentedPickerStyle())
-                    .frame(maxWidth: 200)
                 }
+                .pickerStyle(.segmented)
             }
-            .frame(minHeight: 100)
-            .frame(minWidth: 300)
-            .preferredColorScheme(displayMode)
+            .padding(24)
+            .frame(width: 360)
+            .preferredColorScheme(appState.colorScheme)
         }
     }
 }

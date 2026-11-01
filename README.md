@@ -15,12 +15,29 @@ The application is still in beta for the moment and needs optimizations. When th
 </a>
 </p>
 
-## Application preview
-### Dark mode
-<img width="1021" alt="dark mode" src="https://github.com/mattrighetti/HNReaderApp/assets/16304728/1ec1969d-dc20-47bb-b472-d6e20602ae73">
+## Modern macOS reader
 
-### Light mode
-<img width="1021" alt="light mode" src="https://github.com/mattrighetti/HNReaderApp/assets/16304728/7fc6049a-69e6-435f-8f11-b3517befd2f6">
+The app targets macOS 14 or later and uses a native three-column SwiftUI interface:
+
+- Top, Latest, Best, Ask HN, Show HN, and Jobs feeds.
+- In-app discussions with expandable replies and selectable text.
+- Saved stories and read status persisted locally across launches.
+- Search by title, author, or domain within the loaded feed or saved stories.
+- Unread filtering, paginated feeds, and loading/error/retry states.
+- Native sharing, article links, and System / Light / Dark appearance.
+
+Open `HNReader.xcodeproj` in Xcode and run the `HNReader` scheme.
+Use **⌘R** to refresh a feed and **⌘D** to save or unsave the selected story.
+Articles open in your default browser. Saved story metadata is available offline;
+discussions require a connection. Bookmarks and read status are stored on this Mac.
+
+To run the deterministic tests without live API requests:
+
+```sh
+xcodebuild -project HNReader.xcodeproj -scheme HNReader \
+  -destination 'platform=macOS' CODE_SIGNING_ALLOWED=NO \
+  -skip-testing:HNReaderTests/HackerNewsClientTests test
+```
 
 ## License
 [MIT](LICENSE) or [APACHE 2.0](LICENSE)

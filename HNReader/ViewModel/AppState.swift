@@ -1,80 +1,92 @@
-//
-//  AppState.swift
-//  HNReader
-//
-//  Created by Mattia Righetti on 12/06/21.
-//
-
-import Combine
 import SwiftUI
 
-class AppState: ObservableObject {
-    @AppStorage("displayMode") var displayMode: DisplayMode = .system
-    @Published var sidebarSelection: SidebarSelection? = SidebarSelection.top {
-        willSet {
-            switch newValue {
-            case .top:
-                newsSelection = .top
-            case .ask:
-                newsSelection = .ask
-            case .show:
-                newsSelection = .show
-            case .best:
-                newsSelection = .best
-            case .new:
-                newsSelection = .new
-            case .job:
-                newsSelection = .job
-            default:
-                break
-            }
-        }
+final class AppState: ObservableObject {
+    @Published var displayMode: DisplayMode {
+        didSet { defaults.set(displayMode.rawValue, forKey: "displayMode") }
     }
-    @Published var newsSelection: HackerNews.API.Stories = .top
+    @Published var sidebarSelection: SidebarSelection? = .top
+    @Published private(set) var savedItems: [Item]
+    @Published private(set) var readIDs: Set<Int>
+    private let defaults: UserDefaults
 
-    func getColorScheme() -> ColorScheme {
+    init(defaults: UserDefaults = .standard) {
+        self.defaults = defaults
+        displayMode = DisplayMode(rawValue: defaults.integer(forKey: "displayMode")) ?? .system
+        savedItems = defaults.data(forKey: "savedStories")
+            .flatMap { try? JSONDecoder().decode([Item].self, from: $0) } ?? []
+        readIDs = Set(defaults.array(forKey: "readStories") as? [Int] ?? [])
+    }
+
+    var colorScheme: ColorScheme? {
         switch displayMode {
+        case .system: return nil
         case .dark: return .dark
         case .light: return .light
-        case .system: return .dark
         }
     }
 
-    func setColorScheme(_ colorScheme: ColorScheme) {
-        switch colorScheme {
-        case .dark:
-            displayMode = .dark
-        case .light:
-            displayMode = .light
-        @unknown default:
-            break
+    func isSaved(_ item: Item) -> Bool { savedItems.contains { $0.id == item.id } }
+
+    func toggleSaved(_ item: Item) {
+        if isSaved(item) { savedItems.removeAll { $0.id == item.id } }
+        else { savedItems.insert(item, at: 0) }
+        if let data = try? JSONEncoder().encode(savedItems) {
+            defaults.set(data, forKey: "savedStories")
         }
     }
 
-    // Sidebar categories abstraction
-    enum SidebarSelection: String, Equatable, CaseIterable {
-        case top = "Top"
-        case ask = "Ask"
-        case show = "Show"
-        case job = "Job"
-        case best = "Best"
-        case new = "Newest"
-        
+    func markRead(_ item: Item) {
+        guard readIDs.insert(item.id).inserted else { return }
+        defaults.set(Array(readIDs), forKey: "readStories")
+    }
+
+    enum SidebarSelection: String, CaseIterable, Identifiable {
+        case top = "Top Stories", new = "Latest", best = "Best"
+        case ask = "Ask HN", show = "Show HN", job = "Jobs", saved = "Saved"
+        var id: String { rawValue }
+        var category: HackerNews.API.Stories? {
+            switch self {
+            case .top: return .top
+            case .new: return .new
+            case .best: return .best
+            case .ask: return .ask
+            case .show: return .show
+            case .job: return .job
+            case .saved: return nil
+            }
+        }
+        var subtitle: String {
+            switch self {
+            case .top: return "What the community is reading"
+            case .new: return "Fresh from the community"
+            case .best: return "Stories worth your time"
+            case .ask: return "Questions, ideas, and conversations"
+            case .show: return "Made by the community"
+            case .job: return "Find your next chapter"
+            case .saved: return "Good reads, kept for later"
+            }
+        }
         var iconName: String {
             switch self {
             case .top: return "flame"
-            case .ask: return "person.fill.questionmark"
-            case .new: return "paperplane"
-            case .show: return "eye.circle"
-            case .best: return "rosette"
+            case .new: return "clock"
+            case .best: return "star"
+            case .ask: return "bubble.left.and.bubble.right"
+            case .show: return "sparkles"
             case .job: return "briefcase"
+            case .saved: return "bookmark"
             }
         }
     }
 
-    enum DisplayMode: Int {
-        case system = 0
-        case dark = 1
-        case light = 2
+    enum DisplayMode: Int, CaseIterable {
+        case system = 0, dark = 1, light = 2
+        var title: String {
+            switch self {
+            case .system: return "System"
+            case .dark: return "Dark"
+            case .light: return "Light"
+            }
+        }
     }
 }
