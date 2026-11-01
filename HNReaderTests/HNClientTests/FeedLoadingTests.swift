@@ -320,6 +320,92 @@ final class FeedLoadingTests: XCTestCase {
         XCTAssertFalse(model.hasMore)
     }
 
+    @MainActor
+    func testRepliesLoadOnDemandInPagesAndReuseTheItemCache() async throws {
+        let server = FeedTestServer()
+        defer { server.close() }
+
+        let json = "{\"id\":900,\"kids\":[\((1...31).map(String.init).joined(separator: ","))]}"
+        let parent = try JSONDecoder().decode(Item.self, from: Data(json.utf8))
+        let service = NewsService(session: server.session)
+        let model = CommentRepliesModel(item: parent, service: service)
+
+        XCTAssertEqual(server.totalRequests, 0)
+        XCTAssertTrue(model.hasMore)
+
+        await model.loadNextPage()
+
+        XCTAssertEqual(model.replies.map(\.id), Array(1...15))
+        XCTAssertTrue(model.hasLoaded)
+        XCTAssertEqual(server.count("/v0/item/16.json"), 0)
+
+        await model.loadNextPage()
+        await model.loadNextPage()
+
+        XCTAssertEqual(model.replies.map(\.id), Array(1...31))
+        XCTAssertFalse(model.hasMore)
+
+        let anotherView = CommentRepliesModel(item: parent, service: service)
+        await anotherView.loadNextPage()
+
+        XCTAssertEqual(anotherView.replies.count, 15)
+        XCTAssertEqual(server.totalRequests, 31)
+    }
+
+    @MainActor
+    func testFailedRepliesCanBeRetriedWithoutAdvancingThePage() async throws {
+        let server = FeedTestServer()
+        defer { server.close() }
+
+        let parent = try JSONDecoder().decode(Item.self, from: Data(#"{"id":900,"kids":[1,2]}"#.utf8))
+        let model = CommentRepliesModel(item: parent, service: NewsService(session: server.session))
+
+        server.respond("/v0/item/2.json", json: "{}", status: 500)
+        await model.loadNextPage()
+
+        XCTAssertTrue(model.replies.isEmpty)
+        XCTAssertFalse(model.hasLoaded)
+        XCTAssertNotNil(model.errorMessage)
+        XCTAssertTrue(model.hasMore)
+
+        server.respond("/v0/item/2.json", json: #"{"id":2}"#)
+        await model.loadNextPage()
+
+        XCTAssertEqual(model.replies.map(\.id), [1, 2])
+        XCTAssertNil(model.errorMessage)
+        XCTAssertFalse(model.hasMore)
+    }
+
+    @MainActor
+    func testCancelledRepliesDoNotAdvanceAndCanBeReopened() async throws {
+        let server = FeedTestServer()
+        defer { server.close() }
+
+        let parent = try JSONDecoder().decode(Item.self, from: Data(#"{"id":900,"kids":[1]}"#.utf8))
+        let model = CommentRepliesModel(item: parent, service: NewsService(session: server.session))
+        let started = expectation(description: "Reply request started")
+
+        server.hold(["/v0/item/1.json"])
+        server.observe { _ in started.fulfill() }
+
+        let task = Task { await model.loadNextPage() }
+        await fulfillment(of: [started], timeout: 3)
+        task.cancel()
+        await task.value
+
+        XCTAssertTrue(model.replies.isEmpty)
+        XCTAssertFalse(model.hasLoaded)
+        XCTAssertFalse(model.isLoading)
+        XCTAssertNil(model.errorMessage)
+
+        server.observe { _ in }
+        server.releaseAll()
+        await model.loadNextPage()
+
+        XCTAssertEqual(model.replies.map(\.id), [1])
+        XCTAssertFalse(model.hasMore)
+    }
+
     func testCacheCanBeClearedAndPreservesLargeIDs() throws {
         let cache = ItemCache()
         let item = try JSONDecoder().decode(Item.self, from: Data(#"{"id":4294967297}"#.utf8))

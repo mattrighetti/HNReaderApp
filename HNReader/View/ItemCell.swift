@@ -7,54 +7,75 @@ enum StoryRowLayout {
 struct ItemCell: View {
     let item: Item
     let rank: Int
+    var isSelected = false
 
     @EnvironmentObject private var appState: AppState
+    @Environment(\.colorScheme) private var colorScheme
 
     private var isRead: Bool {
         appState.readIDs.contains(item.id)
     }
 
+    private var domainColor: Color {
+        if isSelected {
+            return Color(red: 1, green: 0.86, blue: 0.65)
+        }
+
+        return colorScheme == .dark
+            ? .orange
+            : Color(red: 0.65, green: 0.28, blue: 0.06)
+    }
+
+    private var titleColor: Color {
+        if isSelected {
+            return .white
+        }
+
+        return isRead ? .secondary : .primary
+    }
+
     var body: some View {
-        HStack(alignment: .top, spacing: 10) {
+        HStack(alignment: .top, spacing: 6) {
             Text(String(format: "%02d", rank))
                 .font(.system(size: 10, weight: .medium, design: .monospaced))
-                .foregroundStyle(.tertiary)
-                .frame(width: 26, height: 18)
+                .foregroundStyle(isSelected ? Color.white.opacity(0.55) : Color.secondary)
+                .frame(width: 20, height: 14)
 
-            VStack(alignment: .leading, spacing: 6) {
-                HStack(alignment: .top, spacing: 8) {
+            VStack(alignment: .leading, spacing: 4) {
+                HStack(spacing: 6) {
                     Circle()
                         .fill(.orange)
                         .frame(width: 4, height: 4)
-                        .frame(width: 6, height: 18)
+                        .frame(width: 6, height: 14)
                         .opacity(isRead ? 0 : 1)
                         .accessibilityLabel("Unread")
                         .accessibilityHidden(isRead)
 
-                    Text(item.title ?? "Untitled story")
-                        .font(.system(size: 14, weight: .medium, design: .serif))
-                        .lineSpacing(1)
-                        .lineLimit(2)
-                        .foregroundStyle(isRead ? .secondary : .primary)
+                    Text(item.urlHost ?? "news.ycombinator.com")
+                        .font(.system(size: 10, weight: .medium, design: .monospaced))
+                        .foregroundStyle(domainColor)
+                        .lineLimit(1)
+                        .truncationMode(.middle)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .fixedSize(horizontal: false, vertical: true)
 
                     if appState.isSaved(item) {
                         Image(systemName: "bookmark.fill")
                             .font(.system(size: 10))
                             .foregroundStyle(.orange)
-                            .frame(height: 18)
+                            .frame(height: 14)
                     }
                 }
 
+                Text(item.title ?? "Untitled story")
+                    .font(.system(size: 14, weight: .medium, design: .serif))
+                    .lineSpacing(1)
+                    .lineLimit(2)
+                    .foregroundStyle(titleColor)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .padding(.leading, 12)
+
                 HStack(spacing: 12) {
-                    Text(item.urlHost ?? "news.ycombinator.com")
-                        .font(.system(size: 10, design: .monospaced))
-                        .lineLimit(1)
-                        .truncationMode(.middle)
-
-                    Spacer(minLength: 0)
-
                     if let author = item.by {
                         Text("by \(author)")
                             .lineLimit(1)
@@ -62,6 +83,8 @@ struct ItemCell: View {
                             .layoutPriority(1)
                             .help("Posted by \(author)")
                     }
+
+                    Spacer(minLength: 0)
 
                     Label("\(item.score ?? 0)", systemImage: "arrowtriangle.up")
                         .fixedSize()
@@ -73,8 +96,8 @@ struct ItemCell: View {
                         .fixedSize()
                 }
                 .font(.system(size: 10, weight: .medium, design: .rounded))
-                .foregroundStyle(.secondary)
-                .padding(.leading, 14)
+                .foregroundStyle(isSelected ? Color.white.opacity(0.8) : Color.secondary)
+                .padding(.leading, 12)
             }
         }
         .padding(.vertical, 6)
@@ -102,8 +125,11 @@ struct CompactStoryPreview: View {
     @StateObject private var appState: AppState
 
     private let items: [Item]
+    private let selectedID: Int?
 
-    init() {
+    init(selectedID: Int? = nil) {
+        self.selectedID = selectedID
+
         let posted = Int(Date().addingTimeInterval(-7200).timeIntervalSince1970)
         let examples = """
         [
@@ -159,8 +185,9 @@ struct CompactStoryPreview: View {
     var body: some View {
         VStack(spacing: 0) {
             ForEach(Array(items.enumerated()), id: \.element.id) { index, item in
-                ItemCell(item: item, rank: index + 1)
+                ItemCell(item: item, rank: index + 1, isSelected: item.id == selectedID)
                     .frame(height: StoryRowLayout.height)
+                    .background(item.id == selectedID ? Color.accentColor : Color.clear)
                     .overlay(alignment: .bottom) {
                         Rectangle()
                             .fill(.primary.opacity(0.09))
@@ -186,6 +213,11 @@ struct CompactStoryPreview: View {
 
 #Preview("Compact stories · Narrow", traits: .fixedLayout(width: 420, height: 240)) {
     CompactStoryPreview()
+        .preferredColorScheme(.dark)
+}
+
+#Preview("Compact stories · Selected", traits: .fixedLayout(width: 520, height: 240)) {
+    CompactStoryPreview(selectedID: 1)
         .preferredColorScheme(.dark)
 }
 #endif

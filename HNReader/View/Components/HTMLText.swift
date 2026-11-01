@@ -3,22 +3,24 @@ import SwiftUI
 /// Render HN's HTML as selectable, wrapping text with native links and theme colors.
 struct HTMLText: View {
     let text: String
+    var fontSize: CGFloat = 14
+    var lineSpacing: CGFloat = 5
 
     @State private var attributed = AttributedString("")
 
     var body: some View {
         Text(attributed)
-            .font(.system(size: 14))
+            .font(.system(size: fontSize))
             .foregroundStyle(.primary)
-            .lineSpacing(5)
+            .lineSpacing(lineSpacing)
             .textSelection(.enabled)
             .frame(maxWidth: .infinity, alignment: .leading)
             .task(id: text) {
-                attributed = Self.render(text)
+                attributed = Self.render(text, fontSize: fontSize)
             }
     }
 
-    @MainActor static func render(_ html: String) -> AttributedString {
+    @MainActor static func render(_ html: String, fontSize: CGFloat = 14) -> AttributedString {
         guard
             let data = html.data(using: .utf8),
             let value = try? NSMutableAttributedString(
@@ -45,8 +47,8 @@ struct HTMLText: View {
 
             let traits = NSFontManager.shared.traits(of: font)
             let base = traits.contains(.fixedPitchFontMask)
-                ? NSFont.monospacedSystemFont(ofSize: 13, weight: .regular)
-                : NSFont.systemFont(ofSize: 14)
+                ? NSFont.monospacedSystemFont(ofSize: max(11, fontSize - 1), weight: .regular)
+                : NSFont.systemFont(ofSize: fontSize)
 
             value.addAttribute(
                 .font,

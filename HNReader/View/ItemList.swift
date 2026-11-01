@@ -95,7 +95,11 @@ struct ItemList: View {
             } else {
                 List(selection: $selectedID) {
                     ForEach(rows) { row in
-                        ItemCell(item: row.item, rank: row.rank)
+                        ItemCell(
+                            item: row.item,
+                            rank: row.rank,
+                            isSelected: selectedID == row.id
+                        )
                             .help(row.item.title ?? "")
                             .frame(height: StoryRowLayout.height)
                             .tag(row.id)
@@ -179,6 +183,7 @@ struct StoryDetail: View {
     @State private var isLoading = false
     @State private var errorMessage: String?
     @State private var loadedCount = 0
+    @State private var threadsCollapsed = false
 
     var body: some View {
         ScrollView {
@@ -245,8 +250,20 @@ struct StoryDetail: View {
 
                     Spacer()
 
+                    Button {
+                        threadsCollapsed.toggle()
+                    } label: {
+                        Label(
+                            threadsCollapsed ? "Expand threads" : "Collapse threads",
+                            systemImage: threadsCollapsed ? "arrow.up.and.down" : "arrow.down.and.up"
+                        )
+                    }
+                    .buttonStyle(.plain)
+                    .font(.system(size: 10))
+                    .foregroundStyle(.secondary)
+
                     Link("View on HN", destination: item.discussionURL)
-                        .font(.caption)
+                        .font(.system(size: 10))
                 }
 
                 if comments.isEmpty && !isLoading && errorMessage == nil {
@@ -255,10 +272,17 @@ struct StoryDetail: View {
                         .padding(.vertical)
                 }
 
-                ForEach(comments) { comment in
-                    CommentView(item: comment)
+                LazyVStack(alignment: .leading, spacing: 0) {
+                    ForEach(comments) { comment in
+                        CommentView(
+                            item: comment,
+                            storyAuthor: item.by,
+                            collapseAll: threadsCollapsed
+                        )
 
-                    Divider()
+                        Divider()
+                            .padding(.vertical, 4)
+                    }
                 }
 
                 if let errorMessage {
@@ -326,127 +350,6 @@ struct StoryDetail: View {
 
             comments += result
             loadedCount += ids.count
-        } catch {
-            if !Task.isCancelled {
-                errorMessage = error.localizedDescription
-            }
-        }
-    }
-}
-
-struct CommentView: View {
-    let item: Item
-
-    @State private var expanded = false
-    @State private var replies: [Item] = []
-    @State private var loaded = false
-    @State private var isLoading = false
-    @State private var errorMessage: String?
-    @State private var loadedCount = 0
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Text(item.by ?? "Deleted user")
-                    .fontWeight(.semibold)
-
-                Text("\(item.timeStringRepresentation ?? "") ago")
-                    .foregroundStyle(.tertiary)
-
-                Spacer()
-            }
-            .font(.caption)
-
-            if item.deleted == true || item.dead == true {
-                Text("Comment unavailable")
-                    .font(.callout)
-                    .foregroundStyle(.secondary)
-            } else if let text = item.text {
-                HTMLText(text: text)
-            }
-
-            if let kids = item.kids, !kids.isEmpty {
-                Button {
-                    expanded.toggle()
-                } label: {
-                    Label(
-                        expanded ? "Hide replies" :
-                            "\(kids.count) \(kids.count == 1 ? "reply" : "replies")",
-                        systemImage: expanded ? "chevron.down" : "chevron.right"
-                    )
-                    .font(.caption)
-                }
-                .buttonStyle(.plain)
-                .foregroundStyle(.orange)
-
-                if expanded {
-                    VStack(alignment: .leading, spacing: 18) {
-                        ForEach(replies) { reply in
-                            // Type erasure allows a recursively nested SwiftUI view.
-                            AnyView(CommentView(item: reply))
-                        }
-
-                        if isLoading {
-                            ProgressView()
-                                .controlSize(.small)
-                        }
-
-                        if let errorMessage {
-                            Text(errorMessage)
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-
-                            Button("Retry Replies") {
-                                Task {
-                                    await loadReplies()
-                                }
-                            }
-                        } else if loaded && loadedCount < kids.count && !isLoading {
-                            Button("More Replies") {
-                                Task {
-                                    await loadReplies()
-                                }
-                            }
-                            .font(.caption)
-                        }
-                    }
-                    .padding(.leading, 16)
-                    .overlay(alignment: .leading) {
-                        Rectangle()
-                            .fill(.orange.opacity(0.2))
-                            .frame(width: 2)
-                        }
-                    .task {
-                        if !loaded {
-                            await loadReplies()
-                        }
-                    }
-                }
-            }
-        }
-        .padding(.vertical, 4)
-    }
-
-    @MainActor private func loadReplies() async {
-        guard !isLoading else {
-            return
-        }
-
-        isLoading = true
-        errorMessage = nil
-
-        defer {
-            isLoading = false
-        }
-
-        do {
-            let ids = Array((item.kids ?? []).dropFirst(loadedCount).prefix(15))
-            let result = try await NewsService.shared.items(ids: ids)
-            try Task.checkCancellation()
-
-            replies += result
-            loadedCount += ids.count
-            loaded = true
         } catch {
             if !Task.isCancelled {
                 errorMessage = error.localizedDescription

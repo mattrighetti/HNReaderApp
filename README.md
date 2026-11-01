@@ -20,10 +20,11 @@ The application is still in beta for the moment and needs optimizations. When th
 The app targets macOS 14 or later and uses a native three-column SwiftUI interface:
 
 - Top, Latest, Best, Ask HN, Show HN, and Jobs feeds.
-- In-app discussions with expandable replies and selectable text.
+- In-app discussions with curved thread connectors, collapsible comments, author avatars,
+  original-poster badges, selectable text, sharing, and replies loaded on demand.
 - Saved stories and read status persisted locally across launches.
 - Search by title, author, or domain within the loaded feed or saved stories.
-- Unread filtering, viewport-driven infinite scrolling, and loading/error/retry states.
+- Unread filtering, automatic pagination, and loading/error/retry states.
 - Native sharing, article links, and System / Light / Dark appearance.
 
 Open `HNReader.xcodeproj` in Xcode and run the `HNReader` scheme.
@@ -43,6 +44,7 @@ allows eviction under memory pressure. Networking lives in `HNClient/NewsService
 **⌘R** requests fresh IDs and first-page metadata.
 
 Open `View/ItemCell.swift` in Xcode’s Canvas for light, dark, and narrow compact-row
+previews. `View/CommentView.swift` also includes expanded and collapsed comment-thread
 previews. They use local sample data and do not need the app or network to run.
 
 To run the deterministic tests without live API requests:
