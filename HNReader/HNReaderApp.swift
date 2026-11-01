@@ -24,7 +24,8 @@ struct HNReaderApp: App {
             Form {
                 Picker("Appearance", selection: $appState.displayMode) {
                     ForEach(AppState.DisplayMode.allCases, id: \.rawValue) { mode in
-                        Text(mode.title).tag(mode)
+                        Text(mode.title)
+                            .tag(mode)
                     }
                 }
                 .pickerStyle(.segmented)

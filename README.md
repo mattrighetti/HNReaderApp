@@ -23,13 +23,27 @@ The app targets macOS 14 or later and uses a native three-column SwiftUI interfa
 - In-app discussions with expandable replies and selectable text.
 - Saved stories and read status persisted locally across launches.
 - Search by title, author, or domain within the loaded feed or saved stories.
-- Unread filtering, paginated feeds, and loading/error/retry states.
+- Unread filtering, viewport-driven infinite scrolling, and loading/error/retry states.
 - Native sharing, article links, and System / Light / Dark appearance.
 
 Open `HNReader.xcodeproj` in Xcode and run the `HNReader` scheme.
 Use **⌘R** to refresh a feed and **⌘D** to save or unsave the selected story.
 Articles open in your default browser. Saved story metadata is available offline;
 discussions require a connection. Bookmarks and read status are stored on this Mac.
+
+Feed data comes from the official Hacker News Firebase REST API. The app loads
+30 stories per page, with at most eight item requests in flight. A page appears
+only when every request has finished, preserving ranking without individual row
+insertions. Scrolling to the bottom automatically requests the next 30 stories.
+Failed pages leave the existing list intact and can be retried.
+
+Visited sections retain their loaded pages for one minute. A shared `NSCache` in
+`HNClient/ItemCache.swift` reuses story and comment metadata for two minutes and
+allows eviction under memory pressure. Networking lives in `HNClient/NewsService.swift`.
+**⌘R** requests fresh IDs and first-page metadata.
+
+Open `View/ItemCell.swift` in Xcode’s Canvas for light, dark, and narrow compact-row
+previews. They use local sample data and do not need the app or network to run.
 
 To run the deterministic tests without live API requests:
 

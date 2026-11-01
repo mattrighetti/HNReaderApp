@@ -41,31 +41,46 @@ public struct Item: Codable, Identifiable, Hashable, Sendable {
     public let title: String?
     public let parts: Int?
     public let descendants: Int?
-    
+
     public var discussionURL: URL {
         URL(string: "https://news.ycombinator.com/item?id=\(id)")!
     }
 
     public var articleURL: URL? {
-        guard let url, let parsed = URL(string: url),
-              ["http", "https"].contains(parsed.scheme?.lowercased() ?? ""),
-              parsed.host != nil else { return nil }
+        guard
+            let url, let parsed = URL(string: url),
+            ["http", "https"].contains(parsed.scheme?.lowercased() ?? ""),
+            parsed.host != nil
+        else {
+            return nil
+        }
+
         return parsed
     }
 
     public var urlHost: String? {
-        guard let host = articleURL?.host else { return nil }
+        guard let host = articleURL?.host else {
+            return nil
+        }
+
         return host.hasPrefix("www.") ? String(host.dropFirst(4)) : host
     }
 
     public var scoreString: String? {
-        guard let score = score else { return nil }
+        guard let score = score else {
+            return nil
+        }
+
         return "\(score)"
     }
 
     public var timeStringRepresentation: String? {
-        guard let time else { return nil }
-        return Date().timeElapsedStringRepresentation(since: Date(timeIntervalSince1970: TimeInterval(time)))
+        guard let time else {
+            return nil
+        }
+
+        return Date()
+            .timeElapsedStringRepresentation(since: Date(timeIntervalSince1970: TimeInterval(time)))
     }
 }
 

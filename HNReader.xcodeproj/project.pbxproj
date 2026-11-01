@@ -23,6 +23,8 @@
 		5FCE20A72AF7B25A00BF4097 /* InfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FCE20A62AF7B25A00BF4097 /* InfoView.swift */; };
 		5FCE20A92AF7B47B00BF4097 /* BgButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FCE20A82AF7B47B00BF4097 /* BgButton.swift */; };
 		5FCE20AB2AF7B8EE00BF4097 /* +View.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FCE20AA2AF7B8EE00BF4097 /* +View.swift */; };
+		AB1000000000000000000001 /* FeedLoadingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1000000000000000000002 /* FeedLoadingTests.swift */; };
+		AB1000000000000000000003 /* NewsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1000000000000000000004 /* NewsService.swift */; };
 		C93F99B6267554F00046F870 /* ItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C93F99B5267554F00046F870 /* ItemCell.swift */; };
 		C93F99B8267557FC0046F870 /* ItemList.swift in Sources */ = {isa = PBXBuildFile; fileRef = C93F99B7267557FC0046F870 /* ItemList.swift */; };
 		C93F99BA267580CE0046F870 /* HTMLText.swift in Sources */ = {isa = PBXBuildFile; fileRef = C93F99B9267580CE0046F870 /* HTMLText.swift */; };
@@ -65,6 +67,8 @@
 		5FCE20A62AF7B25A00BF4097 /* InfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoView.swift; sourceTree = "<group>"; };
 		5FCE20A82AF7B47B00BF4097 /* BgButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BgButton.swift; sourceTree = "<group>"; };
 		5FCE20AA2AF7B8EE00BF4097 /* +View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "+View.swift"; sourceTree = "<group>"; };
+		AB1000000000000000000002 /* FeedLoadingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedLoadingTests.swift; sourceTree = "<group>"; };
+		AB1000000000000000000004 /* NewsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsService.swift; sourceTree = "<group>"; };
 		C93F99B5267554F00046F870 /* ItemCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemCell.swift; sourceTree = "<group>"; };
 		C93F99B7267557FC0046F870 /* ItemList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemList.swift; sourceTree = "<group>"; };
 		C93F99B9267580CE0046F870 /* HTMLText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTMLText.swift; sourceTree = "<group>"; };
@@ -123,6 +127,7 @@
 		33071AE1286F3A139C23E0A9 /* HNClientTests */ = {
 			isa = PBXGroup;
 			children = (
+				AB1000000000000000000002 /* FeedLoadingTests.swift */,
 				33071E538EC434DF1A245518 /* HackerNewsClientTests.swift */,
 				33071291447141A6D31E671B /* HackerNewsTests.swift */,
 			);
@@ -247,6 +252,7 @@
 		C9D093AA26741BFD002CC786 /* HNClient */ = {
 			isa = PBXGroup;
 			children = (
+				AB1000000000000000000004 /* NewsService.swift */,
 				C9E9BCFE2674CB6C001B4E19 /* HackerNewsClient.swift */,
 				C9E9BD002674D007001B4E19 /* HackerNews.swift */,
 				33071D0E5913DB91DDDBDADB /* ItemDownloader.swift */,
@@ -303,7 +309,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				LastSwiftUpdateCheck = 1250;
-				LastUpgradeCheck = 1510;
+				LastUpgradeCheck = 2720;
 				TargetAttributes = {
 					C9D0937226741BBE002CC786 = {
 						CreatedOnToolsVersion = 12.5;
@@ -363,6 +369,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AB1000000000000000000003 /* NewsService.swift in Sources */,
 				C9D093AC26741C25002CC786 /* Item.swift in Sources */,
 				C9D0938026741BBF002CC786 /* Persistence.swift in Sources */,
 				C9D0937926741BBE002CC786 /* HomeView.swift in Sources */,
@@ -389,6 +396,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AB1000000000000000000001 /* FeedLoadingTests.swift in Sources */,
 				3307109CEEE15ACDD7B88CFE /* HackerNewsClientTests.swift in Sources */,
 				330718D415D21296AA14E7CA /* HackerNewsTests.swift in Sources */,
 				330719203034BDB177F28C41 /* +DateTests.swift in Sources */,
@@ -444,6 +452,7 @@
 				COPY_PHASE_STRIP = NO;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = H89RFW5UZ6;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -466,6 +475,7 @@
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -508,6 +518,7 @@
 				COPY_PHASE_STRIP = NO;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = H89RFW5UZ6;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -523,6 +534,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = macosx;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 			};
@@ -542,7 +554,6 @@
 				CURRENT_PROJECT_VERSION = 1.3;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"HNReader/Preview Content\"";
-				DEVELOPMENT_TEAM = H89RFW5UZ6;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = HNReader/Info.plist;
@@ -575,7 +586,6 @@
 				CURRENT_PROJECT_VERSION = 1.3;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"HNReader/Preview Content\"";
-				DEVELOPMENT_TEAM = H89RFW5UZ6;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = HNReader/Info.plist;
@@ -597,12 +607,10 @@
 		C9D093A226741BC0002CC786 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_TEAM = H89RFW5UZ6;
 				INFOPLIST_FILE = HNReaderTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -620,12 +628,10 @@
 		C9D093A326741BC0002CC786 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_TEAM = H89RFW5UZ6;
 				INFOPLIST_FILE = HNReaderTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
