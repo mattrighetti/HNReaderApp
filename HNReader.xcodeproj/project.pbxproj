@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		AB4000000000000000000003 /* SplitColumnWidthTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB4000000000000000000004 /* SplitColumnWidthTests.swift */; };
+		AB4000000000000000000001 /* SplitColumnWidth.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB4000000000000000000002 /* SplitColumnWidth.swift */; };
 		AB3000000000000000000003 /* CommentNavigationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB3000000000000000000004 /* CommentNavigationTests.swift */; };
 		AB3000000000000000000001 /* CommentNavigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB3000000000000000000002 /* CommentNavigator.swift */; };
 		AB2000000000000000000003 /* CommentRepliesModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB2000000000000000000004 /* CommentRepliesModel.swift */; };
@@ -55,6 +57,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		AB4000000000000000000004 /* SplitColumnWidthTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplitColumnWidthTests.swift; sourceTree = "<group>"; };
+		AB4000000000000000000002 /* SplitColumnWidth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplitColumnWidth.swift; sourceTree = "<group>"; };
 		AB3000000000000000000004 /* CommentNavigationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentNavigationTests.swift; sourceTree = "<group>"; };
 		AB3000000000000000000002 /* CommentNavigator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentNavigator.swift; sourceTree = "<group>"; };
 		AB2000000000000000000004 /* CommentRepliesModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentRepliesModel.swift; sourceTree = "<group>"; };
@@ -127,6 +131,7 @@
 		330716F7289F75F50DB30273 /* UtilsTests */ = {
 			isa = PBXGroup;
 			children = (
+				AB4000000000000000000004 /* SplitColumnWidthTests.swift */,
 				33071B0E5439D8D207CB68F4 /* +DateTests.swift */,
 			);
 			path = UtilsTests;
@@ -165,6 +170,7 @@
 		C9926691267588B80035A88F /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				AB4000000000000000000002 /* SplitColumnWidth.swift */,
 				C93F99B9267580CE0046F870 /* HTMLText.swift */,
 				5FCE20A82AF7B47B00BF4097 /* BgButton.swift */,
 			);
@@ -381,6 +387,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AB4000000000000000000001 /* SplitColumnWidth.swift in Sources */,
 				AB3000000000000000000001 /* CommentNavigator.swift in Sources */,
 				AB2000000000000000000003 /* CommentRepliesModel.swift in Sources */,
 				AB2000000000000000000001 /* CommentView.swift in Sources */,
@@ -411,6 +418,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AB4000000000000000000003 /* SplitColumnWidthTests.swift in Sources */,
 				AB3000000000000000000003 /* CommentNavigationTests.swift in Sources */,
 				AB1000000000000000000001 /* FeedLoadingTests.swift in Sources */,
 				3307109CEEE15ACDD7B88CFE /* HackerNewsClientTests.swift in Sources */,

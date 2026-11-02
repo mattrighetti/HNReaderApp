@@ -68,7 +68,12 @@ struct HomeView: View {
                     await viewModel.loadMore()
                 }
             )
+            .frame(minWidth: 520)
             .navigationSplitViewColumnWidth(min: 520, ideal: 560, max: 720)
+            .background {
+                SplitColumnWidth(minimum: 520, maximum: 720)
+                    .allowsHitTesting(false)
+            }
             .searchable(text: $searchText, prompt: "Search loaded stories")
         } detail: {
             if let item = selectedItem {
