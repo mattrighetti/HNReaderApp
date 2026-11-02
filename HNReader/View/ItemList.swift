@@ -243,14 +243,10 @@ struct ItemList: View {
 }
 
 struct StoryDetail: View {
-    let item: Item
+    @StateObject private var model: StoryDetailViewModel
 
     @EnvironmentObject private var appState: AppState
 
-    @State private var comments: [Item] = []
-    @State private var isLoading = false
-    @State private var errorMessage: String?
-    @State private var loadedCount = 0
     @State private var threadsCollapsed = false
     @State private var commentFrames: [Int: CGRect] = [:]
     @State private var commentViewportHeight: CGFloat = 0
@@ -267,25 +263,26 @@ struct StoryDetail: View {
         isLoading: Bool = false,
         errorMessage: String? = nil
     ) {
-        self.item = item
         self.previewThreads = previewThreads
         self.loadsAutomatically = loadsAutomatically
-        _comments = State(initialValue: initialComments ?? [])
-        _loadedCount = State(initialValue: initialComments == nil ? 0 : item.kids?.count ?? 0)
-        _isLoading = State(initialValue: isLoading)
-        _errorMessage = State(initialValue: errorMessage)
+        _model = StateObject(wrappedValue: StoryDetailViewModel(
+            item: item,
+            initialComments: initialComments,
+            isLoading: isLoading,
+            errorMessage: errorMessage
+        ))
+    }
+
+    private var item: Item {
+        model.item
     }
 
     private var navigation: CommentNavigation {
         CommentNavigation(
-            ids: comments.map(\.id),
+            ids: model.comments.map(\.id),
             frames: commentFrames,
             viewportHeight: commentViewportHeight
         )
-    }
-
-    private var hasMoreComments: Bool {
-        loadedCount < (item.kids?.count ?? 0)
     }
 
     var body: some View {
@@ -374,14 +371,14 @@ struct StoryDetail: View {
                             .font(.system(size: 10))
                     }
 
-                    if comments.isEmpty && !isLoading && errorMessage == nil {
+                    if model.comments.isEmpty && !model.isLoading && model.errorMessage == nil {
                         Text("No comments yet. Be the first to join the conversation on Hacker News.")
                             .foregroundStyle(.secondary)
                             .padding(.vertical)
                     }
 
                     LazyVStack(alignment: .leading, spacing: 0) {
-                        ForEach(comments) { comment in
+                        ForEach(model.comments) { comment in
                             CommentView(
                                 item: comment,
                                 storyAuthor: item.by,
@@ -403,26 +400,26 @@ struct StoryDetail: View {
                         }
                     }
 
-                    if let errorMessage {
+                    if let errorMessage = model.errorMessage {
                         Text(errorMessage)
                             .font(.caption)
                             .foregroundStyle(.secondary)
 
                         Button("Retry Comments") {
                             Task {
-                                await loadComments()
+                                await model.loadComments()
                             }
                         }
                         .clickableCursor()
                     }
 
-                    if isLoading {
+                    if model.isLoading {
                         ProgressView("Loading conversation…")
                             .frame(maxWidth: .infinity)
-                    } else if loadedCount < (item.kids?.count ?? 0) && errorMessage == nil {
+                    } else if model.hasMoreComments && model.errorMessage == nil {
                         Button("Load More Comments") {
                             Task {
-                                await loadComments()
+                                await model.loadComments()
                             }
                         }
                         .clickableCursor()
@@ -460,11 +457,11 @@ struct StoryDetail: View {
                 pendingCommentID = nil
             }
             .overlay(alignment: .bottomTrailing) {
-                if !comments.isEmpty {
+                if !model.comments.isEmpty {
                     CommentJumpControls(
                         canGoUp: navigation.target(for: .previous) != nil,
-                        canGoDown: navigation.target(for: .next) != nil || hasMoreComments,
-                        isLoading: isLoading,
+                        canGoDown: navigation.target(for: .next) != nil || model.hasMoreComments,
+                        isLoading: model.isLoading,
                         previous: {
                             pendingCommentID = navigation.target(for: .previous)
                         },
@@ -497,7 +494,7 @@ struct StoryDetail: View {
         }
         .task {
             if loadsAutomatically {
-                await loadComments()
+                await model.loadComments()
             }
         }
     }
@@ -509,41 +506,15 @@ struct StoryDetail: View {
             return
         }
 
-        guard loadsAutomatically, hasMoreComments, !isLoading else {
+        guard loadsAutomatically, model.hasMoreComments, !model.isLoading else {
             return
         }
 
-        let previousCount = comments.count
-        await loadComments()
+        let previousCount = model.comments.count
+        await model.loadComments()
 
-        if comments.count > previousCount {
-            pendingCommentID = comments[previousCount].id
-        }
-    }
-
-    @MainActor private func loadComments() async {
-        guard loadsAutomatically, !isLoading else {
-            return
-        }
-
-        isLoading = true
-        errorMessage = nil
-
-        defer {
-            isLoading = false
-        }
-
-        do {
-            let ids = Array((item.kids ?? []).dropFirst(loadedCount).prefix(20))
-            let result = try await NewsService.shared.items(ids: ids)
-            try Task.checkCancellation()
-
-            comments += result
-            loadedCount += ids.count
-        } catch {
-            if !Task.isCancelled {
-                errorMessage = error.localizedDescription
-            }
+        if model.comments.count > previousCount {
+            pendingCommentID = model.comments[previousCount].id
         }
     }
 }

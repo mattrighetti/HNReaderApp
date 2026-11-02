@@ -130,6 +130,84 @@ final class FeedLoadingTests: XCTestCase {
     }
 
     @MainActor
+    func testSavedStoryFetchesCurrentMetadataBeforeLoadingComments() async throws {
+        let server = FeedTestServer()
+        defer { server.close() }
+
+        let saved = try JSONDecoder().decode(Item.self, from: Data(#"{"id":42,"title":"Saved snapshot"}"#.utf8))
+        server.respond("/v0/item/42.json", json: #"{"id":42,"title":"Current title","kids":[101,102],"descendants":2}"#)
+
+        let service = NewsService(session: server.session)
+        let model = StoryDetailViewModel(item: saved, service: service)
+        await model.loadComments()
+
+        XCTAssertEqual(model.item.title, "Current title")
+        XCTAssertEqual(model.item.descendants, 2)
+        XCTAssertEqual(model.comments.map(\.id), [101, 102])
+        XCTAssertFalse(model.hasMoreComments)
+        XCTAssertNil(model.errorMessage)
+        XCTAssertEqual(saved.title, "Saved snapshot")
+
+        let reopened = StoryDetailViewModel(item: saved, service: service)
+        await reopened.loadComments()
+
+        XCTAssertEqual(reopened.comments.map(\.id), [101, 102])
+        XCTAssertEqual(server.count("/v0/item/42.json"), 1)
+        XCTAssertEqual(server.count("/v0/item/101.json"), 1)
+    }
+
+    @MainActor
+    func testFailedStoryMetadataKeepsSavedContentAndCanBeRetried() async throws {
+        let server = FeedTestServer()
+        defer { server.close() }
+
+        let saved = try JSONDecoder().decode(Item.self, from: Data(#"{"id":42,"title":"Saved snapshot","kids":[1]}"#.utf8))
+        server.respond("/v0/item/42.json", json: "{}", status: 500)
+
+        let model = StoryDetailViewModel(item: saved, service: NewsService(session: server.session))
+        await model.loadComments()
+
+        XCTAssertEqual(model.item, saved)
+        XCTAssertTrue(model.comments.isEmpty)
+        XCTAssertNotNil(model.errorMessage)
+        XCTAssertFalse(model.isLoading)
+        XCTAssertEqual(server.count("/v0/item/1.json"), 0)
+
+        server.respond("/v0/item/42.json", json: #"{"id":42,"kids":[2]}"#)
+        await model.loadComments()
+
+        XCTAssertEqual(model.comments.map(\.id), [2])
+        XCTAssertNil(model.errorMessage)
+    }
+
+    @MainActor
+    func testFailedCommentPageRetainsItsOffsetAndMetadata() async throws {
+        let server = FeedTestServer()
+        defer { server.close() }
+
+        let item = try JSONDecoder().decode(Item.self, from: Data(#"{"id":42}"#.utf8))
+        server.respond("/v0/item/42.json", json: "{\"id\":42,\"kids\":[\((1...25).map(String.init).joined(separator: ","))]}")
+
+        let model = StoryDetailViewModel(item: item, service: NewsService(session: server.session))
+        await model.loadComments()
+
+        server.respond("/v0/item/25.json", json: "{}", status: 500)
+        await model.loadComments()
+
+        XCTAssertEqual(model.comments.map(\.id), Array(1...20))
+        XCTAssertTrue(model.hasMoreComments)
+        XCTAssertNotNil(model.errorMessage)
+
+        server.respond("/v0/item/25.json", json: #"{"id":25}"#)
+        await model.loadComments()
+
+        XCTAssertEqual(model.comments.map(\.id), Array(1...25))
+        XCTAssertFalse(model.hasMoreComments)
+        XCTAssertNil(model.errorMessage)
+        XCTAssertEqual(server.count("/v0/item/42.json"), 1)
+    }
+
+    @MainActor
     func testPagesAppearAtomicallyInGroupsOfThirty() async throws {
         let server = FeedTestServer()
         defer { server.close() }

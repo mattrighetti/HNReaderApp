@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		AB9000000000000000000001 /* StoryDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB9000000000000000000002 /* StoryDetailViewModel.swift */; };
 		AB7000000000000000000001 /* ClickableCursor.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB7000000000000000000002 /* ClickableCursor.swift */; };
 		AB6000000000000000000001 /* AppInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB6000000000000000000002 /* AppInfo.swift */; };
 		AB5000000000000000000003 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB5000000000000000000004 /* SettingsView.swift */; };
@@ -61,6 +62,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		AB9000000000000000000002 /* StoryDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryDetailViewModel.swift; sourceTree = "<group>"; };
 		AB7000000000000000000002 /* ClickableCursor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClickableCursor.swift; sourceTree = "<group>"; };
 		AB6000000000000000000002 /* AppInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppInfo.swift; sourceTree = "<group>"; };
 		AB5000000000000000000004 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
@@ -272,6 +274,7 @@
 		C9D093A926741BF6002CC786 /* ViewModel */ = {
 			isa = PBXGroup;
 			children = (
+				AB9000000000000000000002 /* StoryDetailViewModel.swift */,
 				AB2000000000000000000004 /* CommentRepliesModel.swift */,
 				C9E9BCFC2674C80E001B4E19 /* AppState.swift */,
 				3307147A30B9051D95FFFB20 /* ItemListViewModel.swift */,
@@ -405,6 +408,7 @@
 				AB7000000000000000000001 /* ClickableCursor.swift in Sources */,
 				AB4000000000000000000001 /* SplitColumnWidth.swift in Sources */,
 				AB3000000000000000000001 /* CommentNavigator.swift in Sources */,
+				AB9000000000000000000001 /* StoryDetailViewModel.swift in Sources */,
 				AB2000000000000000000003 /* CommentRepliesModel.swift in Sources */,
 				AB2000000000000000000001 /* CommentView.swift in Sources */,
 				AB1000000000000000000003 /* NewsService.swift in Sources */,
