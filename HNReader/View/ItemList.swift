@@ -39,6 +39,7 @@ struct ItemList: View {
                     Spacer()
 
                     Toggle("Unread only", isOn: $unreadOnly)
+                        .clickableCursor()
                         .toggleStyle(.button)
                         .buttonStyle(.borderless)
                         .font(.caption)
@@ -65,6 +66,7 @@ struct ItemList: View {
                             await refresh()
                         }
                     }
+                    .clickableCursor()
                 }
                 .padding()
             }
@@ -129,6 +131,7 @@ struct ItemList: View {
                 } label: {
                     Label("Refresh", systemImage: "arrow.clockwise")
                 }
+                .clickableCursor()
                 .keyboardShortcut("r", modifiers: .command)
                 .disabled(isLoading)
             }
@@ -147,6 +150,7 @@ struct ItemList: View {
                         await loadMore()
                     }
                 }
+                .clickableCursor()
                 .buttonStyle(.borderless)
             } else if isLoadingMore {
                 ProgressView("Loading next 30 stories…")
@@ -250,6 +254,7 @@ struct StoryDetail: View {
                                     systemImage: "arrow.up.right"
                                 )
                             }
+                            .clickableCursor()
                             .buttonStyle(.borderedProminent)
                             .tint(.orange)
 
@@ -261,6 +266,7 @@ struct StoryDetail: View {
                                     systemImage: appState.isSaved(item) ? "bookmark.fill" : "bookmark"
                                 )
                             }
+                            .clickableCursor()
                             .buttonStyle(.bordered)
                         }
                     }
@@ -289,11 +295,13 @@ struct StoryDetail: View {
                                 systemImage: threadsCollapsed ? "chevron.down" : "chevron.up"
                             )
                         }
+                        .clickableCursor()
                         .buttonStyle(.plain)
                         .font(.system(size: 10))
                         .foregroundStyle(.secondary)
 
                         Link("View on HN", destination: item.discussionURL)
+                            .clickableCursor()
                             .font(.system(size: 10))
                     }
 
@@ -336,6 +344,7 @@ struct StoryDetail: View {
                                 await loadComments()
                             }
                         }
+                        .clickableCursor()
                     }
 
                     if isLoading {
@@ -347,6 +356,7 @@ struct StoryDetail: View {
                                 await loadComments()
                             }
                         }
+                        .clickableCursor()
                     }
                 }
                 .frame(maxWidth: 760, alignment: .leading)
@@ -410,9 +420,11 @@ struct StoryDetail: View {
                     systemImage: appState.isSaved(item) ? "bookmark.fill" : "bookmark"
                 )
             }
+            .clickableCursor()
             .keyboardShortcut("d", modifiers: .command)
 
             ShareLink(item: item.articleURL ?? item.discussionURL)
+                .clickableCursor()
         }
         .task {
             if loadsAutomatically {

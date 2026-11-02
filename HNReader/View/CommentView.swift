@@ -96,6 +96,7 @@ struct CommentView: View {
                             .font(.system(size: 11))
                             .foregroundStyle(.secondary)
                     }
+                    .clickableCursor()
                     .buttonStyle(.plain)
                     .padding(.leading, 28)
                 } else {
@@ -178,6 +179,7 @@ struct CommentView: View {
                     .frame(width: CommentThreadLayout.headerHeight, height: CommentThreadLayout.headerHeight)
                     .contentShape(Rectangle())
             }
+            .clickableCursor()
             .buttonStyle(.plain)
             .help(isCollapsed ? "Expand comment" : "Collapse comment and replies")
             .accessibilityLabel(isCollapsed ? "Expand comment" : "Collapse comment and replies")
@@ -205,6 +207,7 @@ struct CommentView: View {
                 Button(showFullText ? "Show less" : "Read more") {
                     showFullText.toggle()
                 }
+                .clickableCursor()
                 .buttonStyle(.plain)
                 .font(.system(size: 11, weight: .medium))
                 .foregroundStyle(.orange)
@@ -223,17 +226,20 @@ struct CommentView: View {
                         systemImage: repliesExpanded ? "chevron.up" : "bubble.left"
                     )
                 }
+                .clickableCursor()
                 .foregroundStyle(.orange)
             }
 
             Link(destination: item.discussionURL) {
                 Label("Reply on HN", systemImage: "arrowshape.turn.up.left")
             }
+            .clickableCursor()
             .help("Open this comment on Hacker News to reply")
 
             ShareLink(item: item.discussionURL) {
                 Label("Share", systemImage: "square.and.arrow.up")
             }
+            .clickableCursor()
 
             Spacer(minLength: 0)
         }
@@ -289,6 +295,7 @@ struct CommentView: View {
                             await model.loadNextPage()
                         }
                     }
+                    .clickableCursor()
                     .font(.caption)
                     .buttonStyle(.plain)
                 }
@@ -303,6 +310,7 @@ struct CommentView: View {
                     Label("More replies", systemImage: "arrow.turn.down.right")
                         .font(.system(size: 11, weight: .medium))
                 }
+                .clickableCursor()
                 .buttonStyle(.plain)
                 .foregroundStyle(.orange)
                 .padding(.leading, 28)
@@ -313,6 +321,7 @@ struct CommentView: View {
                         await model.loadNextPage()
                     }
                 }
+                .clickableCursor()
                 .buttonStyle(.plain)
                 .font(.system(size: 11, weight: .medium))
                 .foregroundStyle(.orange)
@@ -425,6 +434,7 @@ struct CommentsPreview: View {
                 Button(collapsed ? "Expand threads" : "Collapse threads") {
                     collapsed.toggle()
                 }
+                .clickableCursor()
                 .buttonStyle(.plain)
                 .font(.system(size: 10))
                 .foregroundStyle(.secondary)

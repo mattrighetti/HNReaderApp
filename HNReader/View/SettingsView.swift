@@ -76,6 +76,7 @@ struct SettingsView: View {
                     in: RoundedRectangle(cornerRadius: 10)
                 )
             }
+            .clickableCursor()
             .buttonStyle(.plain)
             .help("Open the HNReader repository on GitHub")
         }
@@ -94,6 +95,7 @@ struct SettingsView: View {
                     Spacer()
 
                     Link("Mattia Righetti", destination: AppInfo.authorURL)
+                        .clickableCursor()
                 }
 
                 HStack {
@@ -103,6 +105,7 @@ struct SettingsView: View {
                     Spacer()
 
                     Link("Hacker News", destination: AppInfo.hackerNewsURL)
+                        .clickableCursor()
                 }
 
                 HStack {

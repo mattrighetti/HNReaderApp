@@ -170,6 +170,8 @@ struct Sidebar: View {
                 Section("Discover") {
                     ForEach(AppState.SidebarSelection.allCases.filter { $0 != .saved }) { section in
                         Label(section.rawValue, systemImage: section.iconName)
+                            .contentShape(Rectangle())
+                            .clickableCursor()
                             .tag(section)
                             .padding(.vertical, 4)
                     }
@@ -185,6 +187,8 @@ struct Sidebar: View {
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }
+                    .contentShape(Rectangle())
+                    .clickableCursor()
                     .tag(AppState.SidebarSelection.saved)
                     .padding(.vertical, 4)
                 }
@@ -201,6 +205,7 @@ struct Sidebar: View {
                 SettingsLink {
                     Image(systemName: "gearshape")
                 }
+                .clickableCursor()
                 .buttonStyle(.plain)
                 .help("Settings")
             }

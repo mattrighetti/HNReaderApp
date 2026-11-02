@@ -33,6 +33,7 @@ struct BgButton: View {
             .padding()
         }
         .frame(width: minSize.width, height: minSize.height)
+        .clickableCursor(enabled: !disabled)
         .onHover {
             onHover?($0)
         }

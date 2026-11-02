@@ -101,6 +101,7 @@ struct CommentJumpControls: View {
                     .frame(width: 38, height: 34)
                     .contentShape(Rectangle())
             }
+            .clickableCursor()
             .disabled(!canGoUp || isLoading)
             .help("Previous top-level comment")
             .accessibilityLabel("Previous top-level comment")
@@ -121,6 +122,7 @@ struct CommentJumpControls: View {
                 .frame(width: 38, height: 34)
                 .contentShape(Rectangle())
             }
+            .clickableCursor()
             .disabled(!canGoDown || isLoading)
             .help("Next top-level comment")
             .accessibilityLabel("Next top-level comment")

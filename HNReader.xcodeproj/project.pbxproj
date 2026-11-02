@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		AB7000000000000000000001 /* ClickableCursor.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB7000000000000000000002 /* ClickableCursor.swift */; };
 		AB6000000000000000000001 /* AppInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB6000000000000000000002 /* AppInfo.swift */; };
 		AB5000000000000000000003 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB5000000000000000000004 /* SettingsView.swift */; };
 		AB5000000000000000000001 /* PreviewData.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB5000000000000000000002 /* PreviewData.swift */; };
@@ -60,6 +61,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		AB7000000000000000000002 /* ClickableCursor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClickableCursor.swift; sourceTree = "<group>"; };
 		AB6000000000000000000002 /* AppInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppInfo.swift; sourceTree = "<group>"; };
 		AB5000000000000000000004 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		AB5000000000000000000002 /* PreviewData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewData.swift; sourceTree = "<group>"; };
@@ -176,6 +178,7 @@
 		C9926691267588B80035A88F /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				AB7000000000000000000002 /* ClickableCursor.swift */,
 				AB4000000000000000000002 /* SplitColumnWidth.swift */,
 				C93F99B9267580CE0046F870 /* HTMLText.swift */,
 				5FCE20A82AF7B47B00BF4097 /* BgButton.swift */,
@@ -399,6 +402,7 @@
 				AB6000000000000000000001 /* AppInfo.swift in Sources */,
 				AB5000000000000000000003 /* SettingsView.swift in Sources */,
 				AB5000000000000000000001 /* PreviewData.swift in Sources */,
+				AB7000000000000000000001 /* ClickableCursor.swift in Sources */,
 				AB4000000000000000000001 /* SplitColumnWidth.swift in Sources */,
 				AB3000000000000000000001 /* CommentNavigator.swift in Sources */,
 				AB2000000000000000000003 /* CommentRepliesModel.swift in Sources */,
