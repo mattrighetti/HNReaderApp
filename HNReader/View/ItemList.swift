@@ -78,22 +78,7 @@ struct ItemList: View {
 
                 Spacer()
             } else if rows.isEmpty && errorMessage == nil {
-                ContentUnavailableView {
-                    Label(
-                        isSaved ? "Your reading list awaits" : "No stories to show",
-                        systemImage: isSaved ? "bookmark" : "magnifyingglass"
-                    )
-                } description: {
-                    Text(
-                        isSearching
-                            ? "Try a different search."
-                            : unreadOnly
-                            ? "You’re all caught up. Turn off the unread filter to see more."
-                            : isSaved
-                            ? "Save a story to come back to it later."
-                            : "Refresh to check for stories."
-                    )
-                }
+                emptyState
             } else {
                 List(selection: $selectedID) {
                     ForEach(rows) { row in
@@ -120,6 +105,7 @@ struct ItemList: View {
                 }
             }
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .background(Color(nsColor: .controlBackgroundColor))
         .navigationTitle(title)
         .toolbar {
@@ -136,6 +122,44 @@ struct ItemList: View {
                 .disabled(isLoading)
             }
         }
+    }
+
+    private var emptyState: some View {
+        VStack(spacing: 12) {
+            Image(systemName: isSaved ? "bookmark" : "magnifyingglass")
+                .font(.system(size: 28, weight: .regular))
+                .foregroundStyle(.tertiary)
+                .accessibilityHidden(true)
+
+            VStack(spacing: 6) {
+                Text(emptyStateContent.title)
+                    .font(.headline)
+
+                Text(emptyStateContent.description)
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
+            }
+            .fixedSize(horizontal: false, vertical: true)
+            .multilineTextAlignment(.center)
+        }
+        .padding(24)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+    private var emptyStateContent: (title: String, description: String) {
+        if isSearching {
+            return ("No matching stories", "Try a different search.")
+        }
+
+        if unreadOnly {
+            return ("No unread stories", "Turn off Unread only to see stories you’ve read.")
+        }
+
+        if isSaved {
+            return ("No saved stories", "Use the bookmark button to save a story.")
+        }
+
+        return ("No stories to show", "Refresh to check for stories.")
     }
 
     private var paginationFooter: some View {
@@ -545,6 +569,11 @@ struct ItemListPreview: View {
 
 #Preview("Story list · Empty saved", traits: .fixedLayout(width: 560, height: 640)) {
     ItemListPreview(state: .emptySaved)
+}
+
+#Preview("Saved · Empty narrow", traits: .fixedLayout(width: 312, height: 640)) {
+    ItemListPreview(state: .emptySaved)
+        .preferredColorScheme(.dark)
 }
 
 #Preview("Story list · No search results", traits: .fixedLayout(width: 560, height: 640)) {
