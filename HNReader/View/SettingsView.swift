@@ -22,14 +22,14 @@ struct SettingsView: View {
     }
 
     private var appHeader: some View {
-        HStack(spacing: 14) {
+        VStack(spacing: 14) {
             Image("AppLogo")
                 .resizable()
                 .scaledToFit()
                 .frame(width: 56, height: 56)
                 .accessibilityHidden(true)
 
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(spacing: 4) {
                 Text("HNReader")
                     .font(.system(size: 20, weight: .semibold))
 
@@ -38,6 +38,8 @@ struct SettingsView: View {
                     .foregroundStyle(.secondary)
             }
         }
+        .frame(maxWidth: .infinity)
+        .multilineTextAlignment(.center)
     }
 
     private var project: some View {
