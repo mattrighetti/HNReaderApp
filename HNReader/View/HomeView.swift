@@ -94,7 +94,23 @@ struct HomeView: View {
                 SplitColumnWidth(minimum: 520, maximum: 720)
                     .allowsHitTesting(false)
             }
-            .searchable(text: $searchText, prompt: "Search loaded stories")
+            .toolbar {
+                ToolbarItem {
+                    HStack(spacing: 6) {
+                        Image(systemName: "magnifyingglass")
+                            .foregroundStyle(.secondary)
+                            .accessibilityHidden(true)
+
+                        TextField("Search loaded stories", text: $searchText)
+                            .textFieldStyle(.plain)
+                            .accessibilityLabel("Search loaded stories")
+                    }
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 6)
+                    .frame(width: 260)
+                    .background(.quaternary, in: RoundedRectangle(cornerRadius: 8))
+                }
+            }
         } detail: {
             if let item = selectedItem {
                 StoryDetail(
