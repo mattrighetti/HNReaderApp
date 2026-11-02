@@ -52,8 +52,8 @@ loading, empty, and error states. Shared fixtures live in
 `HNReader/Preview Content/PreviewData.swift`; previews do not fetch live data or
 use the app’s saved preferences.
 
-You can also open the [rendered preview gallery](resources/previews/README.md)
-without running the app or opening Canvas.
+See the [Canvas preview index](resources/previews/README.md) for the available
+screens and states.
 
 To run the deterministic tests without live API requests:
 
