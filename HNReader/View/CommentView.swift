@@ -6,6 +6,7 @@ private enum CommentThreadLayout {
     static let verticalPadding: CGFloat = 10
     static let contentSpacing: CGFloat = 8
     static let childIndent: CGFloat = 24
+    static let maximumIndentDepth = 5
     static let lineWidth: CGFloat = 1
 
     static var spineX: CGFloat {
@@ -108,7 +109,7 @@ struct CommentView: View {
                 }
             }
             .overlay(alignment: .leading) {
-                if !isCollapsed && repliesExpanded && replyCount > 0 && depth < 3 {
+                if !isCollapsed && repliesExpanded && replyCount > 0 && depth < CommentThreadLayout.maximumIndentDepth {
                     ThreadStem()
                         .stroke(
                             CommentThreadLayout.lineColor(for: colorScheme),
@@ -189,7 +190,7 @@ struct CommentView: View {
 
     @ViewBuilder
     private var commentBody: some View {
-        if depth >= 4, let parentAuthor {
+        if depth > CommentThreadLayout.maximumIndentDepth, let parentAuthor {
             Text("Replying to \(parentAuthor)")
                 .font(.system(size: 10))
                 .foregroundStyle(.secondary)
@@ -260,9 +261,9 @@ struct CommentView: View {
                     previewThreads: previewThreads,
                     expandPreview: expandPreview
                 ))
-                .padding(.leading, depth < 3 ? CommentThreadLayout.childIndent : 0)
+                .padding(.leading, depth < CommentThreadLayout.maximumIndentDepth ? CommentThreadLayout.childIndent : 0)
                 .overlay(alignment: .leading) {
-                    if depth < 3 {
+                    if depth < CommentThreadLayout.maximumIndentDepth {
                         ThreadBranch(isLast: index == model.replies.count - 1 && !model.hasMore)
                             .stroke(
                                 CommentThreadLayout.lineColor(for: colorScheme),
@@ -475,6 +476,22 @@ struct CommentsPreview: View {
         CommentsPreview()
     }
     .preferredColorScheme(.light)
+}
+
+#Preview("Comment threads · Deep replies", traits: .fixedLayout(width: 640, height: 800)) {
+    ScrollView {
+        if let root = PreviewData.deepComments.first {
+            CommentView(
+                item: root,
+                storyAuthor: root.by,
+                previewThreads: PreviewData.deepThreads,
+                expandPreview: true
+            )
+            .padding(20)
+        }
+    }
+    .preferredColorScheme(.dark)
+    .tint(.orange)
 }
 
 #Preview("Comment threads · Collapsed", traits: .fixedLayout(width: 640, height: 240)) {

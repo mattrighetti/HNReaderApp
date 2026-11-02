@@ -9,7 +9,7 @@ Open the relevant Swift file, enable **Editor → Canvas**, and choose a named p
 | [SettingsView.swift](../../HNReader/View/SettingsView.swift) | System appearance, with light/dark Canvas variants |
 | [InfoView.swift](../../HNReader/View/InfoView.swift) | About in light/dark |
 | [ItemCell.swift](../../HNReader/View/ItemCell.swift) | Compact rows in light/dark, narrow, selected |
-| [CommentView.swift](../../HNReader/View/CommentView.swift) | Expanded threads in light/dark, collapsed threads |
+| [CommentView.swift](../../HNReader/View/CommentView.swift) | Expanded threads in light/dark, deep replies, collapsed threads |
 | [CommentNavigator.swift](../../HNReader/View/CommentNavigator.swift) | Floating jump controls |
 | [HTMLText.swift](../../HNReader/View/Components/HTMLText.swift) | Links, emphasis, code, compact comment text |
 | [BgButton.swift](../../HNReader/View/Components/BgButton.swift) | Light/dark and disabled buttons |

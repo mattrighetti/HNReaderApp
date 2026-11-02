@@ -101,6 +101,40 @@ enum PreviewData {
         }
     }
 
+    static let deepComments: [Item] = {
+        let examples = (0...6).map { depth -> [String: Any] in
+            var comment: [String: Any] = [
+                "id": 600 + depth,
+                "by": "reader\(depth + 1)",
+                "text": "Comment at depth \(depth). The curved connector should remain visible through five nested replies."
+            ]
+
+            if depth > 0 {
+                comment["parent"] = 599 + depth
+            }
+
+            if depth < 6 {
+                comment["kids"] = [601 + depth]
+            }
+
+            return comment
+        }
+
+        guard let data = try? JSONSerialization.data(withJSONObject: examples) else {
+            return []
+        }
+
+        return decode(String(decoding: data, as: UTF8.self))
+    }()
+
+    static var deepThreads: [Int: [Item]] {
+        let byID = Dictionary(uniqueKeysWithValues: deepComments.map { ($0.id, $0) })
+
+        return Dictionary(uniqueKeysWithValues: deepComments.map { comment in
+            (comment.id, (comment.kids ?? []).compactMap { byID[$0] })
+        })
+    }
+
     static var rootComments: [Item] {
         comments.filter { $0.parent == nil }
     }
