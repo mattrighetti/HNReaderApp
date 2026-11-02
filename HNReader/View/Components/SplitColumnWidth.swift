@@ -22,7 +22,7 @@ struct SplitColumnWidth: NSViewRepresentable {
 }
 
 final class ColumnWidthProbe: NSView {
-    var minimum: CGFloat = 520
+    var minimum: CGFloat = 312
     var maximum: CGFloat = 720
 
     private var updateScheduled = false
@@ -88,7 +88,7 @@ final class ColumnWidthProbe: NSView {
         let pane = item.viewController.view
 
         // AppKit can place the sidebar over the content pane. Its safe-area
-        // width must be added so the story list itself still gets 520 points.
+        // width must be added so the story list itself still gets its minimum usable width.
         let coveredWidth = pane.safeAreaInsets.left + pane.safeAreaInsets.right
         let paneMinimum = minimum + coveredWidth
         let paneMaximum = maximum + coveredWidth

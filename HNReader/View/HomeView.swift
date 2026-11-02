@@ -88,10 +88,10 @@ struct HomeView: View {
                     }
                 }
             )
-            .frame(minWidth: 520)
-            .navigationSplitViewColumnWidth(min: 520, ideal: 560, max: 720)
+            .frame(minWidth: 312)
+            .navigationSplitViewColumnWidth(min: 312, ideal: 560, max: 720)
             .background {
-                SplitColumnWidth(minimum: 520, maximum: 720)
+                SplitColumnWidth(minimum: 312, maximum: 720)
                     .allowsHitTesting(false)
             }
             .toolbar {

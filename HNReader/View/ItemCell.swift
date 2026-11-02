@@ -160,7 +160,7 @@ struct CompactStoryPreview: View {
         .preferredColorScheme(.dark)
 }
 
-#Preview("Compact stories · Narrow", traits: .fixedLayout(width: 420, height: 240)) {
+#Preview("Compact stories · Narrow", traits: .fixedLayout(width: 312, height: 240)) {
     CompactStoryPreview()
         .preferredColorScheme(.dark)
 }

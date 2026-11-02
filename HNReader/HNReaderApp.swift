@@ -7,7 +7,7 @@ struct HNReaderApp: App {
     var body: some Scene {
         WindowGroup {
             HomeView()
-                .frame(minWidth: 1440, minHeight: 600)
+                .frame(minWidth: 864, minHeight: 600)
                 .environmentObject(appState)
                 .tint(.orange)
         }

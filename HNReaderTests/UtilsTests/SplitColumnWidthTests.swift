@@ -14,7 +14,7 @@ final class SplitColumnWidthTests: XCTestCase {
 
         let host = NSHostingController(rootView: HomeView()
             .environmentObject(state)
-            .frame(minWidth: 1440, minHeight: 600))
+            .frame(minWidth: 864, minHeight: 600))
 
         let window = NSWindow(
             contentRect: NSRect(x: 0, y: 0, width: 1600, height: 800),
@@ -35,13 +35,13 @@ final class SplitColumnWidthTests: XCTestCase {
 
         XCTAssertEqual(
             pane.minimumThickness - pane.viewController.view.safeAreaInsets.left,
-            520,
+            312,
             accuracy: 0.5
         )
         XCTAssertFalse(pane.canCollapse)
         XCTAssertFalse(pane.canCollapseFromWindowResize)
         XCTAssertFalse(controller.splitView(split, canCollapseSubview: pane.viewController.view))
-        XCTAssertGreaterThanOrEqual(Self.usableWidth(of: pane), 519.5)
+        XCTAssertGreaterThanOrEqual(Self.usableWidth(of: pane), 311.5)
 
         // Move the right divider far enough left to reproduce the clipped rows.
         let left = pane.viewController.view.frame.minX
@@ -49,13 +49,13 @@ final class SplitColumnWidthTests: XCTestCase {
         window.contentView?.layoutSubtreeIfNeeded()
         try await Task.sleep(for: .milliseconds(50))
 
-        XCTAssertGreaterThanOrEqual(Self.usableWidth(of: pane), 519.5)
+        XCTAssertGreaterThanOrEqual(Self.usableWidth(of: pane), 311.5)
 
-        window.setContentSize(NSSize(width: 1440, height: 700))
+        window.setContentSize(NSSize(width: 864, height: 700))
         window.contentView?.layoutSubtreeIfNeeded()
         try await Task.sleep(for: .milliseconds(50))
 
-        XCTAssertGreaterThanOrEqual(Self.usableWidth(of: pane), 519.5)
+        XCTAssertGreaterThanOrEqual(Self.usableWidth(of: pane), 311.5)
         XCTAssertFalse(pane.isCollapsed)
 
         let sidebar = try XCTUnwrap(controller.splitViewItems.first { $0.behavior == .sidebar })
@@ -63,13 +63,13 @@ final class SplitColumnWidthTests: XCTestCase {
         window.contentView?.layoutSubtreeIfNeeded()
         try await Task.sleep(for: .milliseconds(100))
 
-        XCTAssertGreaterThanOrEqual(Self.usableWidth(of: pane), 519.5)
+        XCTAssertGreaterThanOrEqual(Self.usableWidth(of: pane), 311.5)
 
         sidebar.isCollapsed = false
         window.contentView?.layoutSubtreeIfNeeded()
         try await Task.sleep(for: .milliseconds(100))
 
-        XCTAssertGreaterThanOrEqual(Self.usableWidth(of: pane), 519.5)
+        XCTAssertGreaterThanOrEqual(Self.usableWidth(of: pane), 311.5)
     }
 
     @MainActor
