@@ -86,33 +86,4 @@ extension ItemTests {
 
         XCTAssertTrue(AppState(defaults: defaults).savedItems.isEmpty)
     }
-
-    func testAppearanceChangesPublishAndRestoreSystemFollowing() throws {
-        let suite = "HNReaderTests.\(UUID().uuidString)"
-        let defaults = try XCTUnwrap(UserDefaults(suiteName: suite))
-        defer {
-            defaults.removePersistentDomain(forName: suite)
-        }
-        defaults.set(AppState.DisplayMode.dark.rawValue, forKey: "displayMode")
-        let state = AppState(defaults: defaults)
-
-        XCTAssertEqual(state.colorScheme, .dark)
-
-        var updates = 0
-        let subscription = state.objectWillChange.sink { updates += 1 }
-        defer {
-            subscription.cancel()
-        }
-
-        state.displayMode = .light
-
-        XCTAssertEqual(state.colorScheme, .light)
-        XCTAssertEqual(AppState(defaults: defaults).displayMode, .light)
-
-        state.displayMode = .system
-
-        XCTAssertNil(state.colorScheme)
-        XCTAssertEqual(AppState(defaults: defaults).displayMode, .system)
-        XCTAssertEqual(updates, 2, "Both appearance changes must invalidate observing windows")
-    }
 }

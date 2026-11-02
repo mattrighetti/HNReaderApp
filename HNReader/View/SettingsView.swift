@@ -1,13 +1,9 @@
 import SwiftUI
 
 struct SettingsView: View {
-    @EnvironmentObject private var appState: AppState
-
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
             appHeader
-
-            appearance
 
             project
 
@@ -22,7 +18,6 @@ struct SettingsView: View {
         .padding(24)
         .frame(width: 440)
         .background(Color(nsColor: .windowBackgroundColor))
-        .preferredColorScheme(appState.colorScheme)
         .tint(.orange)
     }
 
@@ -42,22 +37,6 @@ struct SettingsView: View {
                     .font(.system(size: 12))
                     .foregroundStyle(.secondary)
             }
-        }
-    }
-
-    private var appearance: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text("Appearance")
-                .font(.system(size: 12, weight: .semibold))
-
-            Picker("Appearance", selection: $appState.displayMode) {
-                ForEach(AppState.DisplayMode.allCases, id: \.rawValue) { mode in
-                    Text(mode.title)
-                        .tag(mode)
-                }
-            }
-            .pickerStyle(.segmented)
-            .labelsHidden()
         }
     }
 
@@ -146,16 +125,15 @@ struct SettingsView: View {
 #if DEBUG
 #Preview("Settings · System") {
     SettingsView()
-        .environmentObject(PreviewData.appState())
 }
 
 #Preview("Settings · Light") {
     SettingsView()
-        .environmentObject(PreviewData.appState(theme: .light))
+        .preferredColorScheme(.light)
 }
 
 #Preview("Settings · Dark") {
     SettingsView()
-        .environmentObject(PreviewData.appState(theme: .dark))
+        .preferredColorScheme(.dark)
 }
 #endif

@@ -13,6 +13,7 @@ These images use local sample data. You can inspect them without launching HNRea
 | Feed error | [Offline](story-list-offline.png) |
 | Pagination | [Loading next page](story-list-loading-page.png) · [Retry](story-list-page-error.png) |
 | Story detail | [Light](story-detail-light.png) · [Dark](story-detail-dark.png) |
+| Settings | [Light](settings-light.png) · [Dark](settings-dark.png) |
 | About | [About HNReader](about.png) |
 | Compact story rows | [Light](compact-stories-light.png) · [Dark](compact-stories-dark.png) · [Selected](compact-stories-selected.png) |
 | Comment threads | [Light](comment-threads-light.png) · [Dark](comment-threads-dark.png) · [Collapsed](comment-threads-collapsed.png) |
@@ -26,7 +27,7 @@ Open the relevant Swift file, enable **Editor → Canvas**, and choose a named p
 | --- | --- |
 | [HomeView.swift](../../HNReader/View/HomeView.swift) | Full reader in light/dark, no selection, sidebar |
 | [ItemList.swift](../../HNReader/View/ItemList.swift) | List in light/dark; loading, empty, search, offline, pagination; detail in light/dark with comment states |
-| [SettingsView.swift](../../HNReader/View/SettingsView.swift) | System, light, dark |
+| [SettingsView.swift](../../HNReader/View/SettingsView.swift) | System appearance, with light/dark Canvas variants |
 | [InfoView.swift](../../HNReader/View/InfoView.swift) | About in light/dark |
 | [ItemCell.swift](../../HNReader/View/ItemCell.swift) | Compact rows in light/dark, narrow, selected |
 | [CommentView.swift](../../HNReader/View/CommentView.swift) | Expanded threads in light/dark, collapsed threads |

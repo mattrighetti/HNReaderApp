@@ -219,7 +219,7 @@ struct Sidebar: View {
         previewComments: PreviewData.rootComments,
         previewThreads: PreviewData.threads
     )
-    .environmentObject(PreviewData.appState(theme: .light))
+    .environmentObject(PreviewData.appState())
     .preferredColorScheme(.light)
     .tint(.orange)
 }
@@ -232,7 +232,7 @@ struct Sidebar: View {
         previewComments: PreviewData.rootComments,
         previewThreads: PreviewData.threads
     )
-    .environmentObject(PreviewData.appState(theme: .dark))
+    .environmentObject(PreviewData.appState())
     .preferredColorScheme(.dark)
     .tint(.orange)
 }

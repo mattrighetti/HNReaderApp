@@ -8,7 +8,6 @@ struct HNReaderApp: App {
         WindowGroup {
             HomeView()
                 .frame(minWidth: 1440, minHeight: 600)
-                .preferredColorScheme(appState.colorScheme)
                 .environmentObject(appState)
                 .tint(.orange)
         }
@@ -22,7 +21,6 @@ struct HNReaderApp: App {
 
         Settings {
             SettingsView()
-                .environmentObject(appState)
         }
     }
 }

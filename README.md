@@ -26,7 +26,7 @@ The app targets macOS 14 or later and uses a native three-column SwiftUI interfa
 - Saved stories and read status persisted locally across launches.
 - Search by title, author, or domain within the loaded feed or saved stories.
 - Unread filtering, automatic pagination, and loading/error/retry states.
-- Native sharing, article links, and System / Light / Dark appearance.
+- Native sharing, article links, and appearance that follows macOS.
 
 Open `HNReader.xcodeproj` in Xcode and run the `HNReader` scheme.
 Use **⌘R** to refresh a feed and **⌘D** to save or unsave the selected story.

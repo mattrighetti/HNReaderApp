@@ -1,12 +1,6 @@
 import SwiftUI
 
 final class AppState: ObservableObject {
-    @Published var displayMode: DisplayMode {
-        didSet {
-            defaults.set(displayMode.rawValue, forKey: "displayMode")
-        }
-    }
-
     @Published var sidebarSelection: SidebarSelection? = .top
     @Published private(set) var savedItems: [Item]
     @Published private(set) var readIDs: Set<Int>
@@ -15,21 +9,9 @@ final class AppState: ObservableObject {
 
     init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
-        displayMode = DisplayMode(rawValue: defaults.integer(forKey: "displayMode")) ?? .system
         savedItems = defaults.data(forKey: "savedStories")
             .flatMap { try? JSONDecoder().decode([Item].self, from: $0) } ?? []
         readIDs = Set(defaults.array(forKey: "readStories") as? [Int] ?? [])
-    }
-
-    var colorScheme: ColorScheme? {
-        switch displayMode {
-        case .system:
-            return nil
-        case .dark:
-            return .dark
-        case .light:
-            return .light
-        }
     }
 
     func isSaved(_ item: Item) -> Bool {
@@ -118,21 +100,6 @@ final class AppState: ObservableObject {
                 return "briefcase"
             case .saved:
                 return "bookmark"
-            }
-        }
-    }
-
-    enum DisplayMode: Int, CaseIterable {
-        case system = 0, dark = 1, light = 2
-
-        var title: String {
-            switch self {
-            case .system:
-                return "System"
-            case .dark:
-                return "Dark"
-            case .light:
-                return "Light"
             }
         }
     }
