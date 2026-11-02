@@ -52,7 +52,7 @@ struct ItemCell: View {
                         .accessibilityHidden(isRead)
 
                     Text(item.urlHost ?? "news.ycombinator.com")
-                        .font(.system(size: 10, weight: .medium, design: .monospaced))
+                        .font(.system(size: 9, weight: .medium, design: .monospaced))
                         .foregroundStyle(domainColor)
                         .lineLimit(1)
                         .truncationMode(.middle)
@@ -67,7 +67,7 @@ struct ItemCell: View {
                 }
 
                 Text(item.title ?? "Untitled story")
-                    .font(.system(size: 14, weight: .medium, design: .serif))
+                    .font(.system(size: 14, weight: .medium, design: .rounded))
                     .lineSpacing(1)
                     .lineLimit(2)
                     .foregroundStyle(titleColor)
@@ -188,11 +188,6 @@ struct CompactStoryPreview: View {
                 ItemCell(item: item, rank: index + 1, isSelected: item.id == selectedID)
                     .frame(height: StoryRowLayout.height)
                     .background(item.id == selectedID ? Color.accentColor : Color.clear)
-                    .overlay(alignment: .bottom) {
-                        Rectangle()
-                            .fill(.primary.opacity(0.09))
-                            .frame(height: 1)
-                    }
             }
         }
         .padding(.horizontal, 12)

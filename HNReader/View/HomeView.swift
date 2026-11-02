@@ -75,11 +75,7 @@ struct HomeView: View {
                 StoryDetail(item: item)
                     .id(item.id)
             } else {
-                ContentUnavailableView {
-                    Label("A little curiosity goes a long way", systemImage: "text.book.closed")
-                } description: {
-                    Text("Choose a story to explore the conversation.")
-                }
+                ContentUnavailableView("Select a story", systemImage: "newspaper")
             }
         }
         .navigationSplitViewStyle(.balanced)

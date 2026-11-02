@@ -104,11 +104,6 @@ struct ItemList: View {
                             .frame(height: StoryRowLayout.height)
                             .tag(row.id)
                             .listRowInsets(EdgeInsets(top: 0, leading: 12, bottom: 0, trailing: 12))
-                            .overlay(alignment: .bottom) {
-                                Rectangle()
-                                    .fill(.primary.opacity(0.09))
-                                    .frame(height: 1)
-                            }
                             .listRowSeparator(.hidden)
                     }
 
