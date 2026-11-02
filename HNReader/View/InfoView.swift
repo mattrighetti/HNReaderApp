@@ -10,17 +10,9 @@ import StoreKit
 import SwiftUI
 
 struct InfoView: View {
-    var version: String {
-        let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as! String
-            /// Build version of the app, i.e. `64`
-        let appBundleVersion: String = Bundle.main.infoDictionary?["CFBundleVersion"] as! String
-
-        return "\(version) (\(appBundleVersion))"
-    }
-
     var body: some View {
         VStack {
-            Text("HNReader v\(version)")
+            Text("HNReader · \(AppInfo.versionDescription)")
                 .font(.custom("IBMPlexSerif-SemiBold", size: 15))
 
             Text("This project is open source, if you like it you can star it on GitHub.")
@@ -51,7 +43,7 @@ struct InfoView: View {
                     }
                 }
             }, action: {
-                NSWorkspace.shared.open(URL(string: "https://github.com/mattrighetti/HNReaderApp.git")!)
+                NSWorkspace.shared.open(AppInfo.repositoryURL)
             })
         }
         .padding()
@@ -59,6 +51,12 @@ struct InfoView: View {
     }
 }
 
-#Preview {
+#Preview("About · Light") {
     InfoView()
+        .preferredColorScheme(.light)
+}
+
+#Preview("About · Dark") {
+    InfoView()
+        .preferredColorScheme(.dark)
 }

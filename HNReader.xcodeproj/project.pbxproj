@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		AB6000000000000000000001 /* AppInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB6000000000000000000002 /* AppInfo.swift */; };
+		AB5000000000000000000003 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB5000000000000000000004 /* SettingsView.swift */; };
 		AB5000000000000000000001 /* PreviewData.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB5000000000000000000002 /* PreviewData.swift */; };
 		AB4000000000000000000003 /* SplitColumnWidthTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB4000000000000000000004 /* SplitColumnWidthTests.swift */; };
 		AB4000000000000000000001 /* SplitColumnWidth.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB4000000000000000000002 /* SplitColumnWidth.swift */; };
@@ -58,6 +60,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		AB6000000000000000000002 /* AppInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppInfo.swift; sourceTree = "<group>"; };
+		AB5000000000000000000004 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		AB5000000000000000000002 /* PreviewData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewData.swift; sourceTree = "<group>"; };
 		AB4000000000000000000004 /* SplitColumnWidthTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplitColumnWidthTests.swift; sourceTree = "<group>"; };
 		AB4000000000000000000002 /* SplitColumnWidth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplitColumnWidth.swift; sourceTree = "<group>"; };
@@ -239,6 +243,7 @@
 		C9D093A726741BE1002CC786 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				AB5000000000000000000004 /* SettingsView.swift */,
 				AB3000000000000000000002 /* CommentNavigator.swift */,
 				AB2000000000000000000002 /* CommentView.swift */,
 				C9D0937826741BBE002CC786 /* HomeView.swift */,
@@ -254,6 +259,7 @@
 		C9D093A826741BF0002CC786 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				AB6000000000000000000002 /* AppInfo.swift */,
 				C9D093AB26741C25002CC786 /* Item.swift */,
 				C9E9BD022674D095001B4E19 /* User.swift */,
 			);
@@ -390,6 +396,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AB6000000000000000000001 /* AppInfo.swift in Sources */,
+				AB5000000000000000000003 /* SettingsView.swift in Sources */,
 				AB5000000000000000000001 /* PreviewData.swift in Sources */,
 				AB4000000000000000000001 /* SplitColumnWidth.swift in Sources */,
 				AB3000000000000000000001 /* CommentNavigator.swift in Sources */,

@@ -21,18 +21,8 @@ struct HNReaderApp: App {
         }
 
         Settings {
-            Form {
-                Picker("Appearance", selection: $appState.displayMode) {
-                    ForEach(AppState.DisplayMode.allCases, id: \.rawValue) { mode in
-                        Text(mode.title)
-                            .tag(mode)
-                    }
-                }
-                .pickerStyle(.segmented)
-            }
-            .padding(24)
-            .frame(width: 360)
-            .preferredColorScheme(appState.colorScheme)
+            SettingsView()
+                .environmentObject(appState)
         }
     }
 }
