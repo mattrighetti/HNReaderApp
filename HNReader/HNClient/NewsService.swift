@@ -56,15 +56,19 @@ struct NewsService: Sendable {
             return item
         }
 
+        let request = cache.beginRequest(id: id)
+
+        defer {
+            cache.cancelRequest(id: id, request: request)
+        }
+
         let item: Item? = try await fetch(
             url: HackerNews.API.Item.id(id).urlString,
             forceRefresh: forceRefresh
         )
         try Task.checkCancellation()
 
-        if let item {
-            cache.insert(item)
-        }
+        cache.finishRequest(id: id, request: request, item: item)
 
         return item
     }

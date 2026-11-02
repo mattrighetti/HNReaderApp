@@ -14,6 +14,8 @@ final class ItemCache: @unchecked Sendable {
     }
 
     private let storage = NSCache<NSNumber, Entry>()
+    private let lock = NSLock()
+    private var requests: [Int: UUID] = [:]
     private let lifetime: TimeInterval
     private let now: @Sendable () -> Date
 
@@ -43,6 +45,46 @@ final class ItemCache: @unchecked Sendable {
     }
 
     func insert(_ item: Item) {
+        lock.withLock {
+            requests.removeValue(forKey: item.id)
+            store(item)
+        }
+    }
+
+    func beginRequest(id: Int) -> UUID {
+        lock.withLock {
+            let request = UUID()
+            requests[id] = request
+
+            return request
+        }
+    }
+
+    func finishRequest(id: Int, request: UUID, item: Item?) {
+        lock.withLock {
+            guard requests[id] == request else {
+                return
+            }
+
+            requests.removeValue(forKey: id)
+
+            if let item {
+                store(item)
+            } else {
+                storage.removeObject(forKey: NSNumber(value: id))
+            }
+        }
+    }
+
+    func cancelRequest(id: Int, request: UUID) {
+        lock.withLock {
+            if requests[id] == request {
+                requests.removeValue(forKey: id)
+            }
+        }
+    }
+
+    private func store(_ item: Item) {
         storage.setObject(
             Entry(item: item, expiresAt: now().addingTimeInterval(lifetime)),
             forKey: NSNumber(value: item.id)
@@ -50,6 +92,9 @@ final class ItemCache: @unchecked Sendable {
     }
 
     func removeAll() {
-        storage.removeAllObjects()
+        lock.withLock {
+            requests.removeAll()
+            storage.removeAllObjects()
+        }
     }
 }

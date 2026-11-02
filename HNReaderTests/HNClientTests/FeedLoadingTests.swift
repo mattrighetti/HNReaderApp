@@ -71,6 +71,64 @@ final class FeedLoadingTests: XCTestCase {
         XCTAssertEqual(server.count("/v0/item/1.json"), 2)
     }
 
+    func testOlderRequestCannotOverwriteARefreshedItem() async throws {
+        let server = FeedTestServer()
+        defer { server.close() }
+
+        let path = "/v0/item/42.json"
+        let started = expectation(description: "Original request started")
+        server.hold([path])
+        server.observe { _ in started.fulfill() }
+
+        let service = NewsService(session: server.session)
+        let original = Task { try await service.item(id: 42) }
+        await fulfillment(of: [started], timeout: 3)
+
+        server.observe { _ in }
+        server.unhold(path)
+        server.respond(path, json: #"{"id":42,"title":"Fresh"}"#)
+
+        let refreshed = try await service.item(id: 42, forceRefresh: true)
+        server.release(path, json: #"{"id":42,"title":"Old"}"#)
+        let older = try await original.value
+        let cached = try await service.item(id: 42)
+
+        XCTAssertEqual(refreshed?.title, "Fresh")
+        XCTAssertEqual(older?.title, "Old")
+        XCTAssertEqual(cached?.title, "Fresh")
+        XCTAssertEqual(server.count(path), 2)
+    }
+
+    func testFailedRefreshDoesNotAllowAnOlderRequestToPopulateTheCache() async throws {
+        let server = FeedTestServer()
+        defer { server.close() }
+
+        let path = "/v0/item/42.json"
+        let started = expectation(description: "Original request started")
+        server.hold([path])
+        server.observe { _ in started.fulfill() }
+
+        let service = NewsService(session: server.session)
+        let original = Task { try await service.item(id: 42) }
+        await fulfillment(of: [started], timeout: 3)
+
+        server.observe { _ in }
+        server.unhold(path)
+        server.respond(path, json: "{}", status: 500)
+
+        do {
+            _ = try await service.item(id: 42, forceRefresh: true)
+            XCTFail("Refresh should fail")
+        } catch {
+            XCTAssertEqual((error as? URLError)?.code, .badServerResponse)
+        }
+
+        server.release(path, json: #"{"id":42,"title":"Old"}"#)
+        _ = try await original.value
+
+        XCTAssertNil(service.cachedItem(id: 42))
+    }
+
     @MainActor
     func testPagesAppearAtomicallyInGroupsOfThirty() async throws {
         let server = FeedTestServer()
@@ -504,6 +562,10 @@ private final class FeedTestServer: @unchecked Sendable {
         lock.withLock { heldPaths = paths }
     }
 
+    func unhold(_ path: String) {
+        _ = lock.withLock { heldPaths.remove(path) }
+    }
+
     func observe(_ callback: @escaping @Sendable (String) -> Void) {
         lock.withLock { observer = callback } }
 
@@ -527,10 +589,14 @@ private final class FeedTestServer: @unchecked Sendable {
         }
     }
 
-    func release(_ path: String) {
+    func release(_ path: String, json: String? = nil) {
         let request = lock.withLock { pending.removeValue(forKey: path) }
         if let request {
-            reply(request)
+            if let json {
+                request.respond(json)
+            } else {
+                reply(request)
+            }
         }
     }
 
