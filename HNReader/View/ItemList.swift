@@ -179,133 +179,205 @@ struct StoryDetail: View {
     @State private var errorMessage: String?
     @State private var loadedCount = 0
     @State private var threadsCollapsed = false
+    @State private var commentFrames: [Int: CGRect] = [:]
+    @State private var commentViewportHeight: CGFloat = 0
+    @State private var pendingCommentID: Int?
+
+    private var navigation: CommentNavigation {
+        CommentNavigation(
+            ids: comments.map(\.id),
+            frames: commentFrames,
+            viewportHeight: commentViewportHeight
+        )
+    }
+
+    private var hasMoreComments: Bool {
+        loadedCount < (item.kids?.count ?? 0)
+    }
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 24) {
-                VStack(alignment: .leading, spacing: 16) {
-                    Text(item.urlHost?.uppercased() ?? "HACKER NEWS")
-                        .font(.system(size: 10, weight: .bold, design: .monospaced))
-                        .tracking(1.5)
-                        .foregroundStyle(.orange)
+        ScrollViewReader { proxy in
+            ScrollView {
+                VStack(alignment: .leading, spacing: 24) {
+                    VStack(alignment: .leading, spacing: 16) {
+                        Text(item.urlHost?.uppercased() ?? "HACKER NEWS")
+                            .font(.system(size: 10, weight: .bold, design: .monospaced))
+                            .tracking(1.5)
+                            .foregroundStyle(.orange)
 
-                    Text(item.title ?? "Untitled story")
-                        .font(.system(size: 30, weight: .semibold, design: .serif))
-                        .textSelection(.enabled)
+                        Text(item.title ?? "Untitled story")
+                            .font(.system(size: 30, weight: .semibold, design: .serif))
+                            .textSelection(.enabled)
 
-                    HStack(spacing: 8) {
-                        Text(item.by ?? "Unknown author")
+                        HStack(spacing: 8) {
+                            Text(item.by ?? "Unknown author")
 
-                        Text("·")
+                            Text("·")
 
-                        Text("\(item.timeStringRepresentation ?? "") ago")
+                            Text("\(item.timeStringRepresentation ?? "") ago")
 
-                        Text("·")
+                            Text("·")
 
-                        Text("\(item.score ?? 0) points")
-                    }
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-
-                    HStack(spacing: 12) {
-                        Link(destination: item.articleURL ?? item.discussionURL) {
-                            Label(
-                                "Open \(item.articleURL == nil ? "on Hacker News" : "Article")",
-                                systemImage: "arrow.up.right"
-                            )
+                            Text("\(item.score ?? 0) points")
                         }
-                        .buttonStyle(.borderedProminent)
-                        .tint(.orange)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+
+                        HStack(spacing: 12) {
+                            Link(destination: item.articleURL ?? item.discussionURL) {
+                                Label(
+                                    "Open \(item.articleURL == nil ? "on Hacker News" : "Article")",
+                                    systemImage: "arrow.up.right"
+                                )
+                            }
+                            .buttonStyle(.borderedProminent)
+                            .tint(.orange)
+
+                            Button {
+                                appState.toggleSaved(item)
+                            } label: {
+                                Label(
+                                    appState.isSaved(item) ? "Saved" : "Save for Later",
+                                    systemImage: appState.isSaved(item) ? "bookmark.fill" : "bookmark"
+                                )
+                            }
+                            .buttonStyle(.bordered)
+                        }
+                    }
+
+                    if let text = item.text, !text.isEmpty {
+                        HTMLText(text: text)
+                    }
+
+                    Divider()
+
+                    HStack {
+                        Label("Discussion", systemImage: "bubble.left.and.bubble.right")
+                            .font(.headline)
+
+                        Text("\(item.descendants ?? 0)")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+
+                        Spacer()
 
                         Button {
-                            appState.toggleSaved(item)
+                            threadsCollapsed.toggle()
                         } label: {
                             Label(
-                                appState.isSaved(item) ? "Saved" : "Save for Later",
-                                systemImage: appState.isSaved(item) ? "bookmark.fill" : "bookmark"
+                                threadsCollapsed ? "Expand threads" : "Collapse threads",
+                                systemImage: threadsCollapsed ? "chevron.down" : "chevron.up"
                             )
                         }
-                        .buttonStyle(.bordered)
-                    }
-                }
-
-                if let text = item.text, !text.isEmpty {
-                    HTMLText(text: text)
-                }
-
-                Divider()
-
-                HStack {
-                    Label("Discussion", systemImage: "bubble.left.and.bubble.right")
-                        .font(.headline)
-
-                    Text("\(item.descendants ?? 0)")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-
-                    Spacer()
-
-                    Button {
-                        threadsCollapsed.toggle()
-                    } label: {
-                        Label(
-                            threadsCollapsed ? "Expand threads" : "Collapse threads",
-                            systemImage: threadsCollapsed ? "arrow.up.and.down" : "arrow.down.and.up"
-                        )
-                    }
-                    .buttonStyle(.plain)
-                    .font(.system(size: 10))
-                    .foregroundStyle(.secondary)
-
-                    Link("View on HN", destination: item.discussionURL)
+                        .buttonStyle(.plain)
                         .font(.system(size: 10))
-                }
-
-                if comments.isEmpty && !isLoading && errorMessage == nil {
-                    Text("No comments yet. Be the first to join the conversation on Hacker News.")
                         .foregroundStyle(.secondary)
-                        .padding(.vertical)
-                }
 
-                LazyVStack(alignment: .leading, spacing: 0) {
-                    ForEach(comments) { comment in
-                        CommentView(
-                            item: comment,
-                            storyAuthor: item.by,
-                            collapseAll: threadsCollapsed
-                        )
-
-                        Divider()
-                            .padding(.vertical, 4)
+                        Link("View on HN", destination: item.discussionURL)
+                            .font(.system(size: 10))
                     }
-                }
 
-                if let errorMessage {
-                    Text(errorMessage)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                    if comments.isEmpty && !isLoading && errorMessage == nil {
+                        Text("No comments yet. Be the first to join the conversation on Hacker News.")
+                            .foregroundStyle(.secondary)
+                            .padding(.vertical)
+                    }
 
-                    Button("Retry Comments") {
-                        Task {
-                            await loadComments()
+                    LazyVStack(alignment: .leading, spacing: 0) {
+                        ForEach(comments) { comment in
+                            CommentView(
+                                item: comment,
+                                storyAuthor: item.by,
+                                collapseAll: threadsCollapsed
+                            )
+                            .id(comment.id)
+                            .background {
+                                GeometryReader { geometry in
+                                    Color.clear.preference(
+                                        key: CommentPositions.self,
+                                        value: [comment.id: geometry.frame(in: .named("discussionScroll"))]
+                                    )
+                                }
+                            }
+
+                            Divider()
+                                .padding(.vertical, 4)
+                        }
+                    }
+
+                    if let errorMessage {
+                        Text(errorMessage)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+
+                        Button("Retry Comments") {
+                            Task {
+                                await loadComments()
+                            }
+                        }
+                    }
+
+                    if isLoading {
+                        ProgressView("Loading conversation…")
+                            .frame(maxWidth: .infinity)
+                    } else if loadedCount < (item.kids?.count ?? 0) && errorMessage == nil {
+                        Button("Load More Comments") {
+                            Task {
+                                await loadComments()
+                            }
                         }
                     }
                 }
-
-                if isLoading {
-                    ProgressView("Loading conversation…")
-                        .frame(maxWidth: .infinity)
-                } else if loadedCount < (item.kids?.count ?? 0) && errorMessage == nil {
-                    Button("Load More Comments") {
-                        Task {
-                            await loadComments()
-                        }
-                    }
+                .frame(maxWidth: 760, alignment: .leading)
+                .padding(32)
+                .padding(.bottom, 40)
+                .frame(maxWidth: .infinity)
+            }
+            .coordinateSpace(name: "discussionScroll")
+            .background {
+                GeometryReader { geometry in
+                    Color.clear.preference(
+                        key: CommentViewportHeight.self,
+                        value: geometry.size.height
+                    )
                 }
             }
-            .frame(maxWidth: 760, alignment: .leading)
-            .padding(32)
-            .frame(maxWidth: .infinity)
+            .onPreferenceChange(CommentPositions.self) { frames in
+                commentFrames = frames
+            }
+            .onPreferenceChange(CommentViewportHeight.self) { height in
+                commentViewportHeight = height
+            }
+            .onChange(of: pendingCommentID) { _, id in
+                guard let id else {
+                    return
+                }
+
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    proxy.scrollTo(id, anchor: .top)
+                }
+
+                pendingCommentID = nil
+            }
+            .overlay(alignment: .bottomTrailing) {
+                if !comments.isEmpty {
+                    CommentJumpControls(
+                        canGoUp: navigation.target(for: .previous) != nil,
+                        canGoDown: navigation.target(for: .next) != nil || hasMoreComments,
+                        isLoading: isLoading,
+                        previous: {
+                            pendingCommentID = navigation.target(for: .previous)
+                        },
+                        next: {
+                            Task {
+                                await jumpToNextComment()
+                            }
+                        }
+                    )
+                    .padding(.trailing, 24)
+                    .padding(.bottom, 20)
+                }
+            }
         }
         .background(Color(nsColor: .textBackgroundColor))
         .toolbar {
@@ -323,6 +395,25 @@ struct StoryDetail: View {
         }
         .task {
             await loadComments()
+        }
+    }
+
+    @MainActor
+    private func jumpToNextComment() async {
+        if let id = navigation.target(for: .next) {
+            pendingCommentID = id
+            return
+        }
+
+        guard hasMoreComments, !isLoading else {
+            return
+        }
+
+        let previousCount = comments.count
+        await loadComments()
+
+        if comments.count > previousCount {
+            pendingCommentID = comments[previousCount].id
         }
     }
 

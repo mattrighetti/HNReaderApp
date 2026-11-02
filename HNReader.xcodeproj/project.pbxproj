@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		AB3000000000000000000003 /* CommentNavigationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB3000000000000000000004 /* CommentNavigationTests.swift */; };
+		AB3000000000000000000001 /* CommentNavigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB3000000000000000000002 /* CommentNavigator.swift */; };
 		AB2000000000000000000003 /* CommentRepliesModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB2000000000000000000004 /* CommentRepliesModel.swift */; };
 		AB2000000000000000000001 /* CommentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB2000000000000000000002 /* CommentView.swift */; };
 		3307109CEEE15ACDD7B88CFE /* HackerNewsClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33071E538EC434DF1A245518 /* HackerNewsClientTests.swift */; };
@@ -53,6 +55,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		AB3000000000000000000004 /* CommentNavigationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentNavigationTests.swift; sourceTree = "<group>"; };
+		AB3000000000000000000002 /* CommentNavigator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentNavigator.swift; sourceTree = "<group>"; };
 		AB2000000000000000000004 /* CommentRepliesModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentRepliesModel.swift; sourceTree = "<group>"; };
 		AB2000000000000000000002 /* CommentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentView.swift; sourceTree = "<group>"; };
 		33071291447141A6D31E671B /* HackerNewsTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HackerNewsTests.swift; sourceTree = "<group>"; };
@@ -131,6 +135,7 @@
 		33071AE1286F3A139C23E0A9 /* HNClientTests */ = {
 			isa = PBXGroup;
 			children = (
+				AB3000000000000000000004 /* CommentNavigationTests.swift */,
 				AB1000000000000000000002 /* FeedLoadingTests.swift */,
 				33071E538EC434DF1A245518 /* HackerNewsClientTests.swift */,
 				33071291447141A6D31E671B /* HackerNewsTests.swift */,
@@ -225,6 +230,7 @@
 		C9D093A726741BE1002CC786 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				AB3000000000000000000002 /* CommentNavigator.swift */,
 				AB2000000000000000000002 /* CommentView.swift */,
 				C9D0937826741BBE002CC786 /* HomeView.swift */,
 				C93F99B5267554F00046F870 /* ItemCell.swift */,
@@ -375,6 +381,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AB3000000000000000000001 /* CommentNavigator.swift in Sources */,
 				AB2000000000000000000003 /* CommentRepliesModel.swift in Sources */,
 				AB2000000000000000000001 /* CommentView.swift in Sources */,
 				AB1000000000000000000003 /* NewsService.swift in Sources */,
@@ -404,6 +411,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AB3000000000000000000003 /* CommentNavigationTests.swift in Sources */,
 				AB1000000000000000000001 /* FeedLoadingTests.swift in Sources */,
 				3307109CEEE15ACDD7B88CFE /* HackerNewsClientTests.swift in Sources */,
 				330718D415D21296AA14E7CA /* HackerNewsTests.swift in Sources */,

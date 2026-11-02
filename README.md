@@ -22,6 +22,7 @@ The app targets macOS 14 or later and uses a native three-column SwiftUI interfa
 - Top, Latest, Best, Ask HN, Show HN, and Jobs feeds.
 - In-app discussions with curved thread connectors, collapsible comments, author avatars,
   original-poster badges, selectable text, sharing, and replies loaded on demand.
+  Floating up/down controls jump between top-level threads, skipping nested replies.
 - Saved stories and read status persisted locally across launches.
 - Search by title, author, or domain within the loaded feed or saved stories.
 - Unread filtering, automatic pagination, and loading/error/retry states.
