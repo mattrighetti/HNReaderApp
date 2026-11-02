@@ -103,7 +103,7 @@ struct ItemList: View {
                             isSelected: selectedID == row.id
                         )
                             .help(row.item.title ?? "")
-                            .frame(height: StoryRowLayout.height)
+                            .frame(minHeight: StoryRowLayout.minimumHeight)
                             .tag(row.id)
                             .listRowInsets(EdgeInsets(top: 0, leading: 12, bottom: 0, trailing: 12))
                             .listRowSeparator(.hidden)
@@ -114,7 +114,7 @@ struct ItemList: View {
                     }
                 }
                 .listStyle(.inset)
-                .environment(\.defaultMinListRowHeight, StoryRowLayout.height)
+                .environment(\.defaultMinListRowHeight, StoryRowLayout.minimumHeight)
                 .transaction {
                     $0.animation = nil
                 }

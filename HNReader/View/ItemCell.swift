@@ -1,7 +1,7 @@
 import SwiftUI
 
 enum StoryRowLayout {
-    static let height: CGFloat = 80
+    static let minimumHeight: CGFloat = 64
 }
 
 struct ItemCell: View {
@@ -41,7 +41,7 @@ struct ItemCell: View {
                 .foregroundStyle(isSelected ? Color.white.opacity(0.55) : Color.secondary)
                 .frame(width: 20, height: 14)
 
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: 3) {
                 HStack(spacing: 6) {
                     Circle()
                         .fill(.orange)
@@ -84,8 +84,6 @@ struct ItemCell: View {
                             .help("Posted by \(author)")
                     }
 
-                    Spacer(minLength: 0)
-
                     Label("\(item.score ?? 0)", systemImage: "arrowtriangle.up")
                         .fixedSize()
 
@@ -94,13 +92,15 @@ struct ItemCell: View {
 
                     Text(item.timeStringRepresentation.map { "\($0) ago" } ?? "")
                         .fixedSize()
+
+                    Spacer(minLength: 0)
                 }
                 .font(.system(size: 10, weight: .medium, design: .rounded))
                 .foregroundStyle(isSelected ? Color.white.opacity(0.8) : Color.secondary)
                 .padding(.leading, 12)
             }
         }
-        .padding(.vertical, 6)
+        .padding(.vertical, 4)
         .frame(maxWidth: .infinity, alignment: .leading)
         .contentShape(Rectangle())
         .clickableCursor()
@@ -140,7 +140,7 @@ struct CompactStoryPreview: View {
         VStack(spacing: 0) {
             ForEach(Array(items.enumerated()), id: \.element.id) { index, item in
                 ItemCell(item: item, rank: index + 1, isSelected: item.id == selectedID)
-                    .frame(height: StoryRowLayout.height)
+                    .frame(minHeight: StoryRowLayout.minimumHeight)
                     .background(item.id == selectedID ? Color.accentColor : Color.clear)
             }
         }
@@ -167,6 +167,11 @@ struct CompactStoryPreview: View {
 
 #Preview("Compact stories · Selected", traits: .fixedLayout(width: 520, height: 240)) {
     CompactStoryPreview(selectedID: 1)
+        .preferredColorScheme(.dark)
+}
+
+#Preview("Compact stories · Wide", traits: .fixedLayout(width: 1200, height: 220)) {
+    CompactStoryPreview()
         .preferredColorScheme(.dark)
 }
 #endif
