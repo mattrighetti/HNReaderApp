@@ -406,61 +406,8 @@ struct CommentsPreview: View {
     init(collapsed: Bool = false) {
         _collapsed = State(initialValue: collapsed)
 
-        let posted = Int(Date().addingTimeInterval(-3600).timeIntervalSince1970)
-        let examples = """
-        [
-            {
-                "id": 400,
-                "by": "alex",
-                "text": "The best interfaces make the conversation easy to follow. Small details like spacing and thread lines make a surprisingly big difference.",
-                "kids": [401, 402],
-                "time": \(posted)
-            },
-            {
-                "id": 401,
-                "parent": 400,
-                "by": "samantha",
-                "text": "Agreed. I especially like being able to collapse a whole branch without losing my place in the discussion.",
-                "kids": [403],
-                "time": \(posted + 600)
-            },
-            {
-                "id": 402,
-                "parent": 400,
-                "by": "kai",
-                "text": "And keeping the text readable as the thread gets deeper. A little indentation goes a long way.",
-                "time": \(posted + 1200)
-            },
-            {
-                "id": 403,
-                "parent": 401,
-                "by": "alex",
-                "text": "Exactly. The curved connectors should show <i>who is replying to whom</i>, without making the text feel boxed in.",
-                "kids": [404],
-                "time": \(posted + 900)
-            },
-            {
-                "id": 404,
-                "parent": 403,
-                "by": "jules",
-                "text": "This feels much easier to scan. The author badge helps too.",
-                "time": \(posted + 1500)
-            },
-            {
-                "id": 450,
-                "by": "taylor",
-                "text": "A separate top-level thought: sharing a direct link to a comment is useful when a conversation has a lot of branches.",
-                "time": \(posted + 1800)
-            }
-        ]
-        """
-
-        comments = (try? JSONDecoder().decode([Item].self, from: Data(examples.utf8))) ?? []
-        let byID = Dictionary(uniqueKeysWithValues: comments.map { ($0.id, $0) })
-
-        threads = Dictionary(uniqueKeysWithValues: comments.map { comment in
-            (comment.id, (comment.kids ?? []).compactMap { byID[$0] })
-        })
+        comments = PreviewData.comments
+        threads = PreviewData.threads
     }
 
     var body: some View {

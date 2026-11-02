@@ -44,9 +44,16 @@ Visited sections retain their loaded pages for one minute. A shared `NSCache` in
 allows eviction under memory pressure. Networking lives in `HNClient/NewsService.swift`.
 **⌘R** requests fresh IDs and first-page metadata.
 
-Open `View/ItemCell.swift` in Xcode’s Canvas for light, dark, and narrow compact-row
-previews. `View/CommentView.swift` also includes expanded and collapsed comment-thread
-previews. They use local sample data and do not need the app or network to run.
+## Previews
+
+Every visible screen and component has named SwiftUI Canvas previews. Open a view
+file and enable **Editor → Canvas** to switch between light/dark and relevant
+loading, empty, and error states. Shared fixtures live in
+`HNReader/Preview Content/PreviewData.swift`; previews do not fetch live data or
+use the app’s saved preferences.
+
+You can also open the [rendered preview gallery](resources/previews/README.md)
+without running the app or opening Canvas.
 
 To run the deterministic tests without live API requests:
 

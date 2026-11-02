@@ -183,6 +183,26 @@ struct StoryDetail: View {
     @State private var commentViewportHeight: CGFloat = 0
     @State private var pendingCommentID: Int?
 
+    private let previewThreads: [Int: [Item]]?
+    private let loadsAutomatically: Bool
+
+    init(
+        item: Item,
+        initialComments: [Item]? = nil,
+        previewThreads: [Int: [Item]]? = nil,
+        loadsAutomatically: Bool = true,
+        isLoading: Bool = false,
+        errorMessage: String? = nil
+    ) {
+        self.item = item
+        self.previewThreads = previewThreads
+        self.loadsAutomatically = loadsAutomatically
+        _comments = State(initialValue: initialComments ?? [])
+        _loadedCount = State(initialValue: initialComments == nil ? 0 : item.kids?.count ?? 0)
+        _isLoading = State(initialValue: isLoading)
+        _errorMessage = State(initialValue: errorMessage)
+    }
+
     private var navigation: CommentNavigation {
         CommentNavigation(
             ids: comments.map(\.id),
@@ -288,7 +308,8 @@ struct StoryDetail: View {
                             CommentView(
                                 item: comment,
                                 storyAuthor: item.by,
-                                collapseAll: threadsCollapsed
+                                collapseAll: threadsCollapsed,
+                                previewThreads: previewThreads
                             )
                             .id(comment.id)
                             .background {
@@ -394,7 +415,9 @@ struct StoryDetail: View {
             ShareLink(item: item.articleURL ?? item.discussionURL)
         }
         .task {
-            await loadComments()
+            if loadsAutomatically {
+                await loadComments()
+            }
         }
     }
 
@@ -405,7 +428,7 @@ struct StoryDetail: View {
             return
         }
 
-        guard hasMoreComments, !isLoading else {
+        guard loadsAutomatically, hasMoreComments, !isLoading else {
             return
         }
 
@@ -418,7 +441,7 @@ struct StoryDetail: View {
     }
 
     @MainActor private func loadComments() async {
-        guard !isLoading else {
+        guard loadsAutomatically, !isLoading else {
             return
         }
 
@@ -443,3 +466,141 @@ struct StoryDetail: View {
         }
     }
 }
+
+#if DEBUG
+struct ItemListPreview: View {
+    enum PreviewState {
+        case loaded
+        case loading
+        case emptySaved
+        case noResults
+        case error
+        case loadingPage
+        case pageError
+    }
+
+    let state: PreviewState
+
+    @State private var selection: Int? = PreviewData.stories.first?.id
+    @State private var unreadOnly = false
+
+    private var rows: [StoryRow] {
+        switch state {
+        case .loading, .emptySaved, .noResults, .error:
+            return []
+
+        case .loaded, .loadingPage, .pageError:
+            return PreviewData.rows
+        }
+    }
+
+    var body: some View {
+        ItemList(
+            rows: rows,
+            revision: UUID(),
+            selectedID: $selection,
+            title: state == .emptySaved ? "Saved" : "Top Stories",
+            subtitle: state == .emptySaved ? "Good reads, kept for later" : "What the community is reading",
+            isLoading: state == .loading,
+            isLoadingMore: state == .loadingPage,
+            hasMore: state == .loadingPage || state == .pageError,
+            paginationError: state == .pageError ? "The next page couldn’t be loaded." : nil,
+            errorMessage: state == .error ? "You appear to be offline. Check your connection and try again." : nil,
+            isSaved: state == .emptySaved,
+            isSearching: state == .noResults,
+            unreadOnly: $unreadOnly,
+            refresh: {},
+            loadMore: {}
+        )
+        .environmentObject(PreviewData.appState(includeSavedStories: state != .emptySaved))
+        .tint(.orange)
+    }
+}
+
+#Preview("Story list · Light", traits: .fixedLayout(width: 560, height: 640)) {
+    ItemListPreview(state: .loaded)
+        .preferredColorScheme(.light)
+}
+
+#Preview("Story list · Dark", traits: .fixedLayout(width: 560, height: 640)) {
+    ItemListPreview(state: .loaded)
+        .preferredColorScheme(.dark)
+}
+
+#Preview("Story list · Loading", traits: .fixedLayout(width: 560, height: 640)) {
+    ItemListPreview(state: .loading)
+}
+
+#Preview("Story list · Empty saved", traits: .fixedLayout(width: 560, height: 640)) {
+    ItemListPreview(state: .emptySaved)
+}
+
+#Preview("Story list · No search results", traits: .fixedLayout(width: 560, height: 640)) {
+    ItemListPreview(state: .noResults)
+}
+
+#Preview("Story list · Offline", traits: .fixedLayout(width: 560, height: 640)) {
+    ItemListPreview(state: .error)
+}
+
+#Preview("Story list · Loading next page", traits: .fixedLayout(width: 560, height: 640)) {
+    ItemListPreview(state: .loadingPage)
+}
+
+#Preview("Story list · Failed page", traits: .fixedLayout(width: 560, height: 640)) {
+    ItemListPreview(state: .pageError)
+}
+
+#Preview("Story detail · Light", traits: .fixedLayout(width: 760, height: 820)) {
+    if let item = PreviewData.stories.first {
+        StoryDetail(
+            item: item,
+            initialComments: PreviewData.rootComments,
+            previewThreads: PreviewData.threads,
+            loadsAutomatically: false
+        )
+        .environmentObject(PreviewData.appState())
+        .preferredColorScheme(.light)
+        .tint(.orange)
+    }
+}
+
+#Preview("Story detail · Dark", traits: .fixedLayout(width: 760, height: 820)) {
+    if let item = PreviewData.stories.first {
+        StoryDetail(
+            item: item,
+            initialComments: PreviewData.rootComments,
+            previewThreads: PreviewData.threads,
+            loadsAutomatically: false
+        )
+        .environmentObject(PreviewData.appState())
+        .preferredColorScheme(.dark)
+        .tint(.orange)
+    }
+}
+
+#Preview("Story detail · Loading comments", traits: .fixedLayout(width: 760, height: 820)) {
+    if let item = PreviewData.stories.first {
+        StoryDetail(item: item, loadsAutomatically: false, isLoading: true)
+            .environmentObject(PreviewData.appState())
+    }
+}
+
+#Preview("Story detail · No comments", traits: .fixedLayout(width: 760, height: 820)) {
+    if let item = PreviewData.stories.first {
+        StoryDetail(item: item, initialComments: [], loadsAutomatically: false)
+            .environmentObject(PreviewData.appState())
+    }
+}
+
+#Preview("Story detail · Comment error", traits: .fixedLayout(width: 760, height: 820)) {
+    if let item = PreviewData.stories.first {
+        StoryDetail(
+            item: item,
+            loadsAutomatically: false,
+            errorMessage: "Comments couldn’t be loaded. Please try again."
+        )
+        .environmentObject(PreviewData.appState())
+    }
+}
+#endif

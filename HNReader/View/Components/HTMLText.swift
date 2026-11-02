@@ -60,3 +60,24 @@ struct HTMLText: View {
         return AttributedString(value)
     }
 }
+
+#Preview("Rich text · Light", traits: .fixedLayout(width: 520, height: 280)) {
+    HTMLText(text: """
+    <p>Readable text with <b>emphasis</b>, <i>italics</i>, and
+    <a href="https://news.ycombinator.com">a selectable link</a>.</p>
+    <p>Paragraphs should wrap naturally in the discussion pane.</p>
+    <pre><code>let message = "Stay curious."</code></pre>
+    """)
+    .padding(20)
+    .preferredColorScheme(.light)
+}
+
+#Preview("Rich text · Dark", traits: .fixedLayout(width: 520, height: 240)) {
+    HTMLText(
+        text: "<p>A compact comment with <b>bold</b>, <i>italic</i>, and <code>monospace</code> text.</p>",
+        fontSize: 13,
+        lineSpacing: 3
+    )
+    .padding(20)
+    .preferredColorScheme(.dark)
+}

@@ -130,56 +130,8 @@ struct CompactStoryPreview: View {
     init(selectedID: Int? = nil) {
         self.selectedID = selectedID
 
-        let posted = Int(Date().addingTimeInterval(-7200).timeIntervalSince1970)
-        let examples = """
-        [
-            {
-                "id": 1,
-                "by": "movq",
-                "title": "Novellas with Groff",
-                "url": "https://movq.de",
-                "score": 34,
-                "descendants": 9,
-                "time": \(posted)
-            },
-            {
-                "id": 2,
-                "by": "ninchi",
-                "title": "Work, Art, and Study: AI and Ownership",
-                "url": "https://ninchi.substack.com",
-                "score": 128,
-                "descendants": 42,
-                "time": \(posted)
-            },
-            {
-                "id": 3,
-                "by": "compilerfan",
-                "title": "A surprisingly small compiler, built from first principles and a little curiosity",
-                "url": "https://example.com",
-                "score": 256,
-                "descendants": 61,
-                "time": \(posted)
-            }
-        ]
-        """
-
-        items = (try? JSONDecoder().decode([Item].self, from: Data(examples.utf8))) ?? []
-
-        let defaults = UserDefaults(suiteName: "HNReader.CompactStoryPreview")!
-        defaults.removePersistentDomain(forName: "HNReader.CompactStoryPreview")
-
-        let state = AppState(defaults: defaults)
-
-        if let last = items.last {
-            state.markRead(last)
-        }
-
-        if let second = items.dropFirst().first {
-            state.toggleSaved(second)
-        }
-
-        defaults.removePersistentDomain(forName: "HNReader.CompactStoryPreview")
-        _appState = StateObject(wrappedValue: state)
+        items = PreviewData.stories
+        _appState = StateObject(wrappedValue: PreviewData.appState())
     }
 
     var body: some View {

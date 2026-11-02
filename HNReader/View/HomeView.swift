@@ -3,12 +3,30 @@ import SwiftUI
 struct HomeView: View {
     @EnvironmentObject private var appState: AppState
 
-    @StateObject private var viewModel = ItemListViewModel()
+    @StateObject private var viewModel: ItemListViewModel
 
     @State private var selectedID: Int?
     @State private var searchText = ""
     @State private var unreadOnly = false
     @State private var columnVisibility: NavigationSplitViewVisibility = .all
+
+    private let loadsAutomatically: Bool
+    private let previewComments: [Item]?
+    private let previewThreads: [Int: [Item]]?
+
+    init(
+        viewModel: ItemListViewModel? = nil,
+        selectedID: Int? = nil,
+        loadsAutomatically: Bool = true,
+        previewComments: [Item]? = nil,
+        previewThreads: [Int: [Item]]? = nil
+    ) {
+        _viewModel = StateObject(wrappedValue: viewModel ?? ItemListViewModel())
+        _selectedID = State(initialValue: selectedID)
+        self.loadsAutomatically = loadsAutomatically
+        self.previewComments = previewComments
+        self.previewThreads = previewThreads
+    }
 
     private var selection: AppState.SidebarSelection {
         appState.sidebarSelection ?? .top
@@ -65,7 +83,9 @@ struct HomeView: View {
                 unreadOnly: $unreadOnly,
                 refresh: refresh,
                 loadMore: {
-                    await viewModel.loadMore()
+                    if loadsAutomatically {
+                        await viewModel.loadMore()
+                    }
                 }
             )
             .frame(minWidth: 520)
@@ -77,7 +97,12 @@ struct HomeView: View {
             .searchable(text: $searchText, prompt: "Search loaded stories")
         } detail: {
             if let item = selectedItem {
-                StoryDetail(item: item)
+                StoryDetail(
+                    item: item,
+                    initialComments: previewComments,
+                    previewThreads: previewThreads,
+                    loadsAutomatically: loadsAutomatically
+                )
                     .id(item.id)
             } else {
                 ContentUnavailableView("Select a story", systemImage: "newspaper")
@@ -85,6 +110,10 @@ struct HomeView: View {
         }
         .navigationSplitViewStyle(.balanced)
         .task(id: selection) {
+            guard loadsAutomatically else {
+                return
+            }
+
             selectedID = nil
             searchText = ""
 
@@ -102,6 +131,10 @@ struct HomeView: View {
     }
 
     private func refresh() async {
+        guard loadsAutomatically else {
+            return
+        }
+
         if let category = selection.category {
             await viewModel.load(category, forceRefresh: true)
         }
@@ -177,7 +210,45 @@ struct Sidebar: View {
     }
 }
 
-#Preview {
-    HomeView()
-        .environmentObject(AppState())
+#if DEBUG
+#Preview("Reader · Light", traits: .fixedLayout(width: 1600, height: 820)) {
+    HomeView(
+        viewModel: ItemListViewModel(previewRows: PreviewData.rows),
+        selectedID: PreviewData.stories.first?.id,
+        loadsAutomatically: false,
+        previewComments: PreviewData.rootComments,
+        previewThreads: PreviewData.threads
+    )
+    .environmentObject(PreviewData.appState(theme: .light))
+    .preferredColorScheme(.light)
+    .tint(.orange)
 }
+
+#Preview("Reader · Dark", traits: .fixedLayout(width: 1600, height: 820)) {
+    HomeView(
+        viewModel: ItemListViewModel(previewRows: PreviewData.rows),
+        selectedID: PreviewData.stories.first?.id,
+        loadsAutomatically: false,
+        previewComments: PreviewData.rootComments,
+        previewThreads: PreviewData.threads
+    )
+    .environmentObject(PreviewData.appState(theme: .dark))
+    .preferredColorScheme(.dark)
+    .tint(.orange)
+}
+
+#Preview("Reader · No selection", traits: .fixedLayout(width: 1600, height: 820)) {
+    HomeView(
+        viewModel: ItemListViewModel(previewRows: PreviewData.rows),
+        loadsAutomatically: false
+    )
+    .environmentObject(PreviewData.appState())
+    .tint(.orange)
+}
+
+#Preview("Sidebar", traits: .fixedLayout(width: 205, height: 600)) {
+    Sidebar()
+        .environmentObject(PreviewData.appState(selection: .saved))
+        .tint(.orange)
+}
+#endif

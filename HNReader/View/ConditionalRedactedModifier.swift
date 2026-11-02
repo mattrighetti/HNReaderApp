@@ -30,10 +30,13 @@ extension View {
     }
 }
 
-#Preview {
-    VStack {
-        Text("Some Text")
+#Preview("Loading placeholders") {
+    VStack(alignment: .leading, spacing: 16) {
+        Text("A story ready to read")
+            .redactIfNull("Loaded")
+
+        Text("A story still loading")
             .redactIfNull(Optional<String>.none)
     }
-    .frame(width: 200, height: 100)
+    .padding(24)
 }

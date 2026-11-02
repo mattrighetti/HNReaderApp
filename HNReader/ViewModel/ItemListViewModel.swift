@@ -50,6 +50,13 @@ final class ItemListViewModel: ObservableObject {
         self.now = now
     }
 
+    #if DEBUG
+    convenience init(previewRows: [StoryRow]) {
+        self.init()
+        rows = previewRows
+    }
+    #endif
+
     func load(_ category: HackerNews.API.Stories, forceRefresh: Bool = false) async {
         guard !Task.isCancelled else {
             return
