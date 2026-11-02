@@ -79,6 +79,10 @@ struct ItemList: View {
                 Spacer()
             } else if rows.isEmpty && errorMessage == nil {
                 emptyState
+
+                if canLoadMore {
+                    emptyPaginationControls
+                }
             } else {
                 List(selection: $selectedID) {
                     ForEach(rows) { row in
@@ -94,7 +98,7 @@ struct ItemList: View {
                             .listRowSeparator(.hidden)
                     }
 
-                    if hasMore && !isSaved && !isSearching {
+                    if canLoadMore {
                         paginationFooter
                     }
                 }
@@ -152,6 +156,10 @@ struct ItemList: View {
         }
 
         if unreadOnly {
+            if canLoadMore {
+                return ("No unread stories in loaded pages", "Load more stories to look for unread items.")
+            }
+
             return ("No unread stories", "Turn off Unread only to see stories you’ve read.")
         }
 
@@ -159,7 +167,44 @@ struct ItemList: View {
             return ("No saved stories", "Use the bookmark button to save a story.")
         }
 
-        return ("No stories to show", "Refresh to check for stories.")
+        let description = canLoadMore ? "Load more stories to continue." : "Refresh to check for stories."
+
+        return ("No stories to show", description)
+    }
+
+    private var canLoadMore: Bool {
+        hasMore && !isSaved && !isSearching
+    }
+
+    private var emptyPaginationControls: some View {
+        VStack(spacing: 8) {
+            if let paginationError {
+                Text(paginationError)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+            }
+
+            if isLoadingMore {
+                ProgressView("Loading next 30 stories…")
+                    .controlSize(.small)
+            } else {
+                Button(paginationError == nil ? "Load more stories" : "Retry loading stories") {
+                    Task {
+                        await loadMore()
+                    }
+                }
+                .clickableCursor()
+                .disabled(isLoading)
+                .accessibilityIdentifier("emptyFeed.loadMore")
+            }
+        }
+        .padding(16)
+        .task(id: revision) {
+            if paginationError == nil {
+                await loadMore()
+            }
+        }
     }
 
     private var paginationFooter: some View {
@@ -509,6 +554,7 @@ struct ItemListPreview: View {
         case loaded
         case loading
         case emptySaved
+        case emptyUnreadPage
         case noResults
         case error
         case loadingPage
@@ -520,9 +566,14 @@ struct ItemListPreview: View {
     @State private var selection: Int? = PreviewData.stories.first?.id
     @State private var unreadOnly = false
 
+    init(state: PreviewState) {
+        self.state = state
+        _unreadOnly = State(initialValue: state == .emptyUnreadPage)
+    }
+
     private var rows: [StoryRow] {
         switch state {
-        case .loading, .emptySaved, .noResults, .error:
+        case .loading, .emptySaved, .emptyUnreadPage, .noResults, .error:
             return []
 
         case .loaded, .loadingPage, .pageError:
@@ -539,7 +590,7 @@ struct ItemListPreview: View {
             subtitle: state == .emptySaved ? "Good reads, kept for later" : "What the community is reading",
             isLoading: state == .loading,
             isLoadingMore: state == .loadingPage,
-            hasMore: state == .loadingPage || state == .pageError,
+            hasMore: state == .loadingPage || state == .pageError || state == .emptyUnreadPage,
             paginationError: state == .pageError ? "The next page couldn’t be loaded." : nil,
             errorMessage: state == .error ? "You appear to be offline. Check your connection and try again." : nil,
             isSaved: state == .emptySaved,
@@ -578,6 +629,11 @@ struct ItemListPreview: View {
 
 #Preview("Story list · No search results", traits: .fixedLayout(width: 560, height: 640)) {
     ItemListPreview(state: .noResults)
+}
+
+#Preview("Story list · Empty unread page", traits: .fixedLayout(width: 312, height: 640)) {
+    ItemListPreview(state: .emptyUnreadPage)
+        .preferredColorScheme(.dark)
 }
 
 #Preview("Story list · Offline", traits: .fixedLayout(width: 560, height: 640)) {

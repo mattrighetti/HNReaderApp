@@ -411,6 +411,47 @@ final class FeedLoadingTests: XCTestCase {
     }
 
     @MainActor
+    func testEmptyUnreadPageLoadsTheNextPage() async throws {
+        let server = FeedTestServer()
+        defer { server.close() }
+
+        let model = ItemListViewModel(service: NewsService(session: server.session))
+        await model.load(.top)
+
+        let host = NSHostingView(rootView: FeedPageHarness(
+            model: model,
+            readIDs: Set(1...30)
+        ).environmentObject(AppState()))
+
+        let window = NSWindow(
+            contentRect: NSRect(x: 0, y: 0, width: 560, height: 650),
+            styleMask: [.titled],
+            backing: .buffered,
+            defer: false
+        )
+        window.isReleasedWhenClosed = false
+        window.contentView = host
+
+        defer { window.close() }
+        XCTAssertEqual(model.rows.count, 30)
+        XCTAssertEqual(server.count("/v0/item/31.json"), 0)
+
+        let loaded = expectation(description: "The unread stories on page two become available")
+        let observation = model.$rows.sink { rows in
+            if rows.count == 40 {
+                loaded.fulfill()
+            }
+        }
+        defer { observation.cancel() }
+
+        window.makeKeyAndOrderFront(nil)
+        await fulfillment(of: [loaded], timeout: 3)
+
+        XCTAssertEqual(model.rows.filter { $0.id > 30 }.map(\.id), Array(31...40))
+        XCTAssertFalse(model.hasMore)
+    }
+
+    @MainActor
     func testFailedRepliesCanBeRetriedWithoutAdvancingThePage() async throws {
         let server = FeedTestServer()
         defer { server.close() }
@@ -501,12 +542,20 @@ final class FeedLoadingTests: XCTestCase {
 private struct FeedPageHarness: View {
     @ObservedObject var model: ItemListViewModel
 
+    let readIDs: Set<Int>
+
     @State private var selection: Int?
-    @State private var unreadOnly = false
+    @State private var unreadOnly: Bool
+
+    init(model: ItemListViewModel, readIDs: Set<Int> = []) {
+        self.model = model
+        self.readIDs = readIDs
+        _unreadOnly = State(initialValue: !readIDs.isEmpty)
+    }
 
     var body: some View {
         ItemList(
-            rows: model.rows,
+            rows: model.rows.filter { !unreadOnly || !readIDs.contains($0.id) },
             revision: model.revision,
             selectedID: $selection,
             title: "Top Stories",
