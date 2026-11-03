@@ -6,7 +6,7 @@ struct HNReaderiOSApp: App {
 
     var body: some Scene {
         WindowGroup {
-            IOSHomeView()
+            HomeView()
                 .environment(appState)
                 .tint(.orange)
         }

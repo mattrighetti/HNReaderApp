@@ -63,6 +63,14 @@ struct HomeView: View {
     }
 
     var body: some View {
+        #if os(iOS)
+        IOSHomeView(
+            viewModel: viewModel,
+            loadsAutomatically: loadsAutomatically,
+            previewComments: previewComments,
+            previewThreads: previewThreads
+        )
+        #else
         NavigationSplitView(columnVisibility: $columnVisibility) {
             Sidebar()
                 .navigationSplitViewColumnWidth(min: 180, ideal: 205, max: 260)
@@ -153,6 +161,7 @@ struct HomeView: View {
                 appState.markRead(item)
             }
         }
+        #endif
     }
 
     private func refresh() async {
@@ -284,5 +293,18 @@ struct Sidebar: View {
     Sidebar()
         .environment(PreviewData.appState(selection: .saved))
         .tint(.orange)
+}
+#endif
+
+#if DEBUG && os(iOS)
+#Preview("Reader · iOS") {
+    HomeView(
+        viewModel: ItemListViewModel(previewRows: PreviewData.rows),
+        loadsAutomatically: false,
+        previewComments: PreviewData.rootComments,
+        previewThreads: PreviewData.threads
+    )
+    .environment(PreviewData.appState())
+    .tint(.orange)
 }
 #endif

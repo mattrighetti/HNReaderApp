@@ -2,10 +2,43 @@ import SwiftUI
 
 struct IOSHomeView: View {
     @State private var selectedFeed: AppState.SidebarSelection = .top
+    @State private var viewModel: ItemListViewModel
+
+    private let loadsAutomatically: Bool
+    private let previewComments: [Item]?
+    private let previewThreads: [Int: [Item]]?
+
+    @MainActor
+    init() {
+        _viewModel = State(initialValue: ItemListViewModel())
+        loadsAutomatically = true
+        previewComments = nil
+        previewThreads = nil
+    }
+
+    @MainActor
+    init(
+        viewModel: ItemListViewModel,
+        loadsAutomatically: Bool,
+        previewComments: [Item]?,
+        previewThreads: [Int: [Item]]?
+    ) {
+        _viewModel = State(initialValue: viewModel)
+        self.loadsAutomatically = loadsAutomatically
+        self.previewComments = previewComments
+        self.previewThreads = previewThreads
+    }
 
     var body: some View {
         TabView {
-            IOSStoryList(selection: $selectedFeed, showsSavedStories: false)
+            IOSStoryList(
+                selection: $selectedFeed,
+                showsSavedStories: false,
+                viewModel: viewModel,
+                loadsAutomatically: loadsAutomatically,
+                previewComments: previewComments,
+                previewThreads: previewThreads
+            )
                 .tabItem {
                     Label("Stories", systemImage: "newspaper")
                 }
@@ -123,6 +156,7 @@ private struct IOSStoryList: View {
                 }
             }
             .listStyle(.plain)
+            .id(selection)
             .navigationTitle(showsSavedStories ? "Saved Stories" : selection.rawValue)
             .navigationBarTitleDisplayMode(.large)
             .searchable(text: $searchText, prompt: "Search stories")
@@ -160,9 +194,17 @@ private struct IOSStoryList: View {
                         Button {
                             Task { await refresh() }
                         } label: {
-                            Image(systemName: "arrow.clockwise")
+                            Group {
+                                if viewModel.isLoading {
+                                    ProgressView()
+                                        .controlSize(.small)
+                                } else {
+                                    Image(systemName: "arrow.clockwise")
+                                }
+                            }
+                            .frame(width: 20, height: 20)
                         }
-                        .accessibilityLabel("Refresh stories")
+                        .accessibilityLabel(viewModel.isLoading ? "Refreshing stories" : "Refresh stories")
                         .disabled(viewModel.isLoading)
                     }
                 }
