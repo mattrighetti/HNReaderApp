@@ -407,44 +407,35 @@ struct StoryDetail: View {
                             .font(.system(size: 10))
                     }
                     #else
-                    HStack(spacing: 12) {
-                        Image(systemName: "bubble.left.and.bubble.right")
-                            .font(.title3.weight(.semibold))
-                            .accessibilityHidden(true)
-
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("Discussion")
-                                .font(.headline)
-
-                            Text("\(item.descendants ?? 0) comments")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        }
+                    HStack(spacing: 10) {
+                        Label(
+                            "\(item.descendants ?? 0) comments",
+                            systemImage: "bubble.left.and.bubble.right"
+                        )
+                        .font(.subheadline.weight(.medium))
+                        .foregroundStyle(.secondary)
 
                         Spacer()
 
-                        HStack(spacing: 6) {
-                            Button {
-                                threadsCollapsed.toggle()
-                            } label: {
-                                Image(systemName: threadsCollapsed ? "chevron.down" : "chevron.up")
-                                .frame(width: 36, height: 36)
+                        Button {
+                            threadsCollapsed.toggle()
+                        } label: {
+                            Image(systemName: threadsCollapsed ? "chevron.down" : "chevron.up")
+                                .frame(width: 28, height: 28)
                                 .contentShape(Rectangle())
-                            }
-                            .buttonStyle(.plain)
-                            .accessibilityLabel(threadsCollapsed ? "Expand threads" : "Collapse threads")
-
-                            Link(destination: item.discussionURL) {
-                                Label("View on HN", systemImage: "safari")
-                                    .frame(minHeight: 36)
-                                    .contentShape(Rectangle())
-                            }
-                            .buttonStyle(.plain)
-                            .accessibilityLabel("View discussion on Hacker News")
                         }
-                        .font(.body.weight(.semibold))
-                        .foregroundStyle(.secondary)
+                        .buttonStyle(.plain)
+                        .accessibilityLabel(threadsCollapsed ? "Expand threads" : "Collapse threads")
+
+                        Link(destination: item.discussionURL) {
+                            Label("View on HN", systemImage: "arrow.up.right")
+                                .contentShape(Rectangle())
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityLabel("View discussion on Hacker News")
                     }
+                    .font(.subheadline.weight(.medium))
+                    .foregroundStyle(.secondary)
                     #endif
 
                     if model.comments.isEmpty && !model.isLoading && model.errorMessage == nil {

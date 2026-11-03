@@ -141,19 +141,28 @@ struct CommentView: View {
             isCollapsed = collapsed
         }
         .contextMenu {
-            Link("Open Comment on Hacker News", destination: item.discussionURL)
+            Link(destination: item.discussionURL) {
+                Label("Open Comment on HN", systemImage: "safari")
+            }
 
-            Button("Copy Comment Link", systemImage: "link") {
+            Button {
                 #if os(macOS)
                 NSPasteboard.general.clearContents()
                 NSPasteboard.general.setString(item.discussionURL.absoluteString, forType: .string)
                 #else
                 UIPasteboard.general.url = item.discussionURL
                 #endif
+            } label: {
+                Label("Copy Comment Link", systemImage: "doc.on.doc")
             }
 
-            Button(isCollapsed ? "Expand Comment" : "Collapse Comment") {
+            Button {
                 isCollapsed.toggle()
+            } label: {
+                Label(
+                    isCollapsed ? "Expand Comment" : "Collapse Comment",
+                    systemImage: isCollapsed ? "plus" : "minus"
+                )
             }
         }
     }
