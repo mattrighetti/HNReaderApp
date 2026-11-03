@@ -103,7 +103,7 @@ struct CommentView: View {
     }
 
     private var replyCount: Int {
-        item.kids?.count ?? 0
+        model.visibleReplyCountEstimate
     }
 
     private var replyLabel: String {
@@ -119,20 +119,7 @@ struct CommentView: View {
             VStack(alignment: .leading, spacing: CommentThreadLayout.contentSpacing) {
                 header
 
-                if isCollapsed {
-                    Button {
-                        isCollapsed = false
-                    } label: {
-                        Text(replyCount > 0 ? "Comment collapsed · \(replyLabel)" : "Comment collapsed")
-                            .font(.system(size: CommentThreadLayout.headerFontSize))
-                            .foregroundStyle(.secondary)
-                            .frame(minHeight: CommentThreadLayout.touchTarget)
-                            .contentShape(Rectangle())
-                    }
-                    .clickableCursor()
-                    .buttonStyle(.plain)
-                    .padding(.leading, CommentThreadLayout.bodyIndent)
-                } else {
+                if !isCollapsed {
                     commentBody
                         .padding(.leading, CommentThreadLayout.bodyIndent)
 
@@ -235,11 +222,7 @@ struct CommentView: View {
                 .foregroundStyle(.secondary)
         }
 
-        if item.deleted == true || item.dead == true {
-            Text("This comment is no longer available.")
-                .font(.system(size: CommentThreadLayout.bodyFontSize))
-                .foregroundStyle(.secondary)
-        } else if let text = item.text {
+        if let text = item.text {
             HTMLText(
                 text: text,
                 fontSize: CommentThreadLayout.bodyFontSize,
@@ -414,12 +397,6 @@ struct CommentView: View {
                 .foregroundStyle(.orange)
                 .padding(.leading, CommentThreadLayout.bodyIndent)
                 .frame(minHeight: CommentThreadLayout.touchTarget)
-            } else if model.hasLoaded && model.replies.isEmpty {
-                Text("These replies are no longer available.")
-                    .font(.system(size: CommentThreadLayout.metadataFontSize))
-                    .foregroundStyle(.secondary)
-                    .padding(.leading, CommentThreadLayout.bodyIndent)
-                    .padding(.vertical, 10)
             }
         }
         .task {

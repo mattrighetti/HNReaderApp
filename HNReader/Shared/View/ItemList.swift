@@ -379,8 +379,6 @@ struct StoryDetail: View {
                         #endif
                     }
 
-                    Divider()
-
                     #if os(macOS)
                     HStack {
                         Label("Discussion", systemImage: "bubble.left.and.bubble.right")
@@ -475,9 +473,6 @@ struct StoryDetail: View {
                                 }
                             }
                             #endif
-
-                            Divider()
-                                .padding(.vertical, 4)
                         }
                     }
 
@@ -600,7 +595,7 @@ struct StoryDetail: View {
     }
 }
 
-#if DEBUG
+#if DEBUG && os(macOS)
 struct ItemListPreview: View {
     enum PreviewState {
         case loaded
@@ -751,5 +746,11 @@ struct ItemListPreview: View {
         )
         .environment(PreviewData.appState())
     }
+}
+#endif
+
+#if DEBUG && os(iOS)
+#Preview("iOS · Native Story List (Mock)") {
+    IOSStoryListCanvas()
 }
 #endif

@@ -17,10 +17,14 @@ final class CommentRepliesModel {
         nextOffset < ids.count
     }
 
+    var visibleReplyCountEstimate: Int {
+        replies.count + (ids.count - nextOffset)
+    }
+
     init(item: Item, service: NewsService = .shared, previewReplies: [Item]? = nil) {
         ids = item.kids ?? []
         self.service = service
-        replies = previewReplies ?? []
+        replies = (previewReplies ?? []).filter(\.isVisibleComment)
         hasLoaded = previewReplies != nil
         nextOffset = previewReplies == nil ? 0 : ids.count
     }
@@ -30,7 +34,6 @@ final class CommentRepliesModel {
             return
         }
 
-        let page = Array(ids.dropFirst(nextOffset).prefix(15))
         isLoading = true
         errorMessage = nil
 
@@ -39,11 +42,20 @@ final class CommentRepliesModel {
         }
 
         do {
-            let result = try await service.items(ids: page)
-            try Task.checkCancellation()
+            var visibleReplies: [Item] = []
 
-            replies += result
-            nextOffset += page.count
+            repeat {
+                let page = Array(ids.dropFirst(nextOffset).prefix(15))
+                guard !page.isEmpty else { break }
+
+                let result = try await service.items(ids: page)
+                try Task.checkCancellation()
+
+                visibleReplies += result.filter(\.isVisibleComment)
+                nextOffset += page.count
+            } while visibleReplies.isEmpty && hasMore
+
+            replies += visibleReplies
             hasLoaded = true
         } catch {
             if !Task.isCancelled {

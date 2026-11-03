@@ -122,7 +122,7 @@ struct ItemCell: View {
     }
 }
 
-#if DEBUG
+#if DEBUG && os(macOS)
 struct CompactStoryPreview: View {
     @State private var appState: AppState
 

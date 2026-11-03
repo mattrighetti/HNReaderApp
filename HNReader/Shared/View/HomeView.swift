@@ -244,7 +244,7 @@ struct Sidebar: View {
     }
 }
 
-#if DEBUG
+#if DEBUG && os(macOS)
 #Preview("Reader · Light", traits: .fixedLayout(width: 1600, height: 820)) {
     HomeView(
         viewModel: ItemListViewModel(previewRows: PreviewData.rows),

@@ -23,11 +23,44 @@ private struct IOSStoryList: View {
     @Environment(AppState.self) private var appState
 
     @Binding var selection: AppState.SidebarSelection
-    let showsSavedStories: Bool
+    private let showsSavedStories: Bool
+    private let loadsAutomatically: Bool
+    private let previewComments: [Item]?
+    private let previewThreads: [Int: [Item]]?
 
-    @State private var viewModel = ItemListViewModel()
+    @State private var viewModel: ItemListViewModel
     @State private var searchText = ""
     @State private var unreadOnly = false
+
+    @MainActor
+    init(
+        selection: Binding<AppState.SidebarSelection>,
+        showsSavedStories: Bool
+    ) {
+        _selection = selection
+        self.showsSavedStories = showsSavedStories
+        loadsAutomatically = true
+        previewComments = nil
+        previewThreads = nil
+        _viewModel = State(initialValue: ItemListViewModel())
+    }
+
+    @MainActor
+    init(
+        selection: Binding<AppState.SidebarSelection>,
+        showsSavedStories: Bool,
+        viewModel: ItemListViewModel,
+        loadsAutomatically: Bool,
+        previewComments: [Item]?,
+        previewThreads: [Int: [Item]]?
+    ) {
+        _selection = selection
+        self.showsSavedStories = showsSavedStories
+        self.loadsAutomatically = loadsAutomatically
+        self.previewComments = previewComments
+        self.previewThreads = previewThreads
+        _viewModel = State(initialValue: viewModel)
+    }
 
     private var rows: [StoryRow] {
         if showsSavedStories {
@@ -138,7 +171,12 @@ private struct IOSStoryList: View {
                 await refresh()
             }
             .navigationDestination(for: Item.self) { item in
-                StoryDetail(item: item)
+                StoryDetail(
+                    item: item,
+                    initialComments: previewComments,
+                    previewThreads: previewThreads,
+                    loadsAutomatically: loadsAutomatically
+                )
                     .environment(appState)
                     .navigationTitle("Story")
                     .navigationBarTitleDisplayMode(.inline)
@@ -147,7 +185,7 @@ private struct IOSStoryList: View {
                     }
             }
             .task(id: selection) {
-                guard !showsSavedStories else { return }
+                guard loadsAutomatically, !showsSavedStories else { return }
                 searchText = ""
                 unreadOnly = false
 
@@ -197,7 +235,7 @@ private struct IOSStoryList: View {
     }
 
     private func refresh() async {
-        guard !showsSavedStories, let category = selection.category else { return }
+        guard loadsAutomatically, !showsSavedStories, let category = selection.category else { return }
         await viewModel.load(category, forceRefresh: true)
     }
 }
@@ -247,19 +285,23 @@ private struct IOSStoryRow: View {
                 .lineLimit(3)
                 .fixedSize(horizontal: false, vertical: true)
 
-            HStack(spacing: 10) {
-                Label("\(row.item.score ?? 0)", systemImage: "arrowtriangle.up.fill")
-                Label("\(row.item.descendants ?? 0)", systemImage: "bubble.right")
+            HStack(spacing: 14) {
+                metadataValue("\(row.item.score ?? 0)", systemImage: "arrow.up")
+                metadataValue("\(row.item.descendants ?? 0)", systemImage: "bubble.left")
+
                 if let author = row.item.by {
-                    Text("by \(author)")
+                    Text(author)
                         .lineLimit(1)
                         .truncationMode(.middle)
                 }
-                Spacer(minLength: 4)
+
+                Spacer(minLength: 6)
+
                 Text(row.item.timeStringRepresentation.map { "\($0) ago" } ?? "")
                     .lineLimit(1)
+                    .fixedSize()
             }
-            .font(.caption2)
+            .font(.caption)
             .foregroundStyle(.secondary)
         }
         .padding(.vertical, 2)
@@ -272,9 +314,41 @@ private struct IOSStoryRow: View {
             ShareLink(item: row.item.articleURL ?? row.item.discussionURL)
         }
     }
+
+    private func metadataValue(_ value: String, systemImage: String) -> some View {
+        HStack(spacing: 3) {
+            Image(systemName: systemImage)
+                .font(.system(size: 10, weight: .semibold))
+                .foregroundStyle(.tertiary)
+
+            Text(value)
+                .fontWeight(.medium)
+                .monospacedDigit()
+        }
+        .fixedSize()
+    }
 }
 
 #if DEBUG
+struct IOSStoryListCanvas: View {
+    @State private var appState = PreviewData.appState()
+    @State private var selectedFeed: AppState.SidebarSelection = .top
+    @State private var viewModel = ItemListViewModel(previewRows: PreviewData.rows)
+
+    var body: some View {
+        IOSStoryList(
+            selection: $selectedFeed,
+            showsSavedStories: false,
+            viewModel: viewModel,
+            loadsAutomatically: false,
+            previewComments: PreviewData.rootComments,
+            previewThreads: PreviewData.threads
+        )
+        .environment(appState)
+        .tint(.orange)
+    }
+}
+
 /// An interactive Canvas backed by the same live API and detail view as the app.
 private struct IOSLiveArticleCanvas: View {
     private static let storyID = 8863

@@ -26,7 +26,7 @@ final class StoryDetailViewModel {
     ) {
         self.item = item
         self.service = service
-        comments = initialComments ?? []
+        comments = (initialComments ?? []).filter(\.isVisibleComment)
         self.isLoading = isLoading
         self.errorMessage = errorMessage
         hasLoadedMetadata = initialComments != nil
@@ -57,12 +57,20 @@ final class StoryDetailViewModel {
                 hasLoadedMetadata = true
             }
 
-            let ids = Array((item.kids ?? []).dropFirst(loadedCount).prefix(20))
-            let result = try await service.items(ids: ids)
-            try Task.checkCancellation()
+            var visibleComments: [Item] = []
 
-            comments += result
-            loadedCount += ids.count
+            repeat {
+                let ids = Array((item.kids ?? []).dropFirst(loadedCount).prefix(20))
+                guard !ids.isEmpty else { break }
+
+                let result = try await service.items(ids: ids)
+                try Task.checkCancellation()
+
+                visibleComments += result.filter(\.isVisibleComment)
+                loadedCount += ids.count
+            } while visibleComments.isEmpty && hasMoreComments
+
+            comments += visibleComments
         } catch {
             if !Task.isCancelled {
                 errorMessage = error.localizedDescription

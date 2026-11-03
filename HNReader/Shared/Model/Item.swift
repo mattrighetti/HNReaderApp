@@ -82,6 +82,10 @@ public struct Item: Codable, Identifiable, Hashable, Sendable {
         return Date()
             .timeElapsedStringRepresentation(since: Date(timeIntervalSince1970: TimeInterval(time)))
     }
+
+    var isVisibleComment: Bool {
+        deleted != true && dead != true
+    }
 }
 
 public enum ItemType: String, Codable, Sendable {
