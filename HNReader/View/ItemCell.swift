@@ -9,7 +9,7 @@ struct ItemCell: View {
     let rank: Int
     var isSelected = false
 
-    @EnvironmentObject private var appState: AppState
+    @Environment(AppState.self) private var appState
     @Environment(\.colorScheme) private var colorScheme
 
     private var isRead: Bool {
@@ -124,7 +124,7 @@ struct ItemCell: View {
 
 #if DEBUG
 struct CompactStoryPreview: View {
-    @StateObject private var appState: AppState
+    @State private var appState: AppState
 
     private let items: [Item]
     private let selectedID: Int?
@@ -133,7 +133,7 @@ struct CompactStoryPreview: View {
         self.selectedID = selectedID
 
         items = PreviewData.stories
-        _appState = StateObject(wrappedValue: PreviewData.appState())
+        _appState = State(initialValue: PreviewData.appState())
     }
 
     var body: some View {
@@ -146,7 +146,7 @@ struct CompactStoryPreview: View {
         }
         .padding(.horizontal, 12)
         .background(Color(nsColor: .controlBackgroundColor))
-        .environmentObject(appState)
+        .environment(appState)
     }
 }
 

@@ -13,7 +13,7 @@ final class SplitColumnWidthTests: XCTestCase {
         state.sidebarSelection = .saved
 
         let host = NSHostingController(rootView: HomeView()
-            .environmentObject(state)
+            .environment(state)
             .frame(minWidth: 864, minHeight: 600))
 
         let window = NSWindow(

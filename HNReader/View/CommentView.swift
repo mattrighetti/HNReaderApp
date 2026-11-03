@@ -36,7 +36,7 @@ struct CommentView: View {
 
     @Environment(\.colorScheme) private var colorScheme
 
-    @StateObject private var model: CommentRepliesModel
+    @State private var model: CommentRepliesModel
     @State private var isCollapsed: Bool
     @State private var repliesExpanded: Bool
     @State private var showFullText = false
@@ -58,8 +58,8 @@ struct CommentView: View {
         self.previewThreads = previewThreads
         self.expandPreview = expandPreview
 
-        _model = StateObject(
-            wrappedValue: CommentRepliesModel(
+        _model = State(
+            initialValue: CommentRepliesModel(
                 item: item,
                 previewReplies: previewThreads?[item.id]
             )

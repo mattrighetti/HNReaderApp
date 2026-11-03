@@ -53,6 +53,7 @@ extension ItemTests {
         XCTAssertEqual(host.urlHost, "example.com")
     }
 
+    @MainActor
     func testSavedStoriesAndReadStateSurviveRelaunch() throws {
         let suite = "HNReaderTests.\(UUID().uuidString)"
         let defaults = try XCTUnwrap(UserDefaults(suiteName: suite))
@@ -76,6 +77,7 @@ extension ItemTests {
         XCTAssertEqual(AppState(defaults: defaults).readIDs, [42])
     }
 
+    @MainActor
     func testCorruptSavedDataDoesNotPreventStartup() throws {
         let suite = "HNReaderTests.\(UUID().uuidString)"
         let defaults = try XCTUnwrap(UserDefaults(suiteName: suite))

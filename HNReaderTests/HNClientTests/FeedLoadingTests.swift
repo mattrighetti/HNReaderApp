@@ -1,4 +1,5 @@
 import SwiftUI
+import Observation
 import XCTest
 @testable import HNReader
 
@@ -431,7 +432,7 @@ final class FeedLoadingTests: XCTestCase {
             defer: false
         )
         window.isReleasedWhenClosed = false
-        window.contentView = NSHostingView(rootView: FeedPageHarness(model: model).environmentObject(AppState()))
+        window.contentView = NSHostingView(rootView: FeedPageHarness(model: model).environment(AppState()))
 
         defer { window.close() }
         window.makeKeyAndOrderFront(nil)
@@ -499,7 +500,7 @@ final class FeedLoadingTests: XCTestCase {
         let host = NSHostingView(rootView: FeedPageHarness(
             model: model,
             readIDs: Set(1...30)
-        ).environmentObject(AppState()))
+        ).environment(AppState()))
 
         let window = NSWindow(
             contentRect: NSRect(x: 0, y: 0, width: 560, height: 650),
@@ -515,12 +516,11 @@ final class FeedLoadingTests: XCTestCase {
         XCTAssertEqual(server.count("/v0/item/31.json"), 0)
 
         let loaded = expectation(description: "The unread stories on page two become available")
-        let observation = model.$rows.sink { rows in
-            if rows.count == 40 {
-                loaded.fulfill()
-            }
+        withObservationTracking {
+            _ = model.rows
+        } onChange: {
+            loaded.fulfill()
         }
-        defer { observation.cancel() }
 
         window.makeKeyAndOrderFront(nil)
         await fulfillment(of: [loaded], timeout: 3)
@@ -618,7 +618,7 @@ final class FeedLoadingTests: XCTestCase {
 }
 
 private struct FeedPageHarness: View {
-    @ObservedObject var model: ItemListViewModel
+    let model: ItemListViewModel
 
     let readIDs: Set<Int>
 

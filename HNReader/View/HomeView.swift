@@ -1,9 +1,9 @@
 import SwiftUI
 
 struct HomeView: View {
-    @EnvironmentObject private var appState: AppState
+    @Environment(AppState.self) private var appState
 
-    @StateObject private var viewModel: ItemListViewModel
+    @State private var viewModel: ItemListViewModel
 
     @State private var selectedID: Int?
     @State private var searchText = ""
@@ -21,7 +21,7 @@ struct HomeView: View {
         previewComments: [Item]? = nil,
         previewThreads: [Int: [Item]]? = nil
     ) {
-        _viewModel = StateObject(wrappedValue: viewModel ?? ItemListViewModel())
+        _viewModel = State(initialValue: viewModel ?? ItemListViewModel())
         _selectedID = State(initialValue: selectedID)
         self.loadsAutomatically = loadsAutomatically
         self.previewComments = previewComments
@@ -158,9 +158,11 @@ struct HomeView: View {
 }
 
 struct Sidebar: View {
-    @EnvironmentObject private var appState: AppState
+    @Environment(AppState.self) private var appState
 
     var body: some View {
+        @Bindable var appState = appState
+
         VStack(spacing: 0) {
             HStack(spacing: 10) {
                 Text("Y")
@@ -240,7 +242,7 @@ struct Sidebar: View {
         previewComments: PreviewData.rootComments,
         previewThreads: PreviewData.threads
     )
-    .environmentObject(PreviewData.appState())
+    .environment(PreviewData.appState())
     .preferredColorScheme(.light)
     .tint(.orange)
 }
@@ -253,7 +255,7 @@ struct Sidebar: View {
         previewComments: PreviewData.rootComments,
         previewThreads: PreviewData.threads
     )
-    .environmentObject(PreviewData.appState())
+    .environment(PreviewData.appState())
     .preferredColorScheme(.dark)
     .tint(.orange)
 }
@@ -263,13 +265,13 @@ struct Sidebar: View {
         viewModel: ItemListViewModel(previewRows: PreviewData.rows),
         loadsAutomatically: false
     )
-    .environmentObject(PreviewData.appState())
+    .environment(PreviewData.appState())
     .tint(.orange)
 }
 
 #Preview("Sidebar", traits: .fixedLayout(width: 205, height: 600)) {
     Sidebar()
-        .environmentObject(PreviewData.appState(selection: .saved))
+        .environment(PreviewData.appState(selection: .saved))
         .tint(.orange)
 }
 #endif

@@ -243,9 +243,9 @@ struct ItemList: View {
 }
 
 struct StoryDetail: View {
-    @StateObject private var model: StoryDetailViewModel
+    @State private var model: StoryDetailViewModel
 
-    @EnvironmentObject private var appState: AppState
+    @Environment(AppState.self) private var appState
 
     @State private var threadsCollapsed = false
     @State private var commentFrames: [Int: CGRect] = [:]
@@ -265,7 +265,7 @@ struct StoryDetail: View {
     ) {
         self.previewThreads = previewThreads
         self.loadsAutomatically = loadsAutomatically
-        _model = StateObject(wrappedValue: StoryDetailViewModel(
+        _model = State(initialValue: StoryDetailViewModel(
             item: item,
             initialComments: initialComments,
             isLoading: isLoading,
@@ -570,7 +570,7 @@ struct ItemListPreview: View {
             refresh: {},
             loadMore: {}
         )
-        .environmentObject(PreviewData.appState(includeSavedStories: state != .emptySaved))
+        .environment(PreviewData.appState(includeSavedStories: state != .emptySaved))
         .tint(.orange)
     }
 }
@@ -627,7 +627,7 @@ struct ItemListPreview: View {
             previewThreads: PreviewData.threads,
             loadsAutomatically: false
         )
-        .environmentObject(PreviewData.appState())
+        .environment(PreviewData.appState())
         .preferredColorScheme(.light)
         .tint(.orange)
     }
@@ -641,7 +641,7 @@ struct ItemListPreview: View {
             previewThreads: PreviewData.threads,
             loadsAutomatically: false
         )
-        .environmentObject(PreviewData.appState())
+        .environment(PreviewData.appState())
         .preferredColorScheme(.dark)
         .tint(.orange)
     }
@@ -650,14 +650,14 @@ struct ItemListPreview: View {
 #Preview("Story detail · Loading comments", traits: .fixedLayout(width: 760, height: 820)) {
     if let item = PreviewData.stories.first {
         StoryDetail(item: item, loadsAutomatically: false, isLoading: true)
-            .environmentObject(PreviewData.appState())
+            .environment(PreviewData.appState())
     }
 }
 
 #Preview("Story detail · No comments", traits: .fixedLayout(width: 760, height: 820)) {
     if let item = PreviewData.stories.first {
         StoryDetail(item: item, initialComments: [], loadsAutomatically: false)
-            .environmentObject(PreviewData.appState())
+            .environment(PreviewData.appState())
     }
 }
 
@@ -668,7 +668,7 @@ struct ItemListPreview: View {
             loadsAutomatically: false,
             errorMessage: "Comments couldn’t be loaded. Please try again."
         )
-        .environmentObject(PreviewData.appState())
+        .environment(PreviewData.appState())
     }
 }
 #endif

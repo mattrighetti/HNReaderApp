@@ -1,11 +1,13 @@
-import SwiftUI
+import Foundation
+import Observation
 
 @MainActor
-final class CommentRepliesModel: ObservableObject {
-    @Published private(set) var replies: [Item]
-    @Published private(set) var isLoading = false
-    @Published private(set) var errorMessage: String?
-    @Published private(set) var hasLoaded: Bool
+@Observable
+final class CommentRepliesModel {
+    private(set) var replies: [Item]
+    private(set) var isLoading = false
+    private(set) var errorMessage: String?
+    private(set) var hasLoaded: Bool
 
     private let ids: [Int]
     private let service: NewsService

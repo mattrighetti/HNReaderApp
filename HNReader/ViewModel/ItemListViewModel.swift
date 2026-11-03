@@ -1,4 +1,5 @@
-import SwiftUI
+import Foundation
+import Observation
 
 struct StoryRow: Identifiable {
     let rank: Int
@@ -10,14 +11,15 @@ struct StoryRow: Identifiable {
 }
 
 @MainActor
-final class ItemListViewModel: ObservableObject {
-    @Published private(set) var rows: [StoryRow] = []
-    @Published private(set) var isLoading = false
-    @Published private(set) var isLoadingMore = false
-    @Published private(set) var hasMore = false
-    @Published private(set) var errorMessage: String?
-    @Published private(set) var paginationError: String?
-    @Published private(set) var revision = UUID()
+@Observable
+final class ItemListViewModel {
+    private(set) var rows: [StoryRow] = []
+    private(set) var isLoading = false
+    private(set) var isLoadingMore = false
+    private(set) var hasMore = false
+    private(set) var errorMessage: String?
+    private(set) var paginationError: String?
+    private(set) var revision = UUID()
 
     var stories: [Item] {
         rows.map(\.item)

@@ -1,9 +1,12 @@
-import SwiftUI
+import Foundation
+import Observation
 
-final class AppState: ObservableObject {
-    @Published var sidebarSelection: SidebarSelection? = .top
-    @Published private(set) var savedItems: [Item]
-    @Published private(set) var readIDs: Set<Int>
+@MainActor
+@Observable
+final class AppState {
+    var sidebarSelection: SidebarSelection? = .top
+    private(set) var savedItems: [Item]
+    private(set) var readIDs: Set<Int>
 
     private let defaults: UserDefaults
 

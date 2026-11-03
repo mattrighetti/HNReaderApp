@@ -2,13 +2,13 @@ import SwiftUI
 
 @main
 struct HNReaderApp: App {
-    @StateObject private var appState = AppState()
+    @State private var appState = AppState()
 
     var body: some Scene {
         WindowGroup {
             HomeView()
                 .frame(minWidth: 864, minHeight: 600)
-                .environmentObject(appState)
+                .environment(appState)
                 .tint(.orange)
         }
         .defaultSize(width: 1600, height: 820)

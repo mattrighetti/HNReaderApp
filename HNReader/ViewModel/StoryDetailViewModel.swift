@@ -1,12 +1,13 @@
 import Foundation
-import Combine
+import Observation
 
 @MainActor
-final class StoryDetailViewModel: ObservableObject {
-    @Published private(set) var item: Item
-    @Published private(set) var comments: [Item]
-    @Published private(set) var isLoading: Bool
-    @Published private(set) var errorMessage: String?
+@Observable
+final class StoryDetailViewModel {
+    private(set) var item: Item
+    private(set) var comments: [Item]
+    private(set) var isLoading: Bool
+    private(set) var errorMessage: String?
 
     private let service: NewsService
     private var hasLoadedMetadata: Bool
