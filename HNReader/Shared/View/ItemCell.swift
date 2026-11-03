@@ -10,7 +10,6 @@ struct ItemCell: View {
     var isSelected = false
 
     @Environment(AppState.self) private var appState
-    @Environment(\.colorScheme) private var colorScheme
 
     private var isRead: Bool {
         appState.readIDs.contains(item.id)
@@ -18,12 +17,10 @@ struct ItemCell: View {
 
     private var domainColor: Color {
         if isSelected {
-            return Color(red: 1, green: 0.86, blue: 0.65)
+            return Color.white.opacity(0.75)
         }
 
-        return colorScheme == .dark
-            ? .orange
-            : Color(red: 0.65, green: 0.28, blue: 0.06)
+        return .secondary
     }
 
     private var titleColor: Color {
@@ -44,7 +41,7 @@ struct ItemCell: View {
             VStack(alignment: .leading, spacing: 3) {
                 HStack(spacing: 6) {
                     Circle()
-                        .fill(.orange)
+                        .fill(Color.accentColor)
                         .frame(width: 4, height: 4)
                         .frame(width: 6, height: 14)
                         .opacity(isRead ? 0 : 1)
@@ -61,7 +58,7 @@ struct ItemCell: View {
                     if appState.isSaved(item) {
                         Image(systemName: "bookmark.fill")
                             .font(.system(size: 10))
-                            .foregroundStyle(.orange)
+                            .foregroundStyle(Color.accentColor)
                             .frame(height: 14)
                     }
                 }

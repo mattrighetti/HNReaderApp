@@ -36,6 +36,8 @@
 		AB6000000000000000000001 /* AppInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB6000000000000000000002 /* AppInfo.swift */; };
 		AB7000000000000000000001 /* ClickableCursor.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB7000000000000000000002 /* ClickableCursor.swift */; };
 		AB9000000000000000000001 /* StoryDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB9000000000000000000002 /* StoryDetailViewModel.swift */; };
+		AC1000000000000000000001 /* CommentTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC1000000000000000000002 /* CommentTextView.swift */; };
+		AC1000000000000000000003 /* CommentTextView.swift in iOS Sources */ = {isa = PBXBuildFile; fileRef = AC1000000000000000000002 /* CommentTextView.swift */; };
 		B20000000000000000000000 /* HackerNews.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9E9BD002674D007001B4E19 /* HackerNews.swift */; };
 		B20000000000000000000001 /* HackerNewsClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9E9BCFE2674CB6C001B4E19 /* HackerNewsClient.swift */; };
 		B20000000000000000000002 /* ItemCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33071CD8B451FE700B64F387 /* ItemCache.swift */; };
@@ -125,6 +127,7 @@
 		AB6000000000000000000002 /* AppInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppInfo.swift; sourceTree = "<group>"; };
 		AB7000000000000000000002 /* ClickableCursor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClickableCursor.swift; sourceTree = "<group>"; };
 		AB9000000000000000000002 /* StoryDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryDetailViewModel.swift; sourceTree = "<group>"; };
+		AC1000000000000000000002 /* CommentTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentTextView.swift; sourceTree = "<group>"; };
 		B10000000000000000000005 /* HNReaderiOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = HNReaderiOS.app; path = HNReader.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B10000000000000000000009 /* HNReaderiOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HNReaderiOSApp.swift; sourceTree = "<group>"; };
 		B1000000000000000000000A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -261,6 +264,7 @@
 			isa = PBXGroup;
 			children = (
 				AB7000000000000000000002 /* ClickableCursor.swift */,
+				AC1000000000000000000002 /* CommentTextView.swift */,
 				C93F99B9267580CE0046F870 /* HTMLText.swift */,
 				5FCE20A82AF7B47B00BF4097 /* BgButton.swift */,
 			);
@@ -525,6 +529,7 @@
 				B2000000000000000000000D /* CommentView.swift in Sources */,
 				B2000000000000000000000E /* BgButton.swift in Sources */,
 				B2000000000000000000000F /* ClickableCursor.swift in Sources */,
+				AC1000000000000000000003 /* CommentTextView.swift in iOS Sources */,
 				B20000000000000000000010 /* HTMLText.swift in Sources */,
 				B20000000000000000000011 /* ConditionalRedactedModifier.swift in Sources */,
 				B20000000000000000000012 /* HomeView.swift in Sources */,
@@ -564,6 +569,7 @@
 				C93F99B8267557FC0046F870 /* ItemList.swift in Sources */,
 				C9E9BCFD2674C80E001B4E19 /* AppState.swift in Sources */,
 				C9E9BD032674D095001B4E19 /* User.swift in Sources */,
+				AC1000000000000000000001 /* CommentTextView.swift in Sources */,
 				C93F99BA267580CE0046F870 /* HTMLText.swift in Sources */,
 				C9E9BCFF2674CB6C001B4E19 /* HackerNewsClient.swift in Sources */,
 				C9E9BD012674D007001B4E19 /* HackerNews.swift in Sources */,
@@ -606,7 +612,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = NO;
@@ -626,7 +631,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = NO;
@@ -771,7 +775,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = HNReader/HNReader.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
@@ -803,7 +806,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = HNReader/HNReader.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";

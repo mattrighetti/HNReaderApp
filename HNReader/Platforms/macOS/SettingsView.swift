@@ -18,7 +18,6 @@ struct SettingsView: View {
         .padding(24)
         .frame(width: 440)
         .background(Color(nsColor: .windowBackgroundColor))
-        .tint(.orange)
     }
 
     private var appHeader: some View {

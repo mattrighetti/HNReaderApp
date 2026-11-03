@@ -48,7 +48,6 @@ struct IOSHomeView: View {
                     Label("Saved", systemImage: "bookmark")
                 }
         }
-        .tint(.orange)
     }
 }
 
@@ -300,7 +299,7 @@ private struct IOSStoryRow: View {
 
                 Text(row.item.urlHost ?? "news.ycombinator.com")
                     .font(.caption.weight(.medium))
-                    .foregroundStyle(.orange)
+                    .foregroundStyle(.secondary)
                     .lineLimit(1)
                     .truncationMode(.middle)
 
@@ -308,7 +307,7 @@ private struct IOSStoryRow: View {
 
                 if !isRead {
                     Circle()
-                        .fill(.orange)
+                        .fill(Color.accentColor)
                         .frame(width: 7, height: 7)
                         .accessibilityLabel("Unread")
                 }
@@ -316,7 +315,7 @@ private struct IOSStoryRow: View {
                 if appState.isSaved(row.item) {
                     Image(systemName: "bookmark.fill")
                         .font(.caption2)
-                        .foregroundStyle(.orange)
+                        .foregroundStyle(Color.accentColor)
                         .accessibilityLabel("Saved")
                 }
             }
@@ -387,7 +386,6 @@ struct IOSStoryListCanvas: View {
             previewThreads: PreviewData.threads
         )
         .environment(appState)
-        .tint(.orange)
     }
 }
 
@@ -425,7 +423,6 @@ private struct IOSLiveArticleCanvas: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .environment(appState)
-        .tint(.orange)
         .task(id: requestID) {
             await loadArticle()
         }

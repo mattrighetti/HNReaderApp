@@ -8,7 +8,6 @@ struct HNReaderiOSApp: App {
         WindowGroup {
             HomeView()
                 .environment(appState)
-                .tint(.orange)
         }
     }
 }

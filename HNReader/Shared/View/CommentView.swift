@@ -12,8 +12,6 @@ private enum CommentThreadLayout {
     static let verticalPadding: CGFloat = 10
     static let contentSpacing: CGFloat = 8
     static let childIndent: CGFloat = 24
-    static let bodyFontSize: CGFloat = 13
-    static let bodyLineSpacing: CGFloat = 3
     static let headerFontSize: CGFloat = 11
     static let metadataFontSize: CGFloat = 10
     static let actionFontSize: CGFloat = 10
@@ -24,8 +22,6 @@ private enum CommentThreadLayout {
     static let verticalPadding: CGFloat = 10
     static let contentSpacing: CGFloat = 10
     static let childIndent: CGFloat = 20
-    static let bodyFontSize: CGFloat = 16
-    static let bodyLineSpacing: CGFloat = 5
     static let headerFontSize: CGFloat = 13
     static let metadataFontSize: CGFloat = 12
     static let actionFontSize: CGFloat = 13
@@ -69,7 +65,6 @@ struct CommentView: View {
     @State private var model: CommentRepliesModel
     @State private var isCollapsed: Bool
     @State private var repliesExpanded: Bool
-    @State private var showFullText = false
 
     init(
         item: Item,
@@ -108,10 +103,6 @@ struct CommentView: View {
 
     private var replyLabel: String {
         "\(replyCount) \(replyCount == 1 ? "reply" : "replies")"
-    }
-
-    private var canExpandText: Bool {
-        (item.text?.count ?? 0) > 800
     }
 
     var body: some View {
@@ -168,35 +159,35 @@ struct CommentView: View {
     }
 
     private var header: some View {
-        HStack(spacing: 8) {
-            CommentAvatar(author: author)
+        Button {
+            isCollapsed.toggle()
+        } label: {
+            HStack(spacing: 8) {
+                CommentAvatar(author: author)
 
-            Text(author)
-                .font(.system(size: CommentThreadLayout.headerFontSize, weight: .semibold))
-                .lineLimit(1)
+                Text(author)
+                    .font(.system(size: CommentThreadLayout.headerFontSize, weight: .semibold))
+                    .lineLimit(1)
 
-            if item.by != nil && item.by == storyAuthor {
-                Text("OP")
-                    .font(.system(size: 8, weight: .bold))
-                    .foregroundStyle(.orange)
-                    .padding(.horizontal, 5)
-                    .padding(.vertical, 2)
-                    .background(.orange.opacity(0.12), in: Capsule())
-                    .accessibilityLabel("Original poster")
-            }
+                if item.by != nil && item.by == storyAuthor {
+                    Text("OP")
+                        .font(.system(size: 8, weight: .bold))
+                        .foregroundStyle(Color.accentColor)
+                        .padding(.horizontal, 5)
+                        .padding(.vertical, 2)
+                        .background(Color.accentColor.opacity(0.12), in: Capsule())
+                        .accessibilityLabel("Original poster")
+                }
 
-            if let time = item.timeStringRepresentation {
-                Text("· \(time)")
-                    .font(.system(size: CommentThreadLayout.metadataFontSize))
-                    .foregroundStyle(.secondary)
-                    .fixedSize()
-            }
+                if let time = item.timeStringRepresentation {
+                    Text("· \(time)")
+                        .font(.system(size: CommentThreadLayout.metadataFontSize))
+                        .foregroundStyle(.secondary)
+                        .fixedSize()
+                }
 
-            Spacer(minLength: 4)
+                Spacer(minLength: 4)
 
-            Button {
-                isCollapsed.toggle()
-            } label: {
                 Image(systemName: isCollapsed ? "plus" : "minus")
                     .font(.system(size: CommentThreadLayout.metadataFontSize, weight: .semibold))
                     .foregroundStyle(.secondary)
@@ -204,45 +195,25 @@ struct CommentView: View {
                         width: CommentThreadLayout.touchTarget,
                         height: CommentThreadLayout.touchTarget
                     )
-                    .contentShape(Rectangle())
+                    .accessibilityHidden(true)
             }
-            .clickableCursor()
-            .buttonStyle(.plain)
-            .help(isCollapsed ? "Expand comment" : "Collapse comment and replies")
-            .accessibilityLabel(isCollapsed ? "Expand comment" : "Collapse comment and replies")
+            .frame(maxWidth: .infinity)
+            .contentShape(Rectangle())
         }
+        .clickableCursor()
+        .buttonStyle(.plain)
+        .help(isCollapsed ? "Expand comment" : "Collapse comment and replies")
+        .accessibilityHint(isCollapsed ? "Expands this comment" : "Collapses this comment and its replies")
         .frame(height: CommentThreadLayout.headerHeight)
     }
 
     @ViewBuilder
     private var commentBody: some View {
-        if depth > CommentThreadLayout.maximumIndentDepth, let parentAuthor {
-            Text("Replying to \(parentAuthor)")
-                .font(.system(size: CommentThreadLayout.metadataFontSize))
-                .foregroundStyle(.secondary)
-        }
-
         if let text = item.text {
-            HTMLText(
-                text: text,
-                fontSize: CommentThreadLayout.bodyFontSize,
-                lineSpacing: CommentThreadLayout.bodyLineSpacing
+            CommentTextView(
+                html: text,
+                replyingTo: depth > CommentThreadLayout.maximumIndentDepth ? parentAuthor : nil
             )
-                .lineLimit(canExpandText && !showFullText ? 8 : nil)
-
-            if canExpandText {
-                Button(showFullText ? "Show less" : "Read more") {
-                    showFullText.toggle()
-                }
-                .clickableCursor()
-                .buttonStyle(.plain)
-                .font(.system(size: CommentThreadLayout.actionFontSize, weight: .semibold))
-                .foregroundStyle(.orange)
-                #if os(iOS)
-                .frame(minHeight: CommentThreadLayout.touchTarget)
-                .contentShape(Rectangle())
-                #endif
-            }
         }
     }
 
@@ -251,7 +222,7 @@ struct CommentView: View {
         HStack(spacing: 16) {
             if replyCount > 0 {
                 Button {
-                    repliesExpanded.toggle()
+                    toggleReplies()
                 } label: {
                     Label(
                         repliesExpanded ? "Hide replies" : replyLabel,
@@ -259,7 +230,7 @@ struct CommentView: View {
                     )
                 }
                 .clickableCursor()
-                .foregroundStyle(.orange)
+                .foregroundStyle(Color.accentColor)
             }
 
             Link(destination: item.discussionURL) {
@@ -282,7 +253,7 @@ struct CommentView: View {
         HStack(spacing: 8) {
             if replyCount > 0 {
                 Button {
-                    repliesExpanded.toggle()
+                    toggleReplies()
                 } label: {
                     Label(
                         repliesExpanded ? "Hide replies" : replyLabel,
@@ -291,7 +262,7 @@ struct CommentView: View {
                     .frame(minHeight: CommentThreadLayout.touchTarget)
                     .contentShape(Rectangle())
                 }
-                .foregroundStyle(.orange)
+                .foregroundStyle(Color.accentColor)
                 .accessibilityHint(repliesExpanded ? "Collapses this comment thread" : "Expands this comment thread")
             }
 
@@ -382,27 +353,28 @@ struct CommentView: View {
                 }
                 .clickableCursor()
                 .buttonStyle(.plain)
-                .foregroundStyle(.orange)
+                .foregroundStyle(Color.accentColor)
                 .padding(.leading, CommentThreadLayout.bodyIndent)
                 .frame(minHeight: CommentThreadLayout.touchTarget)
             } else if model.hasMore {
-                Button("Load replies") {
-                    Task {
-                        await model.loadNextPage()
-                    }
-                }
-                .clickableCursor()
-                .buttonStyle(.plain)
-                .font(.system(size: CommentThreadLayout.actionFontSize, weight: .medium))
-                .foregroundStyle(.orange)
-                .padding(.leading, CommentThreadLayout.bodyIndent)
-                .frame(minHeight: CommentThreadLayout.touchTarget)
+                ProgressView("Loading replies…")
+                    .font(.system(size: CommentThreadLayout.actionFontSize, weight: .medium))
+                    .padding(.leading, CommentThreadLayout.bodyIndent)
+                    .padding(.vertical, 12)
+                    .frame(minHeight: CommentThreadLayout.touchTarget)
             }
         }
-        .task {
-            if !model.hasLoaded {
-                await model.loadNextPage()
-            }
+    }
+
+    private func toggleReplies() {
+        repliesExpanded.toggle()
+
+        guard repliesExpanded, !model.hasLoaded else {
+            return
+        }
+
+        Task {
+            await model.loadNextPage()
         }
     }
 }
@@ -523,7 +495,6 @@ struct CommentsPreview: View {
         }
         .padding(20)
         .background(PlatformColors.textBackground)
-        .tint(.orange)
     }
 }
 
@@ -554,7 +525,6 @@ struct CommentsPreview: View {
         }
     }
     .preferredColorScheme(.dark)
-    .tint(.orange)
 }
 
 #Preview("Comment threads · Collapsed", traits: .fixedLayout(width: 640, height: 240)) {

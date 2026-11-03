@@ -9,7 +9,6 @@ struct HNReaderApp: App {
             HomeView()
                 .frame(minWidth: 864, minHeight: 600)
                 .environment(appState)
-                .tint(.orange)
         }
         .defaultSize(width: 1600, height: 820)
         .windowResizability(.contentMinSize)

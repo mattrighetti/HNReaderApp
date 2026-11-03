@@ -293,7 +293,7 @@ struct StoryDetail: View {
                         Text(item.urlHost?.uppercased() ?? "HACKER NEWS")
                             .font(.system(size: 10, weight: .bold, design: .monospaced))
                             .tracking(1.5)
-                            .foregroundStyle(.orange)
+                            .foregroundStyle(Color.accentColor)
 
                         Text(item.title ?? "Untitled story")
                             .font(.system(size: 30, weight: .semibold, design: .serif))
@@ -355,7 +355,6 @@ struct StoryDetail: View {
                             }
                             .clickableCursor()
                             .buttonStyle(.borderedProminent)
-                            .tint(.orange)
 
                             Button {
                                 appState.toggleSaved(item)
@@ -554,6 +553,15 @@ struct StoryDetail: View {
         }
         .background(PlatformColors.textBackground)
         .toolbar {
+            #if os(iOS)
+            if let articleURL = item.articleURL {
+                Link(destination: articleURL) {
+                    Label("Open Article", systemImage: "safari")
+                }
+                .accessibilityLabel("Open article in browser")
+            }
+            #endif
+
             Button {
                 appState.toggleSaved(item)
             } label: {
@@ -647,7 +655,6 @@ struct ItemListPreview: View {
             loadMore: {}
         )
         .environment(PreviewData.appState(includeSavedStories: state != .emptySaved))
-        .tint(.orange)
     }
 }
 
@@ -705,7 +712,6 @@ struct ItemListPreview: View {
         )
         .environment(PreviewData.appState())
         .preferredColorScheme(.light)
-        .tint(.orange)
     }
 }
 
@@ -719,7 +725,6 @@ struct ItemListPreview: View {
         )
         .environment(PreviewData.appState())
         .preferredColorScheme(.dark)
-        .tint(.orange)
     }
 }
 

@@ -26,6 +26,10 @@ struct HTMLText: View {
     }
 
     @MainActor static func render(_ html: String, fontSize: CGFloat = 14) -> AttributedString {
+        AttributedString(renderNative(html, fontSize: fontSize))
+    }
+
+    @MainActor static func renderNative(_ html: String, fontSize: CGFloat = 14) -> NSAttributedString {
         guard
             let data = html.data(using: .utf8),
             let value = try? NSMutableAttributedString(
@@ -37,7 +41,9 @@ struct HTMLText: View {
                 documentAttributes: nil
             )
         else {
-            return AttributedString(html.trimmingCharacters(in: .whitespacesAndNewlines))
+            return NSAttributedString(
+                string: html.trimmingCharacters(in: .whitespacesAndNewlines)
+            )
         }
 
         trimOuterWhitespace(from: value)
@@ -54,9 +60,12 @@ struct HTMLText: View {
             }
 
             let traits = NSFontManager.shared.traits(of: font)
+            let targetSize = traits.contains(.fixedPitchFontMask)
+                ? max(11, fontSize - 2)
+                : fontSize
             let base = traits.contains(.fixedPitchFontMask)
-                ? NSFont.monospacedSystemFont(ofSize: max(11, fontSize - 1), weight: .regular)
-                : NSFont.systemFont(ofSize: fontSize)
+                ? NSFont.monospacedSystemFont(ofSize: targetSize, weight: .regular)
+                : NSFont.systemFont(ofSize: targetSize)
 
             value.addAttribute(
                 .font,
@@ -70,15 +79,22 @@ struct HTMLText: View {
 
             let descriptor = font.fontDescriptor
             let traits = descriptor.symbolicTraits
+            let targetSize = traits.contains(.traitMonoSpace)
+                ? max(11, fontSize - 2)
+                : fontSize
             let base = traits.contains(.traitMonoSpace)
-                ? UIFont.monospacedSystemFont(ofSize: max(11, fontSize - 1), weight: .regular)
-                : UIFont.systemFont(ofSize: fontSize)
+                ? UIFont.monospacedSystemFont(ofSize: targetSize, weight: .regular)
+                : UIFont.systemFont(ofSize: targetSize)
             let styledDescriptor = base.fontDescriptor.withSymbolicTraits(traits) ?? base.fontDescriptor
-            value.addAttribute(.font, value: UIFont(descriptor: styledDescriptor, size: fontSize), range: range)
+            value.addAttribute(
+                .font,
+                value: UIFont(descriptor: styledDescriptor, size: targetSize),
+                range: range
+            )
             #endif
         }
 
-        return AttributedString(value)
+        return value
     }
 
     private static func trimOuterWhitespace(from value: NSMutableAttributedString) {

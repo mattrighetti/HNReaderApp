@@ -264,7 +264,6 @@ struct Sidebar: View {
     )
     .environment(PreviewData.appState())
     .preferredColorScheme(.light)
-    .tint(.orange)
 }
 
 #Preview("Reader · Dark", traits: .fixedLayout(width: 1600, height: 820)) {
@@ -277,7 +276,6 @@ struct Sidebar: View {
     )
     .environment(PreviewData.appState())
     .preferredColorScheme(.dark)
-    .tint(.orange)
 }
 
 #Preview("Reader · No selection", traits: .fixedLayout(width: 1600, height: 820)) {
@@ -286,13 +284,11 @@ struct Sidebar: View {
         loadsAutomatically: false
     )
     .environment(PreviewData.appState())
-    .tint(.orange)
 }
 
 #Preview("Sidebar", traits: .fixedLayout(width: 205, height: 600)) {
     Sidebar()
         .environment(PreviewData.appState(selection: .saved))
-        .tint(.orange)
 }
 #endif
 
@@ -305,6 +301,5 @@ struct Sidebar: View {
         previewThreads: PreviewData.threads
     )
     .environment(PreviewData.appState())
-    .tint(.orange)
 }
 #endif
