@@ -99,7 +99,7 @@ struct CommentJumpControls: View {
             .accessibilityLabel("Previous top-level comment")
 
             Rectangle()
-                .fill(Color(nsColor: .separatorColor))
+                .fill(PlatformColors.separator)
                 .frame(width: 1, height: 16)
 
             Button(action: next) {
@@ -124,7 +124,7 @@ struct CommentJumpControls: View {
         .background(.regularMaterial, in: Capsule())
         .overlay {
             Capsule()
-                .strokeBorder(Color(nsColor: .separatorColor), lineWidth: 0.5)
+                .strokeBorder(PlatformColors.separator, lineWidth: 0.5)
         }
         .shadow(color: .black.opacity(0.12), radius: 8, y: 3)
         .accessibilityElement(children: .contain)

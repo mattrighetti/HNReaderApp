@@ -36,6 +36,40 @@
 		AB6000000000000000000001 /* AppInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB6000000000000000000002 /* AppInfo.swift */; };
 		AB7000000000000000000001 /* ClickableCursor.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB7000000000000000000002 /* ClickableCursor.swift */; };
 		AB9000000000000000000001 /* StoryDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB9000000000000000000002 /* StoryDetailViewModel.swift */; };
+		B20000000000000000000000 /* HackerNews.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9E9BD002674D007001B4E19 /* HackerNews.swift */; };
+		B20000000000000000000001 /* HackerNewsClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9E9BCFE2674CB6C001B4E19 /* HackerNewsClient.swift */; };
+		B20000000000000000000002 /* ItemCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33071CD8B451FE700B64F387 /* ItemCache.swift */; };
+		B20000000000000000000003 /* ItemDownloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33071D0E5913DB91DDDBDADB /* ItemDownloader.swift */; };
+		B20000000000000000000004 /* NewsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1000000000000000000004 /* NewsService.swift */; };
+		B20000000000000000000005 /* AppInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB6000000000000000000002 /* AppInfo.swift */; };
+		B20000000000000000000006 /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9D093AB26741C25002CC786 /* Item.swift */; };
+		B20000000000000000000007 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9E9BD022674D095001B4E19 /* User.swift */; };
+		B20000000000000000000008 /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000000E /* Persistence.swift */; };
+		B20000000000000000000009 /* PreviewData.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB5000000000000000000002 /* PreviewData.swift */; };
+		B2000000000000000000000A /* +Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3307159309D438EFAA1259C7 /* +Date.swift */; };
+		B2000000000000000000000B /* PlatformColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000000F /* PlatformColors.swift */; };
+		B2000000000000000000000C /* CommentNavigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB3000000000000000000002 /* CommentNavigator.swift */; };
+		B2000000000000000000000D /* CommentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB2000000000000000000002 /* CommentView.swift */; };
+		B2000000000000000000000E /* BgButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FCE20A82AF7B47B00BF4097 /* BgButton.swift */; };
+		B2000000000000000000000F /* ClickableCursor.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB7000000000000000000002 /* ClickableCursor.swift */; };
+		B20000000000000000000010 /* HTMLText.swift in Sources */ = {isa = PBXBuildFile; fileRef = C93F99B9267580CE0046F870 /* HTMLText.swift */; };
+		B20000000000000000000011 /* ConditionalRedactedModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F109D582AF6F50D00AE6AF3 /* ConditionalRedactedModifier.swift */; };
+		B20000000000000000000012 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9D0937826741BBE002CC786 /* HomeView.swift */; };
+		B20000000000000000000013 /* InfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FCE20A62AF7B25A00BF4097 /* InfoView.swift */; };
+		B20000000000000000000014 /* ItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C93F99B5267554F00046F870 /* ItemCell.swift */; };
+		B20000000000000000000015 /* ItemList.swift in Sources */ = {isa = PBXBuildFile; fileRef = C93F99B7267557FC0046F870 /* ItemList.swift */; };
+		B20000000000000000000016 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9E9BCFC2674C80E001B4E19 /* AppState.swift */; };
+		B20000000000000000000017 /* CommentRepliesModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB2000000000000000000004 /* CommentRepliesModel.swift */; };
+		B20000000000000000000018 /* ItemListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3307147A30B9051D95FFFB20 /* ItemListViewModel.swift */; };
+		B20000000000000000000019 /* StoryDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB9000000000000000000002 /* StoryDetailViewModel.swift */; };
+		B20000000000000000000030 /* HNReaderiOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000009 /* HNReaderiOSApp.swift */; };
+		B20000000000000000000031 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C9D0937A26741BBF002CC786 /* Assets.xcassets */; };
+		B20000000000000000000032 /* IBMPlexSerif-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5F109D5D2AF704F700AE6AF3 /* IBMPlexSerif-Regular.ttf */; };
+		B20000000000000000000033 /* IBMPlexSerif-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5F109D5C2AF704F700AE6AF3 /* IBMPlexSerif-Bold.ttf */; };
+		B20000000000000000000034 /* IBMPlexSerif-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5F109D5E2AF704F700AE6AF3 /* IBMPlexSerif-SemiBold.ttf */; };
+		B20000000000000000000035 /* IBMPlexSerif-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5F109D5B2AF704F700AE6AF3 /* IBMPlexSerif-Light.ttf */; };
+		B20000000000000000000036 /* PlatformColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000000F /* PlatformColors.swift */; };
+		B20000000000000000000037 /* IOSHomeView.swift in iOS Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000010 /* IOSHomeView.swift */; };
 		C93F99B6267554F00046F870 /* ItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C93F99B5267554F00046F870 /* ItemCell.swift */; };
 		C93F99B8267557FC0046F870 /* ItemList.swift in Sources */ = {isa = PBXBuildFile; fileRef = C93F99B7267557FC0046F870 /* ItemList.swift */; };
 		C93F99BA267580CE0046F870 /* HTMLText.swift in Sources */ = {isa = PBXBuildFile; fileRef = C93F99B9267580CE0046F870 /* HTMLText.swift */; };
@@ -43,7 +77,7 @@
 		C9D0937926741BBE002CC786 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9D0937826741BBE002CC786 /* HomeView.swift */; };
 		C9D0937B26741BBF002CC786 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C9D0937A26741BBF002CC786 /* Assets.xcassets */; };
 		C9D0937E26741BBF002CC786 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C9D0937D26741BBF002CC786 /* Preview Assets.xcassets */; };
-		C9D0938026741BBF002CC786 /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9D0937F26741BBF002CC786 /* Persistence.swift */; };
+		C9D0938026741BBF002CC786 /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000000E /* Persistence.swift */; };
 		C9D093AC26741C25002CC786 /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9D093AB26741C25002CC786 /* Item.swift */; };
 		C9E9BCFD2674C80E001B4E19 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9E9BCFC2674C80E001B4E19 /* AppState.swift */; };
 		C9E9BCFF2674CB6C001B4E19 /* HackerNewsClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9E9BCFE2674CB6C001B4E19 /* HackerNewsClient.swift */; };
@@ -91,6 +125,12 @@
 		AB6000000000000000000002 /* AppInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppInfo.swift; sourceTree = "<group>"; };
 		AB7000000000000000000002 /* ClickableCursor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClickableCursor.swift; sourceTree = "<group>"; };
 		AB9000000000000000000002 /* StoryDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryDetailViewModel.swift; sourceTree = "<group>"; };
+		B10000000000000000000005 /* HNReaderiOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = HNReaderiOS.app; path = HNReader.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B10000000000000000000009 /* HNReaderiOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HNReaderiOSApp.swift; sourceTree = "<group>"; };
+		B1000000000000000000000A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B1000000000000000000000E /* Persistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
+		B1000000000000000000000F /* PlatformColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlatformColors.swift; sourceTree = "<group>"; };
+		B10000000000000000000010 /* IOSHomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSHomeView.swift; sourceTree = "<group>"; };
 		C93F99B5267554F00046F870 /* ItemCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemCell.swift; sourceTree = "<group>"; };
 		C93F99B7267557FC0046F870 /* ItemList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemList.swift; sourceTree = "<group>"; };
 		C93F99B9267580CE0046F870 /* HTMLText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTMLText.swift; sourceTree = "<group>"; };
@@ -99,7 +139,6 @@
 		C9D0937826741BBE002CC786 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		C9D0937A26741BBF002CC786 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		C9D0937D26741BBF002CC786 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		C9D0937F26741BBF002CC786 /* Persistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
 		C9D0938426741BBF002CC786 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C9D0938526741BBF002CC786 /* HNReader.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = HNReader.entitlements; sourceTree = "<group>"; };
 		C9D0938A26741BC0002CC786 /* HNReaderTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HNReaderTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -112,6 +151,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		B30000000000000000000002 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		C9D0937026741BBE002CC786 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -133,7 +179,7 @@
 			isa = PBXGroup;
 			children = (
 				3307159309D438EFAA1259C7 /* +Date.swift */,
-				5FCE20AA2AF7B8EE00BF4097 /* +View.swift */,
+				B1000000000000000000000F /* PlatformColors.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -177,11 +223,44 @@
 			path = fonts;
 			sourceTree = "<group>";
 		};
+		B1000000000000000000000B /* HNReader/Shared */ = {
+			isa = PBXGroup;
+			children = (
+				C9D093AA26741BFD002CC786 /* HNClient */,
+				C9D093A926741BF6002CC786 /* ViewModel */,
+				C9D093A826741BF0002CC786 /* Model */,
+				C9D093A726741BE1002CC786 /* View */,
+				3307153CA4CBEF847DCF967F /* Utils */,
+				B1000000000000000000000E /* Persistence.swift */,
+			);
+			path = HNReader/Shared;
+			sourceTree = "<group>";
+		};
+		B1000000000000000000000C /* HNReader/Platforms/macOS */ = {
+			isa = PBXGroup;
+			children = (
+				C9D0937626741BBE002CC786 /* HNReaderApp.swift */,
+				AB5000000000000000000004 /* SettingsView.swift */,
+				AB4000000000000000000002 /* SplitColumnWidth.swift */,
+				5FCE20AA2AF7B8EE00BF4097 /* +View.swift */,
+			);
+			path = HNReader/Platforms/macOS;
+			sourceTree = "<group>";
+		};
+		B1000000000000000000000D /* HNReader/Platforms/iOS */ = {
+			isa = PBXGroup;
+			children = (
+				B10000000000000000000009 /* HNReaderiOSApp.swift */,
+				B10000000000000000000010 /* IOSHomeView.swift */,
+				B1000000000000000000000A /* Info.plist */,
+			);
+			path = HNReader/Platforms/iOS;
+			sourceTree = "<group>";
+		};
 		C9926691267588B80035A88F /* Components */ = {
 			isa = PBXGroup;
 			children = (
 				AB7000000000000000000002 /* ClickableCursor.swift */,
-				AB4000000000000000000002 /* SplitColumnWidth.swift */,
 				C93F99B9267580CE0046F870 /* HTMLText.swift */,
 				5FCE20A82AF7B47B00BF4097 /* BgButton.swift */,
 			);
@@ -191,6 +270,9 @@
 		C9D0936A26741BBE002CC786 = {
 			isa = PBXGroup;
 			children = (
+				B1000000000000000000000B /* HNReader/Shared */,
+				B1000000000000000000000C /* HNReader/Platforms/macOS */,
+				B1000000000000000000000D /* HNReader/Platforms/iOS */,
 				C9D0937526741BBE002CC786 /* HNReader */,
 				C9D0938D26741BC0002CC786 /* HNReaderTests */,
 				C9D0937426741BBE002CC786 /* Products */,
@@ -201,6 +283,7 @@
 			isa = PBXGroup;
 			children = (
 				C9D0937326741BBE002CC786 /* HNReader.app */,
+				B10000000000000000000005 /* HNReaderiOS.app */,
 				C9D0938A26741BC0002CC786 /* HNReaderTests.xctest */,
 			);
 			name = Products;
@@ -210,28 +293,21 @@
 			isa = PBXGroup;
 			children = (
 				5F96E4AB2AF70C2C00593AD6 /* fonts */,
-				C9D093AA26741BFD002CC786 /* HNClient */,
-				C9D093A926741BF6002CC786 /* ViewModel */,
-				C9D093A826741BF0002CC786 /* Model */,
-				C9D093A726741BE1002CC786 /* View */,
-				C9D0937626741BBE002CC786 /* HNReaderApp.swift */,
 				C9D0937A26741BBF002CC786 /* Assets.xcassets */,
-				C9D0937F26741BBF002CC786 /* Persistence.swift */,
 				C9D0938426741BBF002CC786 /* Info.plist */,
 				C9D0938526741BBF002CC786 /* HNReader.entitlements */,
-				C9D0937C26741BBF002CC786 /* Preview Content */,
-				3307153CA4CBEF847DCF967F /* Utils */,
+				C9D0937C26741BBF002CC786 /* Shared/Preview Content */,
 			);
 			path = HNReader;
 			sourceTree = "<group>";
 		};
-		C9D0937C26741BBF002CC786 /* Preview Content */ = {
+		C9D0937C26741BBF002CC786 /* Shared/Preview Content */ = {
 			isa = PBXGroup;
 			children = (
 				AB5000000000000000000002 /* PreviewData.swift */,
 				C9D0937D26741BBF002CC786 /* Preview Assets.xcassets */,
 			);
-			path = "Preview Content";
+			path = "Shared/Preview Content";
 			sourceTree = "<group>";
 		};
 		C9D0938D26741BC0002CC786 /* HNReaderTests */ = {
@@ -248,7 +324,6 @@
 		C9D093A726741BE1002CC786 /* View */ = {
 			isa = PBXGroup;
 			children = (
-				AB5000000000000000000004 /* SettingsView.swift */,
 				AB3000000000000000000002 /* CommentNavigator.swift */,
 				AB2000000000000000000002 /* CommentView.swift */,
 				C9D0937826741BBE002CC786 /* HomeView.swift */,
@@ -297,6 +372,25 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		B30000000000000000000004 /* HNReader iOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B40000000000000000000001 /* Build configuration list for PBXNativeTarget "HNReader iOS" */;
+			buildPhases = (
+				B30000000000000000000001 /* Sources */,
+				B30000000000000000000002 /* Frameworks */,
+				B30000000000000000000003 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "HNReader iOS";
+			packageProductDependencies = (
+			);
+			productName = HNReaderiOS;
+			productReference = B10000000000000000000005 /* HNReaderiOS.app */;
+			productType = "com.apple.product-type.application";
+		};
 		C9D0937226741BBE002CC786 /* HNReader */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = C9D0939E26741BC0002CC786 /* Build configuration list for PBXNativeTarget "HNReader" */;
@@ -368,6 +462,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
+				B30000000000000000000004 /* HNReader iOS */,
 				C9D0937226741BBE002CC786 /* HNReader */,
 				C9D0938926741BC0002CC786 /* HNReaderTests */,
 			);
@@ -375,6 +470,18 @@
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		B30000000000000000000003 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B20000000000000000000031 /* Assets.xcassets in Resources */,
+				B20000000000000000000032 /* IBMPlexSerif-Regular.ttf in Resources */,
+				B20000000000000000000033 /* IBMPlexSerif-Bold.ttf in Resources */,
+				B20000000000000000000034 /* IBMPlexSerif-SemiBold.ttf in Resources */,
+				B20000000000000000000035 /* IBMPlexSerif-Light.ttf in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		C9D0937126741BBE002CC786 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -398,6 +505,41 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		B30000000000000000000001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B20000000000000000000000 /* HackerNews.swift in Sources */,
+				B20000000000000000000001 /* HackerNewsClient.swift in Sources */,
+				B20000000000000000000002 /* ItemCache.swift in Sources */,
+				B20000000000000000000003 /* ItemDownloader.swift in Sources */,
+				B20000000000000000000004 /* NewsService.swift in Sources */,
+				B20000000000000000000005 /* AppInfo.swift in Sources */,
+				B20000000000000000000006 /* Item.swift in Sources */,
+				B20000000000000000000007 /* User.swift in Sources */,
+				B20000000000000000000008 /* Persistence.swift in Sources */,
+				B20000000000000000000009 /* PreviewData.swift in Sources */,
+				B2000000000000000000000A /* +Date.swift in Sources */,
+				B2000000000000000000000B /* PlatformColors.swift in Sources */,
+				B2000000000000000000000C /* CommentNavigator.swift in Sources */,
+				B2000000000000000000000D /* CommentView.swift in Sources */,
+				B2000000000000000000000E /* BgButton.swift in Sources */,
+				B2000000000000000000000F /* ClickableCursor.swift in Sources */,
+				B20000000000000000000010 /* HTMLText.swift in Sources */,
+				B20000000000000000000011 /* ConditionalRedactedModifier.swift in Sources */,
+				B20000000000000000000012 /* HomeView.swift in Sources */,
+				B20000000000000000000013 /* InfoView.swift in Sources */,
+				B20000000000000000000014 /* ItemCell.swift in Sources */,
+				B20000000000000000000015 /* ItemList.swift in Sources */,
+				B20000000000000000000016 /* AppState.swift in Sources */,
+				B20000000000000000000017 /* CommentRepliesModel.swift in Sources */,
+				B20000000000000000000018 /* ItemListViewModel.swift in Sources */,
+				B20000000000000000000019 /* StoryDetailViewModel.swift in Sources */,
+				B20000000000000000000030 /* HNReaderiOSApp.swift in Sources */,
+				B20000000000000000000037 /* IOSHomeView.swift in iOS Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		C9D0936F26741BBE002CC786 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -428,6 +570,7 @@
 				C9D0937726741BBE002CC786 /* HNReaderApp.swift in Sources */,
 				330713D3016ED410AFD53FDF /* ItemListViewModel.swift in Sources */,
 				330711A9216E762026AF98A0 /* +Date.swift in Sources */,
+				B20000000000000000000036 /* PlatformColors.swift in Sources */,
 				33071F1C64D4742E1F947FAA /* ItemDownloader.swift in Sources */,
 				5FCE20AB2AF7B8EE00BF4097 /* +View.swift in Sources */,
 				3307147AB95F03650FC40B97 /* ItemCache.swift in Sources */,
@@ -459,6 +602,46 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		B40000000000000000000002 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = HNReader/Platforms/iOS/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MARKETING_VERSION = 2.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mattrighetti.HNReader.ios;
+				PRODUCT_NAME = HNReader;
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		B40000000000000000000003 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = HNReader/Platforms/iOS/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MARKETING_VERSION = 2.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mattrighetti.HNReader.ios;
+				PRODUCT_NAME = HNReader;
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 		C9D0939C26741BC0002CC786 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -597,7 +780,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_ASSET_PATHS = "\"HNReader/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"HNReader/Shared/Preview Content\"";
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = HNReader/Info.plist;
@@ -629,7 +812,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_ASSET_PATHS = "\"HNReader/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"HNReader/Shared/Preview Content\"";
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = HNReader/Info.plist;
@@ -693,6 +876,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		B40000000000000000000001 /* Build configuration list for PBXNativeTarget "HNReader iOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B40000000000000000000002 /* Debug */,
+				B40000000000000000000003 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		C9D0936E26741BBE002CC786 /* Build configuration list for PBXProject "HNReader" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

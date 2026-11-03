@@ -1,13 +1,43 @@
 import SwiftUI
+#if os(macOS)
+import AppKit
+#else
+import UIKit
+#endif
 
 private enum CommentThreadLayout {
+    #if os(macOS)
     static let avatarSize: CGFloat = 20
     static let headerHeight: CGFloat = 22
     static let verticalPadding: CGFloat = 10
     static let contentSpacing: CGFloat = 8
     static let childIndent: CGFloat = 24
+    static let bodyFontSize: CGFloat = 13
+    static let bodyLineSpacing: CGFloat = 3
+    static let headerFontSize: CGFloat = 11
+    static let metadataFontSize: CGFloat = 10
+    static let actionFontSize: CGFloat = 10
+    static let touchTarget: CGFloat = 22
+    #else
+    static let avatarSize: CGFloat = 22
+    static let headerHeight: CGFloat = 36
+    static let verticalPadding: CGFloat = 10
+    static let contentSpacing: CGFloat = 10
+    static let childIndent: CGFloat = 20
+    static let bodyFontSize: CGFloat = 16
+    static let bodyLineSpacing: CGFloat = 5
+    static let headerFontSize: CGFloat = 13
+    static let metadataFontSize: CGFloat = 12
+    static let actionFontSize: CGFloat = 13
+    static let touchTarget: CGFloat = 32
+    #endif
+
     static let maximumIndentDepth = 5
     static let lineWidth: CGFloat = 1
+
+    static var bodyIndent: CGFloat {
+        childIndent + 4
+    }
 
     static var spineX: CGFloat {
         avatarSize / 2
@@ -94,18 +124,20 @@ struct CommentView: View {
                         isCollapsed = false
                     } label: {
                         Text(replyCount > 0 ? "Comment collapsed · \(replyLabel)" : "Comment collapsed")
-                            .font(.system(size: 11))
+                            .font(.system(size: CommentThreadLayout.headerFontSize))
                             .foregroundStyle(.secondary)
+                            .frame(minHeight: CommentThreadLayout.touchTarget)
+                            .contentShape(Rectangle())
                     }
                     .clickableCursor()
                     .buttonStyle(.plain)
-                    .padding(.leading, 28)
+                    .padding(.leading, CommentThreadLayout.bodyIndent)
                 } else {
                     commentBody
-                        .padding(.leading, 28)
+                        .padding(.leading, CommentThreadLayout.bodyIndent)
 
                     actions
-                        .padding(.leading, 28)
+                        .padding(.leading, CommentThreadLayout.bodyIndent)
                 }
             }
             .overlay(alignment: .leading) {
@@ -134,8 +166,12 @@ struct CommentView: View {
             Link("Open Comment on Hacker News", destination: item.discussionURL)
 
             Button("Copy Comment Link", systemImage: "link") {
+                #if os(macOS)
                 NSPasteboard.general.clearContents()
                 NSPasteboard.general.setString(item.discussionURL.absoluteString, forType: .string)
+                #else
+                UIPasteboard.general.url = item.discussionURL
+                #endif
             }
 
             Button(isCollapsed ? "Expand Comment" : "Collapse Comment") {
@@ -149,7 +185,7 @@ struct CommentView: View {
             CommentAvatar(author: author)
 
             Text(author)
-                .font(.system(size: 11, weight: .semibold))
+                .font(.system(size: CommentThreadLayout.headerFontSize, weight: .semibold))
                 .lineLimit(1)
 
             if item.by != nil && item.by == storyAuthor {
@@ -164,7 +200,7 @@ struct CommentView: View {
 
             if let time = item.timeStringRepresentation {
                 Text("· \(time)")
-                    .font(.system(size: 10))
+                    .font(.system(size: CommentThreadLayout.metadataFontSize))
                     .foregroundStyle(.secondary)
                     .fixedSize()
             }
@@ -175,9 +211,12 @@ struct CommentView: View {
                 isCollapsed.toggle()
             } label: {
                 Image(systemName: isCollapsed ? "plus" : "minus")
-                    .font(.system(size: 10, weight: .medium))
+                    .font(.system(size: CommentThreadLayout.metadataFontSize, weight: .semibold))
                     .foregroundStyle(.secondary)
-                    .frame(width: CommentThreadLayout.headerHeight, height: CommentThreadLayout.headerHeight)
+                    .frame(
+                        width: CommentThreadLayout.touchTarget,
+                        height: CommentThreadLayout.touchTarget
+                    )
                     .contentShape(Rectangle())
             }
             .clickableCursor()
@@ -192,16 +231,20 @@ struct CommentView: View {
     private var commentBody: some View {
         if depth > CommentThreadLayout.maximumIndentDepth, let parentAuthor {
             Text("Replying to \(parentAuthor)")
-                .font(.system(size: 10))
+                .font(.system(size: CommentThreadLayout.metadataFontSize))
                 .foregroundStyle(.secondary)
         }
 
         if item.deleted == true || item.dead == true {
             Text("This comment is no longer available.")
-                .font(.system(size: 12))
+                .font(.system(size: CommentThreadLayout.bodyFontSize))
                 .foregroundStyle(.secondary)
         } else if let text = item.text {
-            HTMLText(text: text, fontSize: 13, lineSpacing: 3)
+            HTMLText(
+                text: text,
+                fontSize: CommentThreadLayout.bodyFontSize,
+                lineSpacing: CommentThreadLayout.bodyLineSpacing
+            )
                 .lineLimit(canExpandText && !showFullText ? 8 : nil)
 
             if canExpandText {
@@ -210,13 +253,18 @@ struct CommentView: View {
                 }
                 .clickableCursor()
                 .buttonStyle(.plain)
-                .font(.system(size: 11, weight: .medium))
+                .font(.system(size: CommentThreadLayout.actionFontSize, weight: .semibold))
                 .foregroundStyle(.orange)
+                #if os(iOS)
+                .frame(minHeight: CommentThreadLayout.touchTarget)
+                .contentShape(Rectangle())
+                #endif
             }
         }
     }
 
     private var actions: some View {
+        #if os(macOS)
         HStack(spacing: 16) {
             if replyCount > 0 {
                 Button {
@@ -247,12 +295,49 @@ struct CommentView: View {
         .font(.system(size: 10, weight: .medium))
         .foregroundStyle(.secondary)
         .buttonStyle(.plain)
+        #else
+        HStack(spacing: 8) {
+            if replyCount > 0 {
+                Button {
+                    repliesExpanded.toggle()
+                } label: {
+                    Label(
+                        repliesExpanded ? "Hide replies" : replyLabel,
+                        systemImage: repliesExpanded ? "chevron.up" : "bubble.left"
+                    )
+                    .frame(minHeight: CommentThreadLayout.touchTarget)
+                    .contentShape(Rectangle())
+                }
+                .foregroundStyle(.orange)
+                .accessibilityHint(repliesExpanded ? "Collapses this comment thread" : "Expands this comment thread")
+            }
+
+            Link(destination: item.discussionURL) {
+                Image(systemName: "arrowshape.turn.up.left")
+                    .frame(width: CommentThreadLayout.touchTarget, height: CommentThreadLayout.touchTarget)
+                    .contentShape(Rectangle())
+            }
+            .accessibilityLabel("Reply on Hacker News")
+
+            ShareLink(item: item.discussionURL) {
+                Image(systemName: "square.and.arrow.up")
+                    .frame(width: CommentThreadLayout.touchTarget, height: CommentThreadLayout.touchTarget)
+                    .contentShape(Rectangle())
+            }
+            .accessibilityLabel("Share comment")
+
+            Spacer(minLength: 0)
+        }
+        .font(.system(size: CommentThreadLayout.actionFontSize, weight: .semibold))
+        .foregroundStyle(.secondary)
+        .buttonStyle(.plain)
+        #endif
     }
 
     private var replyThread: some View {
         VStack(alignment: .leading, spacing: 0) {
             ForEach(Array(model.replies.enumerated()), id: \.element.id) { index, reply in
-                AnyView(CommentView(
+                CommentView(
                     item: reply,
                     storyAuthor: storyAuthor,
                     depth: depth + 1,
@@ -260,7 +345,7 @@ struct CommentView: View {
                     collapseAll: collapseAll,
                     previewThreads: previewThreads,
                     expandPreview: expandPreview
-                ))
+                )
                 .padding(.leading, depth < CommentThreadLayout.maximumIndentDepth ? CommentThreadLayout.childIndent : 0)
                 .overlay(alignment: .leading) {
                     if depth < CommentThreadLayout.maximumIndentDepth {
@@ -281,9 +366,9 @@ struct CommentView: View {
 
             if model.isLoading {
                 ProgressView("Loading replies…")
-                    .font(.caption)
+                    .font(.system(size: CommentThreadLayout.metadataFontSize))
                     .controlSize(.small)
-                    .padding(.leading, 28)
+                    .padding(.leading, CommentThreadLayout.bodyIndent)
                     .padding(.vertical, 12)
             } else if let error = model.errorMessage {
                 VStack(alignment: .leading, spacing: 6) {
@@ -297,10 +382,11 @@ struct CommentView: View {
                         }
                     }
                     .clickableCursor()
-                    .font(.caption)
+                    .font(.system(size: CommentThreadLayout.actionFontSize, weight: .medium))
                     .buttonStyle(.plain)
+                    .frame(minHeight: CommentThreadLayout.touchTarget)
                 }
-                .padding(.leading, 28)
+                .padding(.leading, CommentThreadLayout.bodyIndent)
                 .padding(.vertical, 10)
             } else if model.hasMore && model.hasLoaded {
                 Button {
@@ -309,13 +395,13 @@ struct CommentView: View {
                     }
                 } label: {
                     Label("More replies", systemImage: "arrow.turn.down.right")
-                        .font(.system(size: 11, weight: .medium))
+                        .font(.system(size: CommentThreadLayout.actionFontSize, weight: .medium))
                 }
                 .clickableCursor()
                 .buttonStyle(.plain)
                 .foregroundStyle(.orange)
-                .padding(.leading, 28)
-                .padding(.vertical, 10)
+                .padding(.leading, CommentThreadLayout.bodyIndent)
+                .frame(minHeight: CommentThreadLayout.touchTarget)
             } else if model.hasMore {
                 Button("Load replies") {
                     Task {
@@ -324,15 +410,15 @@ struct CommentView: View {
                 }
                 .clickableCursor()
                 .buttonStyle(.plain)
-                .font(.system(size: 11, weight: .medium))
+                .font(.system(size: CommentThreadLayout.actionFontSize, weight: .medium))
                 .foregroundStyle(.orange)
-                .padding(.leading, 28)
-                .padding(.vertical, 10)
+                .padding(.leading, CommentThreadLayout.bodyIndent)
+                .frame(minHeight: CommentThreadLayout.touchTarget)
             } else if model.hasLoaded && model.replies.isEmpty {
                 Text("These replies are no longer available.")
-                    .font(.system(size: 11))
+                    .font(.system(size: CommentThreadLayout.metadataFontSize))
                     .foregroundStyle(.secondary)
-                    .padding(.leading, 28)
+                    .padding(.leading, CommentThreadLayout.bodyIndent)
                     .padding(.vertical, 10)
             }
         }
@@ -459,7 +545,7 @@ struct CommentsPreview: View {
             }
         }
         .padding(20)
-        .background(Color(nsColor: .textBackgroundColor))
+        .background(PlatformColors.textBackground)
         .tint(.orange)
     }
 }

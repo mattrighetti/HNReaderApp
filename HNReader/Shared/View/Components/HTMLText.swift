@@ -1,4 +1,9 @@
 import SwiftUI
+#if os(macOS)
+import AppKit
+#else
+import UIKit
+#endif
 
 /// Render HN's HTML as selectable, wrapping text with native links and theme colors.
 struct HTMLText: View {
@@ -32,8 +37,10 @@ struct HTMLText: View {
                 documentAttributes: nil
             )
         else {
-            return AttributedString(html)
+            return AttributedString(html.trimmingCharacters(in: .whitespacesAndNewlines))
         }
+
+        trimOuterWhitespace(from: value)
 
         let range = NSRange(location: 0, length: value.length)
         value.removeAttribute(.foregroundColor, range: range)
@@ -41,6 +48,7 @@ struct HTMLText: View {
 
         // Preserve emphasis, monospace, and links while using readable native sizing.
         value.enumerateAttribute(.font, in: range) { font, range, _ in
+            #if os(macOS)
             guard let font = font as? NSFont else {
                 return
             }
@@ -55,9 +63,46 @@ struct HTMLText: View {
                 value: NSFontManager.shared.convert(base, toHaveTrait: traits),
                 range: range
             )
+            #else
+            guard let font = font as? UIFont else {
+                return
+            }
+
+            let descriptor = font.fontDescriptor
+            let traits = descriptor.symbolicTraits
+            let base = traits.contains(.traitMonoSpace)
+                ? UIFont.monospacedSystemFont(ofSize: max(11, fontSize - 1), weight: .regular)
+                : UIFont.systemFont(ofSize: fontSize)
+            let styledDescriptor = base.fontDescriptor.withSymbolicTraits(traits) ?? base.fontDescriptor
+            value.addAttribute(.font, value: UIFont(descriptor: styledDescriptor, size: fontSize), range: range)
+            #endif
         }
 
         return AttributedString(value)
+    }
+
+    private static func trimOuterWhitespace(from value: NSMutableAttributedString) {
+        let string = value.string as NSString
+        let visibleCharacters = CharacterSet.whitespacesAndNewlines.inverted
+        let first = string.rangeOfCharacter(from: visibleCharacters)
+
+        guard first.location != NSNotFound else {
+            value.deleteCharacters(in: NSRange(location: 0, length: value.length))
+            return
+        }
+
+        let last = string.rangeOfCharacter(from: visibleCharacters, options: .backwards)
+        let contentEnd = NSMaxRange(last)
+
+        if contentEnd < value.length {
+            value.deleteCharacters(
+                in: NSRange(location: contentEnd, length: value.length - contentEnd)
+            )
+        }
+
+        if first.location > 0 {
+            value.deleteCharacters(in: NSRange(location: 0, length: first.location))
+        }
     }
 }
 

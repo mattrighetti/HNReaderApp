@@ -88,13 +88,18 @@ struct HomeView: View {
                     }
                 }
             )
+            #if os(macOS)
             .frame(minWidth: 312)
+            #endif
             .navigationSplitViewColumnWidth(min: 200, ideal: 312, max: 720)
+            #if os(macOS)
             .background {
                 SplitColumnWidth(minimum: 200, maximum: 720)
                     .allowsHitTesting(false)
             }
+            #endif
             .toolbar {
+                #if os(macOS)
                 ToolbarItem {
                     HStack(spacing: 6) {
                         Image(systemName: "magnifyingglass")
@@ -110,7 +115,11 @@ struct HomeView: View {
                 }
 
                 ToolbarSpacer(.fixed)
+                #endif
             }
+            #if os(iOS)
+            .searchable(text: $searchText, prompt: "Search loaded stories")
+            #endif
         } detail: {
             if let item = selectedItem {
                 StoryDetail(
@@ -220,12 +229,14 @@ struct Sidebar: View {
 
                 Spacer()
 
+                #if os(macOS)
                 SettingsLink {
                     Image(systemName: "gearshape")
                 }
                 .clickableCursor()
                 .buttonStyle(.plain)
                 .help("Settings")
+                #endif
             }
             .padding(16)
         }

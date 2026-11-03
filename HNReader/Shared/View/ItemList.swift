@@ -110,7 +110,7 @@ struct ItemList: View {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-        .background(Color(nsColor: .controlBackgroundColor))
+        .background(PlatformColors.controlBackground)
         .navigationTitle(title)
         .toolbar {
             if !isSaved {
@@ -299,6 +299,7 @@ struct StoryDetail: View {
                             .font(.system(size: 30, weight: .semibold, design: .serif))
                             .textSelection(.enabled)
 
+                        #if os(macOS)
                         HStack(spacing: 8) {
                             Text(item.by ?? "Unknown author")
 
@@ -312,7 +313,39 @@ struct StoryDetail: View {
                         }
                         .font(.caption)
                         .foregroundStyle(.secondary)
+                        #else
+                        HStack(spacing: 14) {
+                            Label {
+                                Text("\(item.score ?? 0) points")
+                            } icon: {
+                                Image(systemName: "arrow.up")
+                                    .fontWeight(.bold)
+                            }
 
+                            if let time = item.timeStringRepresentation {
+                                Label {
+                                    Text("\(time) ago")
+                                } icon: {
+                                    Image(systemName: "calendar")
+                                        .fontWeight(.bold)
+                                }
+                            }
+
+                            Label {
+                                Text(item.by ?? "Unknown author")
+                            } icon: {
+                                Image(systemName: "person")
+                                    .fontWeight(.bold)
+                            }
+                        }
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.85)
+                        .accessibilityElement(children: .combine)
+                        #endif
+
+                        #if os(macOS)
                         HStack(spacing: 12) {
                             Link(destination: item.articleURL ?? item.discussionURL) {
                                 Label(
@@ -335,14 +368,20 @@ struct StoryDetail: View {
                             .clickableCursor()
                             .buttonStyle(.bordered)
                         }
+                        #endif
                     }
 
                     if let text = item.text, !text.isEmpty {
+                        #if os(macOS)
                         HTMLText(text: text)
+                        #else
+                        HTMLText(text: text, fontSize: 17, lineSpacing: 6)
+                        #endif
                     }
 
                     Divider()
 
+                    #if os(macOS)
                     HStack {
                         Label("Discussion", systemImage: "bubble.left.and.bubble.right")
                             .font(.headline)
@@ -370,6 +409,46 @@ struct StoryDetail: View {
                             .clickableCursor()
                             .font(.system(size: 10))
                     }
+                    #else
+                    HStack(spacing: 12) {
+                        Image(systemName: "bubble.left.and.bubble.right")
+                            .font(.title3.weight(.semibold))
+                            .accessibilityHidden(true)
+
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Discussion")
+                                .font(.headline)
+
+                            Text("\(item.descendants ?? 0) comments")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+
+                        Spacer()
+
+                        HStack(spacing: 6) {
+                            Button {
+                                threadsCollapsed.toggle()
+                            } label: {
+                                Image(systemName: threadsCollapsed ? "chevron.down" : "chevron.up")
+                                .frame(width: 36, height: 36)
+                                .contentShape(Rectangle())
+                            }
+                            .buttonStyle(.plain)
+                            .accessibilityLabel(threadsCollapsed ? "Expand threads" : "Collapse threads")
+
+                            Link(destination: item.discussionURL) {
+                                Label("View on HN", systemImage: "safari")
+                                    .frame(minHeight: 36)
+                                    .contentShape(Rectangle())
+                            }
+                            .buttonStyle(.plain)
+                            .accessibilityLabel("View discussion on Hacker News")
+                        }
+                        .font(.body.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                    }
+                    #endif
 
                     if model.comments.isEmpty && !model.isLoading && model.errorMessage == nil {
                         Text("No comments yet. Be the first to join the conversation on Hacker News.")
@@ -386,6 +465,7 @@ struct StoryDetail: View {
                                 previewThreads: previewThreads
                             )
                             .id(comment.id)
+                            #if os(macOS)
                             .background {
                                 GeometryReader { geometry in
                                     Color.clear.preference(
@@ -394,6 +474,7 @@ struct StoryDetail: View {
                                     )
                                 }
                             }
+                            #endif
 
                             Divider()
                                 .padding(.vertical, 4)
@@ -426,10 +507,15 @@ struct StoryDetail: View {
                     }
                 }
                 .frame(maxWidth: 760, alignment: .leading)
+                #if os(macOS)
                 .padding(32)
+                #else
+                .padding(16)
+                #endif
                 .padding(.bottom, 40)
                 .frame(maxWidth: .infinity)
             }
+            #if os(macOS)
             .coordinateSpace(name: "discussionScroll")
             .onScrollGeometryChange(for: CGFloat.self) { geometry in
                 geometry.containerSize.height
@@ -469,8 +555,9 @@ struct StoryDetail: View {
                     .padding(.bottom, 20)
                 }
             }
+            #endif
         }
-        .background(Color(nsColor: .textBackgroundColor))
+        .background(PlatformColors.textBackground)
         .toolbar {
             Button {
                 appState.toggleSaved(item)

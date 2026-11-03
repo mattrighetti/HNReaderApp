@@ -145,7 +145,7 @@ struct CompactStoryPreview: View {
             }
         }
         .padding(.horizontal, 12)
-        .background(Color(nsColor: .controlBackgroundColor))
+        .background(PlatformColors.controlBackground)
         .environment(appState)
     }
 }

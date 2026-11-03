@@ -1,4 +1,7 @@
 import SwiftUI
+#if os(macOS)
+import AppKit
+#endif
 
 extension View {
     func clickableCursor(enabled: Bool = true) -> some View {
@@ -12,6 +15,10 @@ private struct ClickableCursor: ViewModifier {
     let enabled: Bool
 
     func body(content: Content) -> some View {
+        #if os(macOS)
         content.pointerStyle(enabled && isEnabled ? .link : nil)
+        #else
+        content
+        #endif
     }
 }
