@@ -106,9 +106,11 @@ struct HomeView: View {
                             .accessibilityLabel("Search loaded stories")
                     }
                     .padding(.horizontal, 8)
-                    .padding(.vertical, 6)
                     .frame(width: 260)
-                    .background(.quaternary, in: RoundedRectangle(cornerRadius: 8))
+                }
+
+                if #available(macOS 26, *) {
+                    ToolbarSpacer(.fixed)
                 }
             }
         } detail: {
