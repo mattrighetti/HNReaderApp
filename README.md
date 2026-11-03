@@ -17,7 +17,7 @@ The application is still in beta for the moment and needs optimizations. When th
 
 ## Modern macOS reader
 
-The app targets macOS 14 or later and uses a native three-column SwiftUI interface:
+The app targets macOS 26.6 or later and uses a native three-column SwiftUI interface:
 
 - Top, Latest, Best, Ask HN, Show HN, and Jobs feeds.
 - In-app discussions with curved thread connectors, collapsible comments, author avatars,

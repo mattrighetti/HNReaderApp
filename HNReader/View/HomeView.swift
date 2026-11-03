@@ -109,9 +109,7 @@ struct HomeView: View {
                     .frame(width: 260)
                 }
 
-                if #available(macOS 26, *) {
-                    ToolbarSpacer(.fixed)
-                }
+                ToolbarSpacer(.fixed)
             }
         } detail: {
             if let item = selectedItem {
