@@ -109,6 +109,8 @@ final class CommentNavigationTests: XCTestCase {
         window.makeKeyAndOrderFront(nil)
         await fulfillment(of: [initial], timeout: 3)
 
+        XCTAssertEqual(model.viewportHeight, 500, accuracy: 1)
+
         model.target = model.navigation.target(for: .next)
         await fulfillment(of: [second], timeout: 3)
 
@@ -128,9 +130,10 @@ final class CommentNavigationTests: XCTestCase {
 private final class NavigationHarnessModel: ObservableObject {
     @Published var frames: [Int: CGRect] = [:]
     @Published var target: Int?
+    @Published var viewportHeight: CGFloat = 0
 
     var navigation: CommentNavigation {
-        CommentNavigation(ids: [1, 2, 3], frames: frames, viewportHeight: 500)
+        CommentNavigation(ids: [1, 2, 3], frames: frames, viewportHeight: viewportHeight)
     }
 }
 
@@ -168,6 +171,11 @@ private struct NavigationHarness: View {
                 }
             }
             .coordinateSpace(name: "testDiscussion")
+            .onScrollGeometryChange(for: CGFloat.self) { geometry in
+                geometry.containerSize.height
+            } action: { _, height in
+                model.viewportHeight = height
+            }
             .onPreferenceChange(CommentPositions.self) { frames in
                 model.frames = frames
             }

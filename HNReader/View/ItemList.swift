@@ -431,19 +431,13 @@ struct StoryDetail: View {
                 .frame(maxWidth: .infinity)
             }
             .coordinateSpace(name: "discussionScroll")
-            .background {
-                GeometryReader { geometry in
-                    Color.clear.preference(
-                        key: CommentViewportHeight.self,
-                        value: geometry.size.height
-                    )
-                }
+            .onScrollGeometryChange(for: CGFloat.self) { geometry in
+                geometry.containerSize.height
+            } action: { _, height in
+                commentViewportHeight = height
             }
             .onPreferenceChange(CommentPositions.self) { frames in
                 commentFrames = frames
-            }
-            .onPreferenceChange(CommentViewportHeight.self) { height in
-                commentViewportHeight = height
             }
             .onChange(of: pendingCommentID) { _, id in
                 guard let id else {

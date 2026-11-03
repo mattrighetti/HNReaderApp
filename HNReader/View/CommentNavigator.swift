@@ -8,14 +8,6 @@ struct CommentPositions: PreferenceKey {
     }
 }
 
-struct CommentViewportHeight: PreferenceKey {
-    static var defaultValue: CGFloat = 0
-
-    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
-        value = nextValue()
-    }
-}
-
 /// Only top-level comment frames participate; nested replies are skipped.
 struct CommentNavigation {
     enum Direction {
