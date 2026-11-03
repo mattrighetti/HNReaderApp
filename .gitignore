@@ -1,2 +1,5 @@
 .idea
 GoogleService-Info.plist
+
+# Generated preview screenshots
+/resources/previews/*.png

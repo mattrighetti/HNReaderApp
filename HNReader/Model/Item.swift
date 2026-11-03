@@ -25,7 +25,7 @@ import Foundation
  }
  ```
  */
-public struct Item: Decodable {
+public struct Item: Codable, Identifiable, Hashable, Sendable {
     public let id: Int
     public let deleted: Bool?
     public let type: ItemType?
@@ -41,30 +41,50 @@ public struct Item: Decodable {
     public let title: String?
     public let parts: Int?
     public let descendants: Int?
-    
-    public var urlHost: String? {
-        if let url = url {
-            var hostString = URL(string: url)!.host!
-            if hostString.contains("www.") {
-                hostString.removeFirst(4)
-            }
-            return hostString
-        } else {
+
+    public var discussionURL: URL {
+        URL(string: "https://news.ycombinator.com/item?id=\(id)")!
+    }
+
+    public var articleURL: URL? {
+        guard
+            let url, let parsed = URL(string: url),
+            ["http", "https"].contains(parsed.scheme?.lowercased() ?? ""),
+            parsed.host != nil
+        else {
             return nil
         }
+
+        return parsed
+    }
+
+    public var urlHost: String? {
+        guard let host = articleURL?.host else {
+            return nil
+        }
+
+        return host.hasPrefix("www.") ? String(host.dropFirst(4)) : host
     }
 
     public var scoreString: String? {
-        guard let score = score else { return nil }
+        guard let score = score else {
+            return nil
+        }
+
         return "\(score)"
     }
 
     public var timeStringRepresentation: String? {
-        Date().timeElapsedStringRepresentation(since: Date(timeIntervalSince1970: TimeInterval(time!)))
+        guard let time else {
+            return nil
+        }
+
+        return Date()
+            .timeElapsedStringRepresentation(since: Date(timeIntervalSince1970: TimeInterval(time)))
     }
 }
 
-public enum ItemType: String, Decodable {
+public enum ItemType: String, Codable, Sendable {
     case poll
     case job
     case story

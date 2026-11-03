@@ -33,6 +33,7 @@ struct BgButton: View {
             .padding()
         }
         .frame(width: minSize.width, height: minSize.height)
+        .clickableCursor(enabled: !disabled)
         .onHover {
             onHover?($0)
         }
@@ -42,6 +43,23 @@ struct BgButton: View {
     }
 }
 
-#Preview {
-    BgButton(text: "Rate app", icon: "star", minSize: CGSize(width: 150, height: 50)).padding()
+#Preview("Buttons · Light") {
+    VStack(spacing: 12) {
+        BgButton(text: "Rate app", icon: "star", minSize: CGSize(width: 200, height: 44))
+
+        BgButton(
+            text: "Disabled action",
+            icon: "arrow.up.right",
+            disabled: true,
+            minSize: CGSize(width: 200, height: 44)
+        )
+    }
+    .padding(20)
+    .preferredColorScheme(.light)
+}
+
+#Preview("Buttons · Dark") {
+    BgButton(text: "Open on GitHub", icon: "arrow.up.right", minSize: CGSize(width: 200, height: 44))
+        .padding(20)
+        .preferredColorScheme(.dark)
 }
