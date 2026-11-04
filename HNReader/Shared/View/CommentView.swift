@@ -142,7 +142,11 @@ struct CommentView: View {
         }
         .contextMenu {
             Link(destination: item.discussionURL) {
-                Label("Open Comment on HN", systemImage: "safari")
+                Label("Reply on Hacker News", systemImage: "arrowshape.turn.up.left")
+            }
+
+            ShareLink(item: item.discussionURL) {
+                Label("Share Comment", systemImage: "square.and.arrow.up")
             }
 
             Button {
@@ -156,6 +160,8 @@ struct CommentView: View {
                 Label("Copy Comment Link", systemImage: "doc.on.doc")
             }
 
+            Divider()
+
             Button {
                 isCollapsed.toggle()
             } label: {
@@ -168,52 +174,73 @@ struct CommentView: View {
     }
 
     private var header: some View {
-        Button {
-            isCollapsed.toggle()
-        } label: {
-            HStack(spacing: 8) {
-                CommentAvatar(author: author)
-
-                Text(author)
-                    .font(.system(size: CommentThreadLayout.headerFontSize, weight: .semibold))
-                    .lineLimit(1)
-
-                if item.by != nil && item.by == storyAuthor {
-                    Text("OP")
-                        .font(.system(size: 8, weight: .bold))
-                        .foregroundStyle(Color.accentColor)
-                        .padding(.horizontal, 5)
-                        .padding(.vertical, 2)
-                        .background(Color.accentColor.opacity(0.12), in: Capsule())
-                        .accessibilityLabel("Original poster")
+        HStack(spacing: 8) {
+            if let username = item.by {
+                NavigationLink {
+                    UserDetailView(username: username)
+                } label: {
+                    authorIdentity
                 }
-
-                if let time = item.timeStringRepresentation {
-                    Text("· \(time)")
-                        .font(.system(size: CommentThreadLayout.metadataFontSize))
-                        .foregroundStyle(.secondary)
-                        .fixedSize()
-                }
-
-                Spacer(minLength: 4)
-
-                Image(systemName: isCollapsed ? "plus" : "minus")
-                    .font(.system(size: CommentThreadLayout.metadataFontSize, weight: .semibold))
-                    .foregroundStyle(.secondary)
-                    .frame(
-                        width: CommentThreadLayout.touchTarget,
-                        height: CommentThreadLayout.touchTarget
-                    )
-                    .accessibilityHidden(true)
+                .clickableCursor()
+                .buttonStyle(.plain)
+                .foregroundStyle(.primary)
+                .accessibilityLabel("View \(username)’s profile")
+            } else {
+                authorIdentity
             }
-            .frame(maxWidth: .infinity)
-            .contentShape(Rectangle())
+
+            Button {
+                isCollapsed.toggle()
+            } label: {
+                HStack(spacing: 8) {
+                    if let time = item.timeStringRepresentation {
+                        Text("· \(time)")
+                            .font(.system(size: CommentThreadLayout.metadataFontSize))
+                            .foregroundStyle(.secondary)
+                            .fixedSize()
+                    }
+
+                    Spacer(minLength: 4)
+
+                    Image(systemName: isCollapsed ? "plus" : "minus")
+                        .font(.system(size: CommentThreadLayout.metadataFontSize, weight: .semibold))
+                        .foregroundStyle(.secondary)
+                        .frame(
+                            width: CommentThreadLayout.touchTarget,
+                            height: CommentThreadLayout.touchTarget
+                        )
+                        .accessibilityHidden(true)
+                }
+                .frame(maxWidth: .infinity)
+                .contentShape(Rectangle())
+            }
+            .clickableCursor()
+            .buttonStyle(.plain)
+            .help(isCollapsed ? "Expand comment" : "Collapse comment and replies")
+            .accessibilityLabel(isCollapsed ? "Expand comment" : "Collapse comment and replies")
+            .accessibilityHint(isCollapsed ? "Expands this comment" : "Collapses this comment and its replies")
         }
-        .clickableCursor()
-        .buttonStyle(.plain)
-        .help(isCollapsed ? "Expand comment" : "Collapse comment and replies")
-        .accessibilityHint(isCollapsed ? "Expands this comment" : "Collapses this comment and its replies")
         .frame(height: CommentThreadLayout.headerHeight)
+    }
+
+    private var authorIdentity: some View {
+        HStack(spacing: 8) {
+            CommentAvatar(author: author)
+
+            Text(author)
+                .font(.system(size: CommentThreadLayout.headerFontSize, weight: .semibold))
+                .lineLimit(1)
+
+            if item.by != nil && item.by == storyAuthor {
+                Text("OP")
+                    .font(.system(size: 8, weight: .bold))
+                    .foregroundStyle(Color.accentColor)
+                    .padding(.horizontal, 5)
+                    .padding(.vertical, 2)
+                    .background(Color.accentColor.opacity(0.12), in: Capsule())
+                    .accessibilityLabel("Original poster")
+            }
+        }
     }
 
     @ViewBuilder
@@ -274,20 +301,6 @@ struct CommentView: View {
                 .foregroundStyle(Color.accentColor)
                 .accessibilityHint(repliesExpanded ? "Collapses this comment thread" : "Expands this comment thread")
             }
-
-            Link(destination: item.discussionURL) {
-                Image(systemName: "arrowshape.turn.up.left")
-                    .frame(width: CommentThreadLayout.touchTarget, height: CommentThreadLayout.touchTarget)
-                    .contentShape(Rectangle())
-            }
-            .accessibilityLabel("Reply on Hacker News")
-
-            ShareLink(item: item.discussionURL) {
-                Image(systemName: "square.and.arrow.up")
-                    .frame(width: CommentThreadLayout.touchTarget, height: CommentThreadLayout.touchTarget)
-                    .contentShape(Rectangle())
-            }
-            .accessibilityLabel("Share comment")
 
             Spacer(minLength: 0)
         }

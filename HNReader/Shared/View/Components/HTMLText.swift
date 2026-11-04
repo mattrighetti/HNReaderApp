@@ -21,7 +21,15 @@ struct HTMLText: View {
             .textSelection(.enabled)
             .frame(maxWidth: .infinity, alignment: .leading)
             .task(id: text) {
-                attributed = Self.render(text, fontSize: fontSize)
+                // SwiftUI may begin a view task before the current update pass has
+                // fully unwound. Suspend first so HTML import and the state write
+                // cannot occur while the view hierarchy is being evaluated.
+                await Task.yield()
+                guard !Task.isCancelled else { return }
+
+                let rendered = Self.render(text, fontSize: fontSize)
+                guard !Task.isCancelled else { return }
+                attributed = rendered
             }
     }
 

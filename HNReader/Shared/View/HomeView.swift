@@ -80,7 +80,6 @@ struct HomeView: View {
                 revision: viewModel.revision,
                 selectedID: $selectedID,
                 title: selection.rawValue,
-                subtitle: selection.subtitle,
                 isLoading: selection != .saved && viewModel.isLoading,
                 isLoadingMore: selection != .saved && viewModel.isLoadingMore,
                 hasMore: selection != .saved && viewModel.hasMore,
@@ -129,17 +128,20 @@ struct HomeView: View {
             .searchable(text: $searchText, prompt: "Search loaded stories")
             #endif
         } detail: {
-            if let item = selectedItem {
-                StoryDetail(
-                    item: item,
-                    initialComments: previewComments,
-                    previewThreads: previewThreads,
-                    loadsAutomatically: loadsAutomatically
-                )
-                    .id(item.id)
-            } else {
-                ContentUnavailableView("Select a story", systemImage: "newspaper")
+            NavigationStack {
+                if let item = selectedItem {
+                    StoryDetail(
+                        item: item,
+                        initialComments: previewComments,
+                        previewThreads: previewThreads,
+                        loadsAutomatically: loadsAutomatically
+                    )
+                        .id(item.id)
+                } else {
+                    ContentUnavailableView("Select a story", systemImage: "newspaper")
+                }
             }
+            .id(selectedItem?.id)
         }
         .navigationSplitViewStyle(.balanced)
         .task(id: selection) {

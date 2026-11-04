@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct User: Decodable {
+public struct User: Decodable, Sendable {
     public let id: String
     public let created: Int
     public let karma: Int

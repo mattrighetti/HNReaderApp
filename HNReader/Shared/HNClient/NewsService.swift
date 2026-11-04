@@ -45,6 +45,18 @@ struct NewsService: Sendable {
         try await fetch(url: category.urlString, forceRefresh: forceRefresh)
     }
 
+    func user(id: String, forceRefresh: Bool = false) async throws -> User? {
+        try Task.checkCancellation()
+
+        let user: User? = try await fetch(
+            url: HackerNews.API.User.id(id).urlString,
+            forceRefresh: forceRefresh
+        )
+
+        try Task.checkCancellation()
+        return user
+    }
+
     func cachedItem(id: Int) -> Item? {
         cache.item(id: id)
     }

@@ -7,7 +7,6 @@ struct ItemList: View {
     @Binding var selectedID: Int?
 
     let title: String
-    let subtitle: String
     let isLoading: Bool
     let isLoadingMore: Bool
     let hasMore: Bool
@@ -23,35 +22,6 @@ struct ItemList: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            VStack(alignment: .leading, spacing: 4) {
-                Text(title)
-                    .font(.system(size: 20, weight: .semibold, design: .rounded))
-
-                Text(subtitle)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-
-                HStack {
-                    Text("\(rows.count) stories")
-                        .font(.caption)
-                        .foregroundStyle(.tertiary)
-
-                    Spacer()
-
-                    Toggle("Unread only", isOn: $unreadOnly)
-                        .clickableCursor()
-                        .toggleStyle(.button)
-                        .buttonStyle(.borderless)
-                        .font(.caption)
-                        .help("Show only stories you haven’t read")
-                }
-                .padding(.top, 4)
-            }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 12)
-
-            Divider()
-
             if let errorMessage {
                 VStack(alignment: .leading, spacing: 8) {
                     Label("Couldn’t load stories", systemImage: "wifi.exclamationmark")
@@ -113,6 +83,13 @@ struct ItemList: View {
         .background(PlatformColors.controlBackground)
         .navigationTitle(title)
         .toolbar {
+            Toggle(isOn: $unreadOnly) {
+                Label("Unread only", systemImage: "circle.lefthalf.filled")
+            }
+            .clickableCursor()
+            .toggleStyle(.button)
+            .help("Show only stories you haven’t read")
+
             if !isSaved {
                 Button {
                     Task {
@@ -301,7 +278,18 @@ struct StoryDetail: View {
 
                         #if os(macOS)
                         HStack(spacing: 8) {
-                            Text(item.by ?? "Unknown author")
+                            if let author = item.by {
+                                NavigationLink {
+                                    UserDetailView(username: author)
+                                } label: {
+                                    Text(author)
+                                }
+                                .clickableCursor()
+                                .buttonStyle(.plain)
+                                .accessibilityLabel("View \(author)’s profile")
+                            } else {
+                                Text("Unknown author")
+                            }
 
                             Text("·")
 
@@ -331,18 +319,32 @@ struct StoryDetail: View {
                                 }
                             }
 
-                            Label {
-                                Text(item.by ?? "Unknown author")
-                            } icon: {
-                                Image(systemName: "person")
-                                    .fontWeight(.bold)
+                            if let author = item.by {
+                                NavigationLink {
+                                    UserDetailView(username: author)
+                                } label: {
+                                    Label {
+                                        Text(author)
+                                    } icon: {
+                                        Image(systemName: "person")
+                                            .fontWeight(.bold)
+                                    }
+                                }
+                                .buttonStyle(.plain)
+                                .accessibilityLabel("View \(author)’s profile")
+                            } else {
+                                Label {
+                                    Text("Unknown author")
+                                } icon: {
+                                    Image(systemName: "person")
+                                        .fontWeight(.bold)
+                                }
                             }
                         }
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                         .lineLimit(1)
                         .minimumScaleFactor(0.85)
-                        .accessibilityElement(children: .combine)
                         #endif
 
                         #if os(macOS)
@@ -633,7 +635,6 @@ struct ItemListPreview: View {
             revision: UUID(),
             selectedID: $selection,
             title: state == .emptySaved ? "Saved" : "Top Stories",
-            subtitle: state == .emptySaved ? "Good reads, kept for later" : "What the community is reading",
             isLoading: state == .loading,
             isLoadingMore: state == .loadingPage,
             hasMore: state == .loadingPage || state == .pageError || state == .emptyUnreadPage,
