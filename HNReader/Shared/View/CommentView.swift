@@ -130,6 +130,11 @@ struct CommentView: View {
                         .allowsHitTesting(false)
                 }
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .contentShape(Rectangle())
+            .contextMenu {
+                commentMenu
+            }
 
             if !isCollapsed && repliesExpanded && replyCount > 0 {
                 replyThread
@@ -140,36 +145,38 @@ struct CommentView: View {
         .onChange(of: collapseAll) { _, collapsed in
             isCollapsed = collapsed
         }
-        .contextMenu {
-            Link(destination: item.discussionURL) {
-                Label("Reply on Hacker News", systemImage: "arrowshape.turn.up.left")
-            }
+    }
 
-            ShareLink(item: item.discussionURL) {
-                Label("Share Comment", systemImage: "square.and.arrow.up")
-            }
+    @ViewBuilder
+    private var commentMenu: some View {
+        Link(destination: item.discussionURL) {
+            Label("Reply on Hacker News", systemImage: "arrowshape.turn.up.left")
+        }
 
-            Button {
-                #if os(macOS)
-                NSPasteboard.general.clearContents()
-                NSPasteboard.general.setString(item.discussionURL.absoluteString, forType: .string)
-                #else
-                UIPasteboard.general.url = item.discussionURL
-                #endif
-            } label: {
-                Label("Copy Comment Link", systemImage: "doc.on.doc")
-            }
+        ShareLink(item: item.discussionURL) {
+            Label("Share Comment", systemImage: "square.and.arrow.up")
+        }
 
-            Divider()
+        Button {
+            #if os(macOS)
+            NSPasteboard.general.clearContents()
+            NSPasteboard.general.setString(item.discussionURL.absoluteString, forType: .string)
+            #else
+            UIPasteboard.general.url = item.discussionURL
+            #endif
+        } label: {
+            Label("Copy Comment Link", systemImage: "doc.on.doc")
+        }
 
-            Button {
-                isCollapsed.toggle()
-            } label: {
-                Label(
-                    isCollapsed ? "Expand Comment" : "Collapse Comment",
-                    systemImage: isCollapsed ? "plus" : "minus"
-                )
-            }
+        Divider()
+
+        Button {
+            isCollapsed.toggle()
+        } label: {
+            Label(
+                isCollapsed ? "Expand Comment" : "Collapse Comment",
+                systemImage: isCollapsed ? "plus" : "minus"
+            )
         }
     }
 
