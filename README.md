@@ -59,8 +59,7 @@ To run the deterministic tests without live API requests:
 
 ```sh
 xcodebuild -project HNReader.xcodeproj -scheme HNReader \
-  -destination 'platform=macOS' CODE_SIGNING_ALLOWED=NO \
-  -skip-testing:HNReaderTests/HackerNewsClientTests test
+  -destination 'platform=macOS' CODE_SIGNING_ALLOWED=NO test
 ```
 
 ## License

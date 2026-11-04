@@ -637,7 +637,6 @@ private struct FeedPageHarness: View {
             revision: model.revision,
             selectedID: $selection,
             title: "Top Stories",
-            subtitle: "Test feed",
             isLoading: model.isLoading,
             isLoadingMore: model.isLoadingMore,
             hasMore: model.hasMore,
