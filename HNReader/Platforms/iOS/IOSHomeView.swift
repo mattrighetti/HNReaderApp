@@ -249,29 +249,29 @@ private struct IOSStoryList: View {
         return "Pull down to refresh the feed."
     }
 
-    @ViewBuilder
     private var paginationRow: some View {
-        if viewModel.isLoadingMore {
-            ProgressView("Loading more stories…")
-                .frame(maxWidth: .infinity)
-                .listRowSeparator(.hidden)
-        } else if let error = viewModel.paginationError {
-            VStack(spacing: 8) {
+        VStack(spacing: 8) {
+            if let error = viewModel.paginationError {
                 Text(error)
                     .font(.footnote)
                     .foregroundStyle(.secondary)
                 Button("Retry") {
                     Task { await viewModel.loadMore() }
                 }
+            } else if viewModel.isLoadingMore {
+                ProgressView("Loading more stories…")
+            } else {
+                Text("More stories")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
             }
-            .frame(maxWidth: .infinity)
-            .listRowSeparator(.hidden)
-        } else {
-            Button("Load More Stories") {
-                Task { await viewModel.loadMore() }
-            }
-            .frame(maxWidth: .infinity)
-            .listRowSeparator(.hidden)
+        }
+        .frame(maxWidth: .infinity, minHeight: 48)
+        .listRowSeparator(.hidden)
+        .id(viewModel.rows.last?.id)
+        .task(id: viewModel.revision) {
+            guard loadsAutomatically, viewModel.paginationError == nil else { return }
+            await viewModel.loadMore()
         }
     }
 
