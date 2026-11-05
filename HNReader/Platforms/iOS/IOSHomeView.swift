@@ -63,6 +63,7 @@ private struct IOSStoryList: View {
     @State private var viewModel: ItemListViewModel
     @State private var searchText = ""
     @State private var unreadOnly = false
+    @State private var scrollResetRequest = UUID()
 
     @MainActor
     init(
@@ -118,44 +119,56 @@ private struct IOSStoryList: View {
 
     var body: some View {
         NavigationStack {
-            List {
-                if let errorMessage = viewModel.errorMessage, !showsSavedStories {
-                    ContentUnavailableView {
-                        Label("Couldn’t load stories", systemImage: "wifi.exclamationmark")
-                    } description: {
-                        Text(errorMessage)
-                    } actions: {
-                        Button("Try Again") {
-                            Task { await refresh() }
+            ScrollViewReader { proxy in
+                List {
+                    if let errorMessage = viewModel.errorMessage, !showsSavedStories {
+                        ContentUnavailableView {
+                            Label("Couldn’t load stories", systemImage: "wifi.exclamationmark")
+                        } description: {
+                            Text(errorMessage)
+                        } actions: {
+                            Button("Try Again") {
+                                Task { await refresh() }
+                            }
+                        }
+                        .listRowSeparator(.hidden)
+                    } else if viewModel.isLoading && visibleRows.isEmpty && !showsSavedStories {
+                        ProgressView("Loading stories…")
+                            .frame(maxWidth: .infinity)
+                            .listRowSeparator(.hidden)
+                    } else if visibleRows.isEmpty {
+                        ContentUnavailableView(
+                            emptyTitle,
+                            systemImage: showsSavedStories ? "bookmark" : "newspaper",
+                            description: Text(emptyMessage)
+                        )
+                        .listRowSeparator(.hidden)
+                    } else {
+                        ForEach(visibleRows) { row in
+                            NavigationLink(value: row.item) {
+                                IOSStoryRow(row: row)
+                            }
+                            .listRowInsets(EdgeInsets(top: 10, leading: 16, bottom: 10, trailing: 16))
+                            .id(row.id)
                         }
                     }
-                    .listRowSeparator(.hidden)
-                } else if viewModel.isLoading && visibleRows.isEmpty && !showsSavedStories {
-                    ProgressView("Loading stories…")
-                        .frame(maxWidth: .infinity)
-                        .listRowSeparator(.hidden)
-                } else if visibleRows.isEmpty {
-                    ContentUnavailableView(
-                        emptyTitle,
-                        systemImage: showsSavedStories ? "bookmark" : "newspaper",
-                        description: Text(emptyMessage)
-                    )
-                    .listRowSeparator(.hidden)
-                } else {
-                    ForEach(visibleRows) { row in
-                        NavigationLink(value: row.item) {
-                            IOSStoryRow(row: row)
-                        }
-                        .listRowInsets(EdgeInsets(top: 10, leading: 16, bottom: 10, trailing: 16))
+
+                    if !showsSavedStories && viewModel.hasMore && searchText.isEmpty {
+                        paginationRow
                     }
                 }
-
-                if !showsSavedStories && viewModel.hasMore && searchText.isEmpty {
-                    paginationRow
+                .listStyle(.plain)
+                // Keep feed changes and page inserts out of the menu's animation.
+                .transaction { transaction in
+                    transaction.animation = nil
+                    transaction.disablesAnimations = true
+                }
+                .onChange(of: scrollResetRequest) {
+                    if let firstID = visibleRows.first?.id {
+                        proxy.scrollTo(firstID, anchor: .top)
+                    }
                 }
             }
-            .listStyle(.plain)
-            .id(selection)
             .navigationTitle(showsSavedStories ? "Saved Stories" : selection.rawValue)
             .navigationBarTitleDisplayMode(.large)
             .searchable(text: $searchText, prompt: "Search stories")
@@ -232,6 +245,8 @@ private struct IOSStoryList: View {
 
                 if let category = selection.category {
                     await viewModel.load(category)
+                    guard !Task.isCancelled else { return }
+                    scrollResetRequest = UUID()
                 }
             }
         }
