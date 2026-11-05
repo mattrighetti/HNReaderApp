@@ -78,6 +78,33 @@ extension ItemTests {
     }
 
     @MainActor
+    func testSavedCommentsPreserveTheirContentAlongsideExistingStories() throws {
+        let suite = "HNReaderTests.\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suite))
+        defer { defaults.removePersistentDomain(forName: suite) }
+
+        // Start with the existing on-disk format so upgrades keep saved stories.
+        let story = try decode(#"{"id":42,"type":"story","title":"Keep this story"}"#)
+        defaults.set(try JSONEncoder().encode([story]), forKey: "savedStories")
+        let comment = try decode(#"{"id":43,"type":"comment","by":"reader","parent":42,"text":"A useful <i>comment</i> &amp; its context.","kids":[44],"time":1700000000}"#)
+
+        let state = AppState(defaults: defaults)
+        state.toggleSaved(comment)
+
+        let restored = AppState(defaults: defaults)
+        XCTAssertEqual(restored.savedItems, [comment, story])
+        XCTAssertTrue(restored.isSaved(comment))
+        XCTAssertEqual(restored.savedItems.first?.text, comment.text)
+        XCTAssertEqual(restored.savedItems.first?.parent, story.id)
+        XCTAssertEqual(restored.savedItems.first?.kids, [44])
+        XCTAssertEqual(restored.savedItems.first?.discussionURL.absoluteString,
+                       "https://news.ycombinator.com/item?id=43")
+
+        restored.toggleSaved(comment)
+        XCTAssertEqual(AppState(defaults: defaults).savedItems, [story])
+    }
+
+    @MainActor
     func testCorruptSavedDataDoesNotPreventStartup() throws {
         let suite = "HNReaderTests.\(UUID().uuidString)"
         let defaults = try XCTUnwrap(UserDefaults(suiteName: suite))
