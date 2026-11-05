@@ -13,6 +13,11 @@ struct HTMLText: View {
 
     @State private var attributed = AttributedString("")
 
+    private struct RenderRequest: Equatable {
+        let text: String
+        let fontSize: CGFloat
+    }
+
     var body: some View {
         Text(attributed)
             .font(.system(size: fontSize))
@@ -20,24 +25,31 @@ struct HTMLText: View {
             .lineSpacing(lineSpacing)
             .textSelection(.enabled)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .task(id: text) {
-                // SwiftUI may begin a view task before the current update pass has
-                // fully unwound. Suspend first so HTML import and the state write
-                // cannot occur while the view hierarchy is being evaluated.
-                await Task.yield()
+            .task(id: RenderRequest(text: text, fontSize: fontSize)) {
                 guard !Task.isCancelled else { return }
 
-                let rendered = Self.render(text, fontSize: fontSize)
+                let rendered = await Self.render(text, fontSize: fontSize)
                 guard !Task.isCancelled else { return }
                 attributed = rendered
             }
     }
 
-    @MainActor static func render(_ html: String, fontSize: CGFloat = 14) -> AttributedString {
-        AttributedString(renderNative(html, fontSize: fontSize))
+    @MainActor static func render(_ html: String, fontSize: CGFloat = 14) async -> AttributedString {
+        AttributedString(await renderNative(html, fontSize: fontSize))
     }
 
-    @MainActor static func renderNative(_ html: String, fontSize: CGFloat = 14) -> NSAttributedString {
+    @MainActor static func renderNative(_ html: String, fontSize: CGFloat = 14) async -> NSAttributedString {
+        // HTML import can spin the run loop. Queue it outside SwiftUI's current
+        // update transaction, while keeping the importer on the main thread.
+        // Task.yield() alone does not guarantee that the update has unwound.
+        await withCheckedContinuation { continuation in
+            DispatchQueue.main.async {
+                continuation.resume(returning: importHTML(html, fontSize: fontSize))
+            }
+        }
+    }
+
+    @MainActor private static func importHTML(_ html: String, fontSize: CGFloat) -> NSAttributedString {
         guard
             let data = html.data(using: .utf8),
             let value = try? NSMutableAttributedString(

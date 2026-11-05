@@ -16,6 +16,7 @@ struct CommentTextView: View {
     var replyingTo: String?
 
     @State private var isExpanded = false
+    @State private var attributed = NSAttributedString(string: "")
 
     private enum Metrics {
         #if os(macOS)
@@ -53,9 +54,7 @@ struct CommentTextView: View {
             }
 
             TextKitCommentText(
-                html: html,
-                fontSize: Metrics.bodyFontSize,
-                lineSpacing: Metrics.bodyLineSpacing,
+                attributed: attributed,
                 maximumNumberOfLines: maximumNumberOfLines
             )
 
@@ -74,6 +73,16 @@ struct CommentTextView: View {
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+        .task(id: html) {
+            guard !Task.isCancelled else { return }
+            let rendered = await CommentTextFormatter.render(
+                html: html,
+                fontSize: Metrics.bodyFontSize,
+                lineSpacing: Metrics.bodyLineSpacing
+            )
+            guard !Task.isCancelled else { return }
+            attributed = rendered
+        }
     }
 }
 
@@ -87,9 +96,9 @@ private enum CommentTextFormatter {
         html: String,
         fontSize: CGFloat,
         lineSpacing: CGFloat
-    ) -> NSMutableAttributedString {
+    ) async -> NSMutableAttributedString {
         let value = NSMutableAttributedString(
-            attributedString: HTMLText.renderNative(html, fontSize: fontSize)
+            attributedString: await HTMLText.renderNative(html, fontSize: fontSize)
         )
         markQuotes(in: value)
         applyParagraphLayout(
@@ -277,15 +286,11 @@ private final class CommentLayoutManager: NSLayoutManager {
 }
 
 private struct TextKitCommentText: UIViewRepresentable {
-    let html: String
-    let fontSize: CGFloat
-    let lineSpacing: CGFloat
+    let attributed: NSAttributedString
     let maximumNumberOfLines: Int?
 
     struct Configuration: Equatable {
-        let html: String
-        let fontSize: CGFloat
-        let lineSpacing: CGFloat
+        let attributed: NSAttributedString
         let maximumNumberOfLines: Int?
     }
 
@@ -324,9 +329,7 @@ private struct TextKitCommentText: UIViewRepresentable {
 
     func updateUIView(_ textView: UITextView, context: Context) {
         let configuration = Configuration(
-            html: html,
-            fontSize: fontSize,
-            lineSpacing: lineSpacing,
+            attributed: attributed,
             maximumNumberOfLines: maximumNumberOfLines
         )
 
@@ -336,12 +339,6 @@ private struct TextKitCommentText: UIViewRepresentable {
 
         context.coordinator.configuration = configuration
 
-        let value = CommentTextFormatter.render(
-            html: html,
-            fontSize: fontSize,
-            lineSpacing: lineSpacing
-        )
-
         textView.linkTextAttributes = [
             .foregroundColor: textView.tintColor ?? UIColor.link,
             .underlineStyle: NSUnderlineStyle.single.rawValue
@@ -350,7 +347,7 @@ private struct TextKitCommentText: UIViewRepresentable {
         textView.textContainer.lineBreakMode = maximumNumberOfLines == nil
             ? .byWordWrapping
             : .byTruncatingTail
-        textView.textStorage.setAttributedString(value)
+        textView.textStorage.setAttributedString(attributed)
         textView.invalidateIntrinsicContentSize()
         textView.setNeedsLayout()
     }
@@ -421,15 +418,11 @@ private final class CommentLayoutManager: NSLayoutManager {
 }
 
 private struct TextKitCommentText: NSViewRepresentable {
-    let html: String
-    let fontSize: CGFloat
-    let lineSpacing: CGFloat
+    let attributed: NSAttributedString
     let maximumNumberOfLines: Int?
 
     struct Configuration: Equatable {
-        let html: String
-        let fontSize: CGFloat
-        let lineSpacing: CGFloat
+        let attributed: NSAttributedString
         let maximumNumberOfLines: Int?
     }
 
@@ -474,9 +467,7 @@ private struct TextKitCommentText: NSViewRepresentable {
 
     func updateNSView(_ textView: NSTextView, context: Context) {
         let configuration = Configuration(
-            html: html,
-            fontSize: fontSize,
-            lineSpacing: lineSpacing,
+            attributed: attributed,
             maximumNumberOfLines: maximumNumberOfLines
         )
 
@@ -486,12 +477,6 @@ private struct TextKitCommentText: NSViewRepresentable {
 
         context.coordinator.configuration = configuration
 
-        let value = CommentTextFormatter.render(
-            html: html,
-            fontSize: fontSize,
-            lineSpacing: lineSpacing
-        )
-
         textView.linkTextAttributes = [
             .foregroundColor: NSColor.linkColor,
             .underlineStyle: NSUnderlineStyle.single.rawValue
@@ -500,7 +485,7 @@ private struct TextKitCommentText: NSViewRepresentable {
         textView.textContainer?.lineBreakMode = maximumNumberOfLines == nil
             ? .byWordWrapping
             : .byTruncatingTail
-        textView.textStorage?.setAttributedString(value)
+        textView.textStorage?.setAttributedString(attributed)
         textView.needsLayout = true
         textView.invalidateIntrinsicContentSize()
     }
