@@ -4,6 +4,23 @@ enum StoryRowLayout {
     static let minimumHeight: CGFloat = 64
 }
 
+/// Decode comment HTML into an excerpt that each platform can style independently.
+struct ItemRowTitle: View {
+    let item: Item
+
+    @State private var commentPreview = ""
+
+    var body: some View {
+        Text(item.type == .comment ? commentPreview : item.title ?? "Untitled story")
+            .task(id: item.text) {
+                guard item.type == .comment, !Task.isCancelled else { return }
+                let rendered = await HTMLText.renderNative(item.text ?? "Comment text unavailable.")
+                guard !Task.isCancelled else { return }
+                commentPreview = rendered.string.split(whereSeparator: \.isWhitespace).joined(separator: " ")
+            }
+    }
+}
+
 struct ItemCell: View {
     let item: Item
     let rank: Int
@@ -33,10 +50,18 @@ struct ItemCell: View {
 
     var body: some View {
         HStack(alignment: .top, spacing: 6) {
-            Text(String(format: "%02d", rank))
-                .font(.system(size: 10, weight: .medium, design: .monospaced))
-                .foregroundStyle(isSelected ? Color.white.opacity(0.55) : Color.secondary)
-                .frame(width: 20, height: 14)
+            Group {
+                if item.type == .comment {
+                    Image(systemName: "bubble.left")
+                        .font(.system(size: 12))
+                        .accessibilityHidden(true)
+                } else {
+                    Text(String(format: "%02d", rank))
+                        .font(.system(size: 10, weight: .medium, design: .monospaced))
+                }
+            }
+            .foregroundStyle(isSelected ? Color.white.opacity(0.55) : Color.secondary)
+            .frame(width: 20, height: 14)
 
             VStack(alignment: .leading, spacing: 3) {
                 HStack(spacing: 6) {
@@ -48,7 +73,7 @@ struct ItemCell: View {
                         .accessibilityLabel("Unread")
                         .accessibilityHidden(isRead)
 
-                    Text(item.urlHost ?? "news.ycombinator.com")
+                    Text(item.type == .comment ? "Comment by \(item.by ?? "Deleted user")" : item.urlHost ?? "news.ycombinator.com")
                         .font(.system(size: 9, weight: .medium, design: .monospaced))
                         .foregroundStyle(domainColor)
                         .lineLimit(1)
@@ -58,13 +83,16 @@ struct ItemCell: View {
                     if appState.isSaved(item) {
                         Image(systemName: "bookmark.fill")
                             .font(.system(size: 10))
-                            .foregroundStyle(Color.accentColor)
+                            .foregroundStyle(isSelected ? Color.white : Color.accentColor)
                             .frame(height: 14)
+                            .accessibilityLabel("Saved")
                     }
                 }
 
-                Text(item.title ?? "Untitled story")
-                    .font(.system(size: 14, weight: .medium, design: .rounded))
+                ItemRowTitle(item: item)
+                    .font(item.type == .comment
+                          ? .system(size: 14)
+                          : .system(size: 14, weight: .medium, design: .rounded))
                     .lineSpacing(1)
                     .lineLimit(2)
                     .foregroundStyle(titleColor)
@@ -73,7 +101,7 @@ struct ItemCell: View {
                     .padding(.leading, 12)
 
                 HStack(spacing: 12) {
-                    if let author = item.by {
+                    if item.type != .comment, let author = item.by {
                         Text("by \(author)")
                             .lineLimit(1)
                             .truncationMode(.middle)
@@ -81,10 +109,12 @@ struct ItemCell: View {
                             .help("Posted by \(author)")
                     }
 
-                    Label("\(item.score ?? 0)", systemImage: "arrowtriangle.up")
-                        .fixedSize()
+                    if item.type != .comment {
+                        Label("\(item.score ?? 0)", systemImage: "arrowtriangle.up")
+                            .fixedSize()
+                    }
 
-                    Label("\(item.descendants ?? 0)", systemImage: "bubble.right")
+                    Label("\(item.type == .comment ? item.kids?.count ?? 0 : item.descendants ?? 0)", systemImage: "bubble.right")
                         .fixedSize()
 
                     Text(item.timeStringRepresentation.map { "\($0) ago" } ?? "")
@@ -102,6 +132,7 @@ struct ItemCell: View {
         .contentShape(Rectangle())
         .clickableCursor()
         .accessibilityElement(children: .combine)
+        .accessibilityIdentifier(item.type == .comment ? "savedComment.\(item.id)" : "story.\(item.id)")
         .contextMenu {
             Button(
                 appState.isSaved(item) ? "Remove from Saved" : "Save for Later",
@@ -110,7 +141,9 @@ struct ItemCell: View {
                 appState.toggleSaved(item)
             }
 
-            Link("Open Article", destination: item.articleURL ?? item.discussionURL)
+            if item.type != .comment {
+                Link("Open Article", destination: item.articleURL ?? item.discussionURL)
+            }
 
             Link("Open Discussion", destination: item.discussionURL)
 
@@ -126,19 +159,26 @@ struct CompactStoryPreview: View {
     private let items: [Item]
     private let selectedID: Int?
 
-    init(selectedID: Int? = nil) {
+    init(selectedID: Int? = nil, includesComment: Bool = false) {
         self.selectedID = selectedID
 
-        items = PreviewData.stories
-        _appState = State(initialValue: PreviewData.appState())
+        items = includesComment
+            ? Array(PreviewData.comments.prefix(1)) + Array(PreviewData.stories.prefix(2))
+            : PreviewData.stories
+        let state = PreviewData.appState()
+        if includesComment, let comment = PreviewData.comments.first {
+            state.toggleSaved(comment)
+            state.markRead(comment)
+        }
+        _appState = State(initialValue: state)
     }
 
     var body: some View {
         VStack(spacing: 0) {
-            ForEach(Array(items.enumerated()), id: \.element.id) { index, item in
-                ItemCell(item: item, rank: index + 1, isSelected: item.id == selectedID)
+            ForEach(StoryRow.savedRows(for: items)) { row in
+                ItemCell(item: row.item, rank: row.rank, isSelected: row.id == selectedID)
                     .frame(minHeight: StoryRowLayout.minimumHeight)
-                    .background(item.id == selectedID ? Color.accentColor : Color.clear)
+                    .background(row.id == selectedID ? Color.accentColor : Color.clear)
             }
         }
         .padding(.horizontal, 12)
@@ -169,6 +209,21 @@ struct CompactStoryPreview: View {
 
 #Preview("Compact stories · Wide", traits: .fixedLayout(width: 1200, height: 220)) {
     CompactStoryPreview()
+        .preferredColorScheme(.dark)
+}
+
+#Preview("Saved stories and comments · Dark", traits: .fixedLayout(width: 520, height: 280)) {
+    CompactStoryPreview(includesComment: true)
+        .preferredColorScheme(.dark)
+}
+
+#Preview("Saved stories and comments · Light", traits: .fixedLayout(width: 520, height: 280)) {
+    CompactStoryPreview(includesComment: true)
+        .preferredColorScheme(.light)
+}
+
+#Preview("Saved comment · Selected", traits: .fixedLayout(width: 312, height: 280)) {
+    CompactStoryPreview(selectedID: PreviewData.comments.first?.id, includesComment: true)
         .preferredColorScheme(.dark)
 }
 #endif

@@ -61,6 +61,7 @@ struct CommentView: View {
     private let expandPreview: Bool
 
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(AppState.self) private var appState
 
     @State private var model: CommentRepliesModel
     @State private var isCollapsed: Bool
@@ -149,6 +150,13 @@ struct CommentView: View {
 
     @ViewBuilder
     private var commentMenu: some View {
+        Button(
+            appState.isSaved(item) ? "Remove Comment from Saved" : "Save Comment",
+            systemImage: appState.isSaved(item) ? "bookmark.fill" : "bookmark"
+        ) {
+            appState.toggleSaved(item)
+        }
+
         Link(destination: item.discussionURL) {
             Label("Reply on Hacker News", systemImage: "arrowshape.turn.up.left")
         }
@@ -287,6 +295,8 @@ struct CommentView: View {
             }
             .clickableCursor()
 
+            saveButton
+
             Spacer(minLength: 0)
         }
         .font(.system(size: 10, weight: .medium))
@@ -310,11 +320,30 @@ struct CommentView: View {
             }
 
             Spacer(minLength: 0)
+
+            saveButton
         }
         .font(.system(size: CommentThreadLayout.actionFontSize, weight: .semibold))
         .foregroundStyle(.secondary)
         .buttonStyle(.plain)
         #endif
+    }
+
+    private var saveButton: some View {
+        Button {
+            appState.toggleSaved(item)
+        } label: {
+            Label(
+                appState.isSaved(item) ? "Saved" : "Save",
+                systemImage: appState.isSaved(item) ? "bookmark.fill" : "bookmark"
+            )
+            .frame(minHeight: CommentThreadLayout.touchTarget)
+            .contentShape(Rectangle())
+        }
+        .clickableCursor()
+        .foregroundStyle(appState.isSaved(item) ? Color.accentColor : .secondary)
+        .accessibilityLabel(appState.isSaved(item) ? "Remove Comment from Saved" : "Save Comment")
+        .accessibilityIdentifier("comment.save.\(item.id)")
     }
 
     private var replyThread: some View {
@@ -408,6 +437,46 @@ struct CommentView: View {
     }
 }
 
+/// Open the saved snapshot immediately, including when the device is offline.
+struct SavedCommentDetail: View {
+    let item: Item
+    var previewThreads: [Int: [Item]]? = nil
+
+    @Environment(AppState.self) private var appState
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 16) {
+                CommentView(item: item, previewThreads: previewThreads)
+
+                Link("View Comment on Hacker News", destination: item.discussionURL)
+                    .clickableCursor()
+                    .font(.callout)
+            }
+            .padding()
+            .frame(maxWidth: 760, alignment: .leading)
+            .frame(maxWidth: .infinity)
+        }
+        .background(PlatformColors.textBackground)
+        .navigationTitle("Saved Comment")
+        .toolbar {
+            Button(
+                appState.isSaved(item) ? "Remove Comment from Saved" : "Save Comment",
+                systemImage: appState.isSaved(item) ? "bookmark.fill" : "bookmark"
+            ) {
+                appState.toggleSaved(item)
+            }
+            .clickableCursor()
+
+            ShareLink(item: item.discussionURL)
+                .clickableCursor()
+        }
+        .task {
+            appState.markRead(item)
+        }
+    }
+}
+
 /// The vertical spine starts directly below the parent's avatar. Each child has
 /// a quarter-circle elbow ending at its avatar; the last child's spine stops there.
 private struct ThreadStem: Shape {
@@ -473,6 +542,7 @@ private struct CommentAvatar: View {
 #if DEBUG
 struct CommentsPreview: View {
     @State private var collapsed: Bool
+    @State private var appState = PreviewData.appState()
 
     private let comments: [Item]
     private let threads: [Int: [Item]]
@@ -524,6 +594,7 @@ struct CommentsPreview: View {
         }
         .padding(20)
         .background(PlatformColors.textBackground)
+        .environment(appState)
     }
 }
 
@@ -551,6 +622,7 @@ struct CommentsPreview: View {
                 expandPreview: true
             )
             .padding(20)
+            .environment(PreviewData.appState())
         }
     }
     .preferredColorScheme(.dark)
@@ -559,5 +631,14 @@ struct CommentsPreview: View {
 #Preview("Comment threads · Collapsed", traits: .fixedLayout(width: 640, height: 240)) {
     CommentsPreview(collapsed: true)
         .preferredColorScheme(.dark)
+}
+
+#Preview("Saved comment", traits: .fixedLayout(width: 390, height: 600)) {
+    if let comment = PreviewData.comments.first {
+        NavigationStack {
+            SavedCommentDetail(item: comment, previewThreads: PreviewData.threads)
+        }
+        .environment(PreviewData.appState())
+    }
 }
 #endif

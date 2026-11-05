@@ -8,6 +8,16 @@ struct StoryRow: Identifiable {
     var id: Int {
         item.id
     }
+
+    static func savedRows(for items: [Item]) -> [StoryRow] {
+        var storyRank = 0
+        return items.map { item in
+            if item.type != .comment {
+                storyRank += 1
+            }
+            return StoryRow(rank: item.type == .comment ? 0 : storyRank, item: item)
+        }
+    }
 }
 
 @MainActor

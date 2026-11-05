@@ -42,19 +42,14 @@ struct HomeView: View {
 
     private var visibleRows: [StoryRow] {
         let rows = selection == .saved
-            ? appState.savedItems.enumerated().map {
-                StoryRow(
-                    rank: $0.offset + 1,
-                    item: $0.element
-                )
-            }
+            ? StoryRow.savedRows(for: appState.savedItems)
             : viewModel.rows
 
         return rows.filter { row in
             (!unreadOnly || !appState.readIDs.contains(row.id) || row.id == selectedID)
                 && (
                     searchText.isEmpty
-                        || [row.item.title, row.item.by, row.item.urlHost]
+                        || [row.item.title, row.item.by, row.item.urlHost, row.item.type == .comment ? row.item.text : nil]
                         .compactMap { $0 }
                         .contains { $0.localizedCaseInsensitiveContains(searchText)
                     }
@@ -113,9 +108,9 @@ struct HomeView: View {
                             .foregroundStyle(.secondary)
                             .accessibilityHidden(true)
 
-                        TextField("Search loaded stories", text: $searchText)
+                        TextField(selection == .saved ? "Search saved items" : "Search loaded stories", text: $searchText)
                             .textFieldStyle(.plain)
-                            .accessibilityLabel("Search loaded stories")
+                            .accessibilityLabel(selection == .saved ? "Search saved items" : "Search loaded stories")
                     }
                     .padding(.horizontal, 8)
                     .frame(width: 260)
@@ -130,13 +125,17 @@ struct HomeView: View {
         } detail: {
             NavigationStack {
                 if let item = selectedItem {
-                    StoryDetail(
-                        item: item,
-                        initialComments: previewComments,
-                        previewThreads: previewThreads,
-                        loadsAutomatically: loadsAutomatically
-                    )
-                        .id(item.id)
+                    if item.type == .comment {
+                        SavedCommentDetail(item: item, previewThreads: previewThreads)
+                    } else {
+                        StoryDetail(
+                            item: item,
+                            initialComments: previewComments,
+                            previewThreads: previewThreads,
+                            loadsAutomatically: loadsAutomatically
+                        )
+                            .id(item.id)
+                    }
                 } else {
                     ContentUnavailableView("Select a story", systemImage: "newspaper")
                 }

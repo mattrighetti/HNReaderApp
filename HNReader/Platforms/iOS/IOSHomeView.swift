@@ -97,9 +97,7 @@ private struct IOSStoryList: View {
 
     private var rows: [StoryRow] {
         if showsSavedStories {
-            return appState.savedItems.enumerated().map { index, item in
-                StoryRow(rank: index + 1, item: item)
-            }
+            return StoryRow.savedRows(for: appState.savedItems)
         }
 
         return viewModel.rows
@@ -110,7 +108,7 @@ private struct IOSStoryList: View {
             (!unreadOnly || !appState.readIDs.contains(row.id))
                 && (
                     searchText.isEmpty
-                        || [row.item.title, row.item.by, row.item.urlHost]
+                        || [row.item.title, row.item.by, row.item.urlHost, row.item.type == .comment ? row.item.text : nil]
                             .compactMap { $0 }
                             .contains { $0.localizedCaseInsensitiveContains(searchText) }
                 )
@@ -169,9 +167,9 @@ private struct IOSStoryList: View {
                     }
                 }
             }
-            .navigationTitle(showsSavedStories ? "Saved Stories" : selection.rawValue)
+            .navigationTitle(showsSavedStories ? "Saved" : selection.rawValue)
             .navigationBarTitleDisplayMode(.large)
-            .searchable(text: $searchText, prompt: "Search stories")
+            .searchable(text: $searchText, prompt: showsSavedStories ? "Search saved items" : "Search stories")
             .toolbar {
                 if !showsSavedStories {
                     ToolbarItem(placement: .topBarLeading) {
@@ -225,14 +223,20 @@ private struct IOSStoryList: View {
                 await refresh()
             }
             .navigationDestination(for: Item.self) { item in
-                StoryDetail(
-                    item: item,
-                    initialComments: previewComments,
-                    previewThreads: previewThreads,
-                    loadsAutomatically: loadsAutomatically
-                )
+                Group {
+                    if item.type == .comment {
+                        SavedCommentDetail(item: item, previewThreads: previewThreads)
+                    } else {
+                        StoryDetail(
+                            item: item,
+                            initialComments: previewComments,
+                            previewThreads: previewThreads,
+                            loadsAutomatically: loadsAutomatically
+                        )
+                    }
+                }
                     .environment(appState)
-                    .navigationTitle("Story")
+                    .navigationTitle(item.type == .comment ? "Saved Comment" : "Story")
                     .navigationBarTitleDisplayMode(.inline)
                     .task {
                         appState.markRead(item)
@@ -253,14 +257,16 @@ private struct IOSStoryList: View {
     }
 
     private var emptyTitle: String {
-        if showsSavedStories { return "No saved stories" }
-        return searchText.isEmpty ? "No stories yet" : "No matching stories"
+        if !searchText.isEmpty { return showsSavedStories ? "No matching saved items" : "No matching stories" }
+        if unreadOnly { return showsSavedStories ? "No unread saved items" : "No unread stories" }
+        if showsSavedStories { return "No saved items" }
+        return "No stories yet"
     }
 
     private var emptyMessage: String {
-        if showsSavedStories { return "Save a story to keep it here for later." }
         if !searchText.isEmpty { return "Try a different search." }
-        if unreadOnly { return "Turn off Unread only to see stories you’ve read." }
+        if unreadOnly { return showsSavedStories ? "Turn off Unread only to see saved items you’ve read." : "Turn off Unread only to see stories you’ve read." }
+        if showsSavedStories { return "Save a story or comment to keep it here for later." }
         return "Pull down to refresh the feed."
     }
 
@@ -308,11 +314,19 @@ private struct IOSStoryRow: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack(spacing: 7) {
-                Text("\(row.rank)")
-                    .font(.caption2.monospacedDigit().weight(.medium))
-                    .foregroundStyle(.tertiary)
+                Group {
+                    if row.item.type == .comment {
+                        Image(systemName: "bubble.left")
+                            .font(.caption)
+                            .accessibilityHidden(true)
+                    } else {
+                        Text("\(row.rank)")
+                            .font(.caption2.monospacedDigit().weight(.medium))
+                    }
+                }
+                .foregroundStyle(.tertiary)
 
-                Text(row.item.urlHost ?? "news.ycombinator.com")
+                Text(row.item.type == .comment ? "Comment by \(row.item.by ?? "Deleted user")" : row.item.urlHost ?? "news.ycombinator.com")
                     .font(.caption.weight(.medium))
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
@@ -335,17 +349,21 @@ private struct IOSStoryRow: View {
                 }
             }
 
-            Text(row.item.title ?? "Untitled story")
-                .font(.system(size: 17, weight: .semibold, design: .rounded))
+            ItemRowTitle(item: row.item)
+                .font(row.item.type == .comment
+                      ? .system(size: 16)
+                      : .system(size: 17, weight: .semibold, design: .rounded))
                 .foregroundStyle(isRead ? .secondary : .primary)
                 .lineLimit(3)
                 .fixedSize(horizontal: false, vertical: true)
 
             HStack(spacing: 14) {
-                metadataValue("\(row.item.score ?? 0)", systemImage: "arrow.up")
-                metadataValue("\(row.item.descendants ?? 0)", systemImage: "bubble.left")
+                if row.item.type != .comment {
+                    metadataValue("\(row.item.score ?? 0)", systemImage: "arrow.up")
+                }
+                metadataValue("\(row.item.type == .comment ? row.item.kids?.count ?? 0 : row.item.descendants ?? 0)", systemImage: "bubble.left")
 
-                if let author = row.item.by {
+                if row.item.type != .comment, let author = row.item.by {
                     Text(author)
                         .lineLimit(1)
                         .truncationMode(.middle)
@@ -361,11 +379,14 @@ private struct IOSStoryRow: View {
             .foregroundStyle(.secondary)
         }
         .padding(.vertical, 2)
+        .accessibilityIdentifier(row.item.type == .comment ? "savedComment.\(row.id)" : "story.\(row.id)")
         .contextMenu {
             Button(appState.isSaved(row.item) ? "Remove from Saved" : "Save for Later", systemImage: "bookmark") {
                 appState.toggleSaved(row.item)
             }
-            Link("Open Article", destination: row.item.articleURL ?? row.item.discussionURL)
+            if row.item.type != .comment {
+                Link("Open Article", destination: row.item.articleURL ?? row.item.discussionURL)
+            }
             Link("Open Discussion", destination: row.item.discussionURL)
             ShareLink(item: row.item.articleURL ?? row.item.discussionURL)
         }
@@ -402,6 +423,37 @@ struct IOSStoryListCanvas: View {
         )
         .environment(appState)
     }
+}
+
+/// The real Saved screen populated with local stories, comments, and replies.
+struct IOSSavedItemsCanvas: View {
+    @State private var appState = PreviewData.appState(
+        selection: .saved,
+        savedItems: zip(PreviewData.stories, PreviewData.comments).flatMap { [$0.0, $0.1] }
+    )
+    @State private var viewModel = ItemListViewModel(previewRows: [])
+
+    var body: some View {
+        IOSStoryList(
+            selection: .constant(.saved),
+            showsSavedStories: true,
+            viewModel: viewModel,
+            loadsAutomatically: false,
+            previewComments: PreviewData.rootComments,
+            previewThreads: PreviewData.threads
+        )
+        .environment(appState)
+    }
+}
+
+#Preview("iOS · Saved Stories & Comments · Light (Mock)") {
+    IOSSavedItemsCanvas()
+        .preferredColorScheme(.light)
+}
+
+#Preview("iOS · Saved Stories & Comments · Dark (Mock)") {
+    IOSSavedItemsCanvas()
+        .preferredColorScheme(.dark)
 }
 
 /// An interactive Canvas backed by the same live API and detail view as the app.

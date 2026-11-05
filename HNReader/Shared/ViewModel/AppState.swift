@@ -12,6 +12,7 @@ final class AppState {
 
     init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
+        // Keep the existing key for compatibility; Item stores stories and comments.
         savedItems = defaults.data(forKey: "savedStories")
             .flatMap { try? JSONDecoder().decode([Item].self, from: $0) } ?? []
         readIDs = Set(defaults.array(forKey: "readStories") as? [Int] ?? [])

@@ -516,11 +516,13 @@ private struct UserAvatar: View {
             loadsAutomatically: false
         )
     }
+    .environment(PreviewData.appState())
 }
 
 #Preview("iOS · Live mattrighetti") {
     NavigationStack {
         UserDetailView(username: "mattrighetti")
     }
+    .environment(PreviewData.appState())
 }
 #endif

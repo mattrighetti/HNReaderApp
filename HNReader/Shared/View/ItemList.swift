@@ -61,7 +61,7 @@ struct ItemList: View {
                             rank: row.rank,
                             isSelected: selectedID == row.id
                         )
-                            .help(row.item.title ?? "")
+                            .help(row.item.title ?? "Saved comment")
                             .frame(minHeight: StoryRowLayout.minimumHeight)
                             .tag(row.id)
                             .listRowInsets(EdgeInsets(top: 0, leading: 12, bottom: 0, trailing: 12))
@@ -88,7 +88,7 @@ struct ItemList: View {
             }
             .clickableCursor()
             .toggleStyle(.button)
-            .help("Show only stories you haven’t read")
+            .help(isSaved ? "Show only saved items you haven’t read" : "Show only stories you haven’t read")
 
             if !isSaved {
                 Button {
@@ -129,7 +129,7 @@ struct ItemList: View {
 
     private var emptyStateContent: (title: String, description: String) {
         if isSearching {
-            return ("No matching stories", "Try a different search.")
+            return (isSaved ? "No matching saved items" : "No matching stories", "Try a different search.")
         }
 
         if unreadOnly {
@@ -137,11 +137,13 @@ struct ItemList: View {
                 return ("No unread stories in loaded pages", "Load more stories to look for unread items.")
             }
 
-            return ("No unread stories", "Turn off Unread only to see stories you’ve read.")
+            return isSaved
+                ? ("No unread saved items", "Turn off Unread only to see saved items you’ve read.")
+                : ("No unread stories", "Turn off Unread only to see stories you’ve read.")
         }
 
         if isSaved {
-            return ("No saved stories", "Use the bookmark button to save a story.")
+            return ("No saved items", "Use the bookmark button to save a story or comment.")
         }
 
         let description = canLoadMore ? "Load more stories to continue." : "Refresh to check for stories."

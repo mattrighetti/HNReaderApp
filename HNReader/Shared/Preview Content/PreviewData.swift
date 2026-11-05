@@ -48,6 +48,7 @@ enum PreviewData {
         [
             {
                 "id": 400,
+                "type": "comment",
                 "by": "alex",
                 "text": "The best interfaces make the conversation easy to follow. Small details like spacing and thread lines make a surprisingly big difference.",
                 "kids": [401, 402],
@@ -56,6 +57,7 @@ enum PreviewData {
             {
                 "id": 401,
                 "parent": 400,
+                "type": "comment",
                 "by": "samantha",
                 "text": "Agreed. I especially like being able to collapse a whole branch without losing my place in the discussion.",
                 "kids": [403],
@@ -64,6 +66,7 @@ enum PreviewData {
             {
                 "id": 402,
                 "parent": 400,
+                "type": "comment",
                 "by": "kai",
                 "text": "And keeping the text readable as the thread gets deeper. A little indentation goes a long way.",
                 "time": \(posted + 1200)
@@ -71,6 +74,7 @@ enum PreviewData {
             {
                 "id": 403,
                 "parent": 401,
+                "type": "comment",
                 "by": "alex",
                 "text": "Exactly. The curved connectors should show <i>who is replying to whom</i>, without making the text feel boxed in.",
                 "kids": [404],
@@ -79,12 +83,14 @@ enum PreviewData {
             {
                 "id": 404,
                 "parent": 403,
+                "type": "comment",
                 "by": "jules",
                 "text": "This feels much easier to scan. The author badge helps too.",
                 "time": \(posted + 1500)
             },
             {
                 "id": 450,
+                "type": "comment",
                 "by": "taylor",
                 "text": "A separate top-level thought: sharing a direct link to a comment is useful when a conversation has a lot of branches.",
                 "time": \(posted + 1800)
@@ -105,6 +111,7 @@ enum PreviewData {
         let examples = (0...6).map { depth -> [String: Any] in
             var comment: [String: Any] = [
                 "id": 600 + depth,
+                "type": "comment",
                 "by": "reader\(depth + 1)",
                 "text": "Comment at depth \(depth). The curved connector should remain visible through five nested replies."
             ]
@@ -149,7 +156,8 @@ enum PreviewData {
 
     static func appState(
         selection: AppState.SidebarSelection = .top,
-        includeSavedStories: Bool = true
+        includeSavedStories: Bool = true,
+        savedItems: [Item]? = nil
     ) -> AppState {
         let suite = "HNReader.Canvas.\(UUID().uuidString)"
         let defaults = UserDefaults(suiteName: suite)!
@@ -160,7 +168,11 @@ enum PreviewData {
             state.markRead(last)
         }
 
-        if includeSavedStories {
+        if let savedItems {
+            for item in savedItems.reversed() {
+                state.toggleSaved(item)
+            }
+        } else if includeSavedStories {
             for story in stories.prefix(2) {
                 state.toggleSaved(story)
             }
