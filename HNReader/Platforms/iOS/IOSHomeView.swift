@@ -47,6 +47,11 @@ struct IOSHomeView: View {
                 .tabItem {
                     Label("Saved", systemImage: "bookmark")
                 }
+
+            IOSSettingsView()
+                .tabItem {
+                    Label("Settings", systemImage: "gearshape")
+                }
         }
     }
 }

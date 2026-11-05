@@ -184,11 +184,11 @@ struct Sidebar: View {
 
         VStack(spacing: 0) {
             HStack(spacing: 10) {
-                Text("Y")
-                    .font(.system(size: 23, weight: .medium, design: .rounded))
-                    .foregroundStyle(.white)
-                    .frame(width: 36, height: 36)
-                    .background(.orange.gradient, in: RoundedRectangle(cornerRadius: 10))
+                Image("AppLogo")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 44, height: 44)
+                    .accessibilityHidden(true)
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Hacker News")
