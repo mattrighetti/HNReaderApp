@@ -122,9 +122,6 @@ struct CommentView: View {
                 if !isCollapsed {
                     commentBody
                         .padding(.leading, CommentThreadLayout.bodyIndent)
-
-                    actions
-                        .padding(.leading, CommentThreadLayout.bodyIndent)
                 }
             }
             .overlay(alignment: .leading) {
@@ -223,32 +220,31 @@ struct CommentView: View {
                 authorIdentity
             }
 
+            if let time = item.timeStringRepresentation {
+                Text("· \(time)")
+                    .font(.system(size: CommentThreadLayout.metadataFontSize))
+                    .foregroundStyle(.secondary)
+                    .fixedSize()
+            }
+
+            Spacer(minLength: 4)
+
+            saveButton
+
             Button {
                 isCollapsed.toggle()
             } label: {
-                HStack(spacing: 8) {
-                    if let time = item.timeStringRepresentation {
-                        Text("· \(time)")
-                            .font(.system(size: CommentThreadLayout.metadataFontSize))
-                            .foregroundStyle(.secondary)
-                            .fixedSize()
-                    }
-
-                    Spacer(minLength: 4)
-
-                    Image(systemName: isCollapsed ? "plus" : "minus")
-                        .font(
-                            .system(size: CommentThreadLayout.metadataFontSize, weight: .semibold)
-                        )
-                        .foregroundStyle(.secondary)
-                        .frame(
-                            width: CommentThreadLayout.touchTarget,
-                            height: CommentThreadLayout.touchTarget
-                        )
-                        .accessibilityHidden(true)
-                }
-                .frame(maxWidth: .infinity)
-                .contentShape(Rectangle())
+                Image(systemName: isCollapsed ? "plus" : "minus")
+                    .font(
+                        .system(size: CommentThreadLayout.metadataFontSize, weight: .semibold)
+                    )
+                    .foregroundStyle(.secondary)
+                    .frame(
+                        width: CommentThreadLayout.touchTarget,
+                        height: CommentThreadLayout.touchTarget
+                    )
+                    .accessibilityHidden(true)
+                    .contentShape(Rectangle())
             }
             .clickableCursor()
             .buttonStyle(.plain)
@@ -285,14 +281,28 @@ struct CommentView: View {
         if let text = item.text {
             CommentTextView(
                 html: text,
-                replyingTo: depth > CommentThreadLayout.maximumIndentDepth ? parentAuthor : nil
-            )
+                replyingTo: depth > CommentThreadLayout.maximumIndentDepth ? parentAuthor : nil,
+                showsActions: hasActions
+            ) {
+                actions
+            }
+        } else {
+            actions
         }
     }
 
+    private var hasActions: Bool {
+        #if os(macOS)
+            true
+        #else
+            replyCount > 0
+        #endif
+    }
+
+    @ViewBuilder
     private var actions: some View {
         #if os(macOS)
-            HStack(spacing: 16) {
+            HStack(alignment: .firstTextBaseline, spacing: 16) {
                 if replyCount > 0 {
                     Button {
                         toggleReplies()
@@ -317,16 +327,14 @@ struct CommentView: View {
                 }
                 .clickableCursor()
 
-                saveButton
-
                 Spacer(minLength: 0)
             }
             .font(.system(size: 10, weight: .medium))
             .foregroundStyle(.secondary)
             .buttonStyle(.plain)
         #else
-            HStack(spacing: 8) {
-                if replyCount > 0 {
+            if replyCount > 0 {
+                HStack(alignment: .firstTextBaseline, spacing: 8) {
                     Button {
                         toggleReplies()
                     } label: {
@@ -341,15 +349,12 @@ struct CommentView: View {
                     .accessibilityHint(
                         repliesExpanded
                             ? "Collapses this comment thread" : "Expands this comment thread")
+                    Spacer(minLength: 0)
                 }
-
-                Spacer(minLength: 0)
-
-                saveButton
+                .font(.system(size: CommentThreadLayout.actionFontSize, weight: .semibold))
+                .foregroundStyle(.secondary)
+                .buttonStyle(.plain)
             }
-            .font(.system(size: CommentThreadLayout.actionFontSize, weight: .semibold))
-            .foregroundStyle(.secondary)
-            .buttonStyle(.plain)
         #endif
     }
 
@@ -361,10 +366,13 @@ struct CommentView: View {
                 appState.isSaved(item) ? "Saved" : "Save",
                 systemImage: appState.isSaved(item) ? "bookmark.fill" : "bookmark"
             )
+            .fixedSize(horizontal: true, vertical: false)
             .frame(minHeight: CommentThreadLayout.touchTarget)
             .contentShape(Rectangle())
         }
         .clickableCursor()
+        .buttonStyle(.plain)
+        .font(.system(size: CommentThreadLayout.actionFontSize, weight: .semibold))
         .foregroundStyle(appState.isSaved(item) ? Color.accentColor : .secondary)
         .accessibilityLabel(appState.isSaved(item) ? "Remove Comment from Saved" : "Save Comment")
         .accessibilityIdentifier("comment.save.\(item.id)")
@@ -635,6 +643,32 @@ private struct CommentAvatar: View {
     #Preview("Comment threads · Collapsed", traits: .fixedLayout(width: 640, height: 240)) {
         CommentsPreview(collapsed: true)
             .preferredColorScheme(.dark)
+    }
+
+    #Preview("Comment · Read more and replies", traits: .fixedLayout(width: 390, height: 600)) {
+        let text = String(
+            repeating:
+                "<p>A longer comment keeps the discussion readable, with text expansion and replies available together below the message.</p>",
+            count: 10)
+        let fixture: [String: Any] = [
+            "id": 800, "type": "comment", "by": "alex", "text": text,
+            "kids": [401, 402], "time": Int(Date().addingTimeInterval(-3600).timeIntervalSince1970),
+        ]
+        if let data = try? JSONSerialization.data(withJSONObject: fixture),
+            let item = try? JSONDecoder().decode(Item.self, from: data)
+        {
+            ScrollView {
+                CommentView(
+                    item: item,
+                    previewThreads: PreviewData.threads.merging([
+                        800: PreviewData.threads[400] ?? []
+                    ]) { _, latest in latest }
+                )
+                .padding(20)
+            }
+            .environment(PreviewData.appState())
+            .preferredColorScheme(.dark)
+        }
     }
 
     #Preview("Saved comment", traits: .fixedLayout(width: 390, height: 600)) {
