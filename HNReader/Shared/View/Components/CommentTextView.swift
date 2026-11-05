@@ -6,51 +6,63 @@ import SwiftUI
     import AppKit
 #endif
 
+private enum CommentTextMetrics {
+    #if os(macOS)
+        static let bodyFontSize: CGFloat = 13
+        static let bodyLineSpacing: CGFloat = 3
+        static let contextFontSize: CGFloat = 10
+        static let actionFontSize: CGFloat = 10
+        static let touchTarget: CGFloat = 22
+    #else
+        static let bodyFontSize: CGFloat = 16
+        static let bodyLineSpacing: CGFloat = 5
+        static let contextFontSize: CGFloat = 12
+        static let actionFontSize: CGFloat = 13
+        static let touchTarget: CGFloat = 32
+    #endif
+
+    static let collapsedLineLimit = 8
+    static let expansionThreshold = 800
+}
+
 /// The independently previewable text portion of a Hacker News comment.
 ///
 /// HN comment text arrives as HTML, most commonly using paragraphs, emphasis,
 /// links, quote markers, and preformatted code. The iOS implementation uses a
 /// selectable TextKit view so those formats can evolve independently from the
 /// surrounding thread cell.
-struct CommentTextView: View {
+struct CommentTextView<Actions: View>: View {
     let html: String
-    var replyingTo: String?
+    let replyingTo: String?
+    private let showsActions: Bool
+    private let actions: Actions
+
+    init(
+        html: String, replyingTo: String? = nil, showsActions: Bool = true,
+        @ViewBuilder actions: () -> Actions
+    ) {
+        self.html = html
+        self.replyingTo = replyingTo
+        self.showsActions = showsActions
+        self.actions = actions()
+    }
 
     @State private var isExpanded = false
     @State private var attributed = NSAttributedString(string: "")
 
-    private enum Metrics {
-        #if os(macOS)
-            static let bodyFontSize: CGFloat = 13
-            static let bodyLineSpacing: CGFloat = 3
-            static let contextFontSize: CGFloat = 10
-            static let actionFontSize: CGFloat = 10
-            static let touchTarget: CGFloat = 22
-        #else
-            static let bodyFontSize: CGFloat = 16
-            static let bodyLineSpacing: CGFloat = 5
-            static let contextFontSize: CGFloat = 12
-            static let actionFontSize: CGFloat = 13
-            static let touchTarget: CGFloat = 32
-        #endif
-
-        static let collapsedLineLimit = 8
-        static let expansionThreshold = 800
-    }
-
     private var canExpand: Bool {
-        html.count > Metrics.expansionThreshold
+        html.count > CommentTextMetrics.expansionThreshold
     }
 
     private var maximumNumberOfLines: Int? {
-        canExpand && !isExpanded ? Metrics.collapsedLineLimit : nil
+        canExpand && !isExpanded ? CommentTextMetrics.collapsedLineLimit : nil
     }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             if let replyingTo {
                 Text("Replying to \(replyingTo)")
-                    .font(.system(size: Metrics.contextFontSize))
+                    .font(.system(size: CommentTextMetrics.contextFontSize))
                     .foregroundStyle(.secondary)
             }
 
@@ -59,18 +71,24 @@ struct CommentTextView: View {
                 maximumNumberOfLines: maximumNumberOfLines
             )
 
-            if canExpand {
-                Button(isExpanded ? "Show less" : "Read more") {
-                    isExpanded.toggle()
+            if canExpand || showsActions {
+                HStack(alignment: .firstTextBaseline, spacing: 16) {
+                    if canExpand {
+                        Button(isExpanded ? "Show less" : "Read more") {
+                            isExpanded.toggle()
+                        }
+                        .clickableCursor()
+                        .buttonStyle(.plain)
+                        .font(.system(size: CommentTextMetrics.actionFontSize, weight: .semibold))
+                        .foregroundStyle(Color.accentColor)
+                        #if os(iOS)
+                            .frame(minHeight: CommentTextMetrics.touchTarget)
+                            .contentShape(Rectangle())
+                        #endif
+                    }
+
+                    actions
                 }
-                .clickableCursor()
-                .buttonStyle(.plain)
-                .font(.system(size: Metrics.actionFontSize, weight: .semibold))
-                .foregroundStyle(Color.accentColor)
-                #if os(iOS)
-                    .frame(minHeight: Metrics.touchTarget)
-                    .contentShape(Rectangle())
-                #endif
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -78,11 +96,19 @@ struct CommentTextView: View {
             guard !Task.isCancelled else { return }
             let rendered = await CommentTextFormatter.render(
                 html: html,
-                fontSize: Metrics.bodyFontSize,
-                lineSpacing: Metrics.bodyLineSpacing
+                fontSize: CommentTextMetrics.bodyFontSize,
+                lineSpacing: CommentTextMetrics.bodyLineSpacing
             )
             guard !Task.isCancelled else { return }
             attributed = rendered
+        }
+    }
+}
+
+extension CommentTextView where Actions == EmptyView {
+    init(html: String, replyingTo: String? = nil) {
+        self.init(html: html, replyingTo: replyingTo, showsActions: false) {
+            EmptyView()
         }
     }
 }

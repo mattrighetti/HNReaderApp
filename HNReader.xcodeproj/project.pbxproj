@@ -7,19 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		BFA400000000000000000002 /* Sidebar.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFA400000000000000000001 /* Sidebar.swift */; };
-		BFA300000000000000000002 /* MacReaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFA300000000000000000001 /* MacReaderView.swift */; };
-		BFA200000000000000000002 /* IOSStoryRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFA200000000000000000001 /* IOSStoryRow.swift */; };
-		BFA100000000000000000002 /* IOSStoryList.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFA100000000000000000001 /* IOSStoryList.swift */; };
-		AF4000000000000000000002 /* CommentTextRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF4000000000000000000001 /* CommentTextRenderer.swift */; };
-		AF4000000000000000000003 /* CommentTextRenderer.swift in iOS Sources */ = {isa = PBXBuildFile; fileRef = AF4000000000000000000001 /* CommentTextRenderer.swift */; };
-		AF3000000000000000000002 /* UserCommentsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF3000000000000000000001 /* UserCommentsView.swift */; };
-		AF3000000000000000000003 /* UserCommentsView.swift in iOS Sources */ = {isa = PBXBuildFile; fileRef = AF3000000000000000000001 /* UserCommentsView.swift */; };
-		AF2000000000000000000002 /* SavedCommentDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF2000000000000000000001 /* SavedCommentDetail.swift */; };
-		AF2000000000000000000003 /* SavedCommentDetail.swift in iOS Sources */ = {isa = PBXBuildFile; fileRef = AF2000000000000000000001 /* SavedCommentDetail.swift */; };
-		AF1000000000000000000002 /* StoryDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF1000000000000000000001 /* StoryDetail.swift */; };
-		AF1000000000000000000003 /* StoryDetail.swift in iOS Sources */ = {isa = PBXBuildFile; fileRef = AF1000000000000000000001 /* StoryDetail.swift */; };
-		AE1000000000000000000001 /* IOSSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE1000000000000000000002 /* IOSSettingsView.swift */; };
 		330710FDACC9DEEBEC56011F /* ItemTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33071EEBE46634E658582AE3 /* ItemTests.swift */; };
 		330711A9216E762026AF98A0 /* +Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3307159309D438EFAA1259C7 /* +Date.swift */; };
 		330713D3016ED410AFD53FDF /* ReaderPages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3307147A30B9051D95FFFB20 /* ReaderPages.swift */; };
@@ -48,9 +35,18 @@
 		AB7000000000000000000001 /* ClickableCursor.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB7000000000000000000002 /* ClickableCursor.swift */; };
 		AB9000000000000000000001 /* ReaderPageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB9000000000000000000002 /* ReaderPageService.swift */; };
 		AC1000000000000000000001 /* CommentTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC1000000000000000000002 /* CommentTextView.swift */; };
-		AC1000000000000000000003 /* CommentTextView.swift in iOS Sources */ = {isa = PBXBuildFile; fileRef = AC1000000000000000000002 /* CommentTextView.swift */; };
+		AC1000000000000000000003 /* CommentTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC1000000000000000000002 /* CommentTextView.swift */; };
 		AD1000000000000000000001 /* UserDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD1000000000000000000003 /* UserDetailView.swift */; };
-		AD1000000000000000000002 /* UserDetailView.swift in iOS Sources */ = {isa = PBXBuildFile; fileRef = AD1000000000000000000003 /* UserDetailView.swift */; };
+		AD1000000000000000000002 /* UserDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD1000000000000000000003 /* UserDetailView.swift */; };
+		AE1000000000000000000001 /* IOSSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE1000000000000000000002 /* IOSSettingsView.swift */; };
+		AF1000000000000000000002 /* StoryDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF1000000000000000000001 /* StoryDetail.swift */; };
+		AF1000000000000000000003 /* StoryDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF1000000000000000000001 /* StoryDetail.swift */; };
+		AF2000000000000000000002 /* SavedCommentDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF2000000000000000000001 /* SavedCommentDetail.swift */; };
+		AF2000000000000000000003 /* SavedCommentDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF2000000000000000000001 /* SavedCommentDetail.swift */; };
+		AF3000000000000000000002 /* UserCommentsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF3000000000000000000001 /* UserCommentsView.swift */; };
+		AF3000000000000000000003 /* UserCommentsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF3000000000000000000001 /* UserCommentsView.swift */; };
+		AF4000000000000000000002 /* CommentTextRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF4000000000000000000001 /* CommentTextRenderer.swift */; };
+		AF4000000000000000000003 /* CommentTextRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF4000000000000000000001 /* CommentTextRenderer.swift */; };
 		B20000000000000000000000 /* HackerNews.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9E9BD002674D007001B4E19 /* HackerNews.swift */; };
 		B20000000000000000000002 /* ItemCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33071CD8B451FE700B64F387 /* ItemCache.swift */; };
 		B20000000000000000000004 /* NewsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1000000000000000000004 /* NewsService.swift */; };
@@ -81,7 +77,11 @@
 		B20000000000000000000034 /* IBMPlexSerif-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5F109D5E2AF704F700AE6AF3 /* IBMPlexSerif-SemiBold.ttf */; };
 		B20000000000000000000035 /* IBMPlexSerif-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5F109D5B2AF704F700AE6AF3 /* IBMPlexSerif-Light.ttf */; };
 		B20000000000000000000036 /* PlatformColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000000F /* PlatformColors.swift */; };
-		B20000000000000000000037 /* IOSHomeView.swift in iOS Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000010 /* IOSHomeView.swift */; };
+		B20000000000000000000037 /* IOSHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000010 /* IOSHomeView.swift */; };
+		BFA100000000000000000002 /* IOSStoryList.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFA100000000000000000001 /* IOSStoryList.swift */; };
+		BFA200000000000000000002 /* IOSStoryRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFA200000000000000000001 /* IOSStoryRow.swift */; };
+		BFA300000000000000000002 /* MacReaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFA300000000000000000001 /* MacReaderView.swift */; };
+		BFA400000000000000000002 /* Sidebar.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFA400000000000000000001 /* Sidebar.swift */; };
 		C93F99B6267554F00046F870 /* ItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C93F99B5267554F00046F870 /* ItemCell.swift */; };
 		C93F99B8267557FC0046F870 /* ItemList.swift in Sources */ = {isa = PBXBuildFile; fileRef = C93F99B7267557FC0046F870 /* ItemList.swift */; };
 		C93F99BA267580CE0046F870 /* HTMLText.swift in Sources */ = {isa = PBXBuildFile; fileRef = C93F99B9267580CE0046F870 /* HTMLText.swift */; };
@@ -106,15 +106,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		BFA400000000000000000001 /* Sidebar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sidebar.swift; sourceTree = "<group>"; };
-		BFA300000000000000000001 /* MacReaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacReaderView.swift; sourceTree = "<group>"; };
-		BFA200000000000000000001 /* IOSStoryRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSStoryRow.swift; sourceTree = "<group>"; };
-		BFA100000000000000000001 /* IOSStoryList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSStoryList.swift; sourceTree = "<group>"; };
-		AF4000000000000000000001 /* CommentTextRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentTextRenderer.swift; sourceTree = "<group>"; };
-		AF3000000000000000000001 /* UserCommentsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserCommentsView.swift; sourceTree = "<group>"; };
-		AF2000000000000000000001 /* SavedCommentDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedCommentDetail.swift; sourceTree = "<group>"; };
-		AF1000000000000000000001 /* StoryDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryDetail.swift; sourceTree = "<group>"; };
-		AE1000000000000000000002 /* IOSSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSSettingsView.swift; sourceTree = "<group>"; };
 		33071291447141A6D31E671B /* HackerNewsTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HackerNewsTests.swift; sourceTree = "<group>"; };
 		3307147A30B9051D95FFFB20 /* ReaderPages.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReaderPages.swift; sourceTree = "<group>"; };
 		3307159309D438EFAA1259C7 /* +Date.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "+Date.swift"; sourceTree = "<group>"; };
@@ -144,11 +135,20 @@
 		AB9000000000000000000002 /* ReaderPageService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReaderPageService.swift; sourceTree = "<group>"; };
 		AC1000000000000000000002 /* CommentTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentTextView.swift; sourceTree = "<group>"; };
 		AD1000000000000000000003 /* UserDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDetailView.swift; sourceTree = "<group>"; };
-		B10000000000000000000005 /* HNReaderiOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = HNReaderiOS.app; path = HNReader.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		AE1000000000000000000002 /* IOSSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSSettingsView.swift; sourceTree = "<group>"; };
+		AF1000000000000000000001 /* StoryDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryDetail.swift; sourceTree = "<group>"; };
+		AF2000000000000000000001 /* SavedCommentDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedCommentDetail.swift; sourceTree = "<group>"; };
+		AF3000000000000000000001 /* UserCommentsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserCommentsView.swift; sourceTree = "<group>"; };
+		AF4000000000000000000001 /* CommentTextRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentTextRenderer.swift; sourceTree = "<group>"; };
+		B10000000000000000000005 /* HNReader.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HNReader.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B10000000000000000000009 /* HNReaderiOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HNReaderiOSApp.swift; sourceTree = "<group>"; };
 		B1000000000000000000000A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B1000000000000000000000F /* PlatformColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlatformColors.swift; sourceTree = "<group>"; };
 		B10000000000000000000010 /* IOSHomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSHomeView.swift; sourceTree = "<group>"; };
+		BFA100000000000000000001 /* IOSStoryList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSStoryList.swift; sourceTree = "<group>"; };
+		BFA200000000000000000001 /* IOSStoryRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSStoryRow.swift; sourceTree = "<group>"; };
+		BFA300000000000000000001 /* MacReaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacReaderView.swift; sourceTree = "<group>"; };
+		BFA400000000000000000001 /* Sidebar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sidebar.swift; sourceTree = "<group>"; };
 		C93F99B5267554F00046F870 /* ItemCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemCell.swift; sourceTree = "<group>"; };
 		C93F99B7267557FC0046F870 /* ItemList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemList.swift; sourceTree = "<group>"; };
 		C93F99B9267580CE0046F870 /* HTMLText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTMLText.swift; sourceTree = "<group>"; };
@@ -304,7 +304,7 @@
 			isa = PBXGroup;
 			children = (
 				C9D0937326741BBE002CC786 /* HNReader.app */,
-				B10000000000000000000005 /* HNReaderiOS.app */,
+				B10000000000000000000005 /* HNReader.app */,
 				C9D0938A26741BC0002CC786 /* HNReaderTests.xctest */,
 			);
 			name = Products;
@@ -404,7 +404,7 @@
 			packageProductDependencies = (
 			);
 			productName = HNReaderiOS;
-			productReference = B10000000000000000000005 /* HNReaderiOS.app */;
+			productReference = B10000000000000000000005 /* HNReader.app */;
 			productType = "com.apple.product-type.application";
 		};
 		C9D0937226741BBE002CC786 /* HNReader */ = {
@@ -538,11 +538,11 @@
 				B2000000000000000000000D /* CommentView.swift in Sources */,
 				B2000000000000000000000E /* BgButton.swift in Sources */,
 				B2000000000000000000000F /* ClickableCursor.swift in Sources */,
-				AF1000000000000000000003 /* StoryDetail.swift in iOS Sources */,
-				AF2000000000000000000003 /* SavedCommentDetail.swift in iOS Sources */,
-				AF3000000000000000000003 /* UserCommentsView.swift in iOS Sources */,
-				AF4000000000000000000003 /* CommentTextRenderer.swift in iOS Sources */,
-				AC1000000000000000000003 /* CommentTextView.swift in iOS Sources */,
+				AF1000000000000000000003 /* StoryDetail.swift in Sources */,
+				AF2000000000000000000003 /* SavedCommentDetail.swift in Sources */,
+				AF3000000000000000000003 /* UserCommentsView.swift in Sources */,
+				AF4000000000000000000003 /* CommentTextRenderer.swift in Sources */,
+				AC1000000000000000000003 /* CommentTextView.swift in Sources */,
 				B20000000000000000000010 /* HTMLText.swift in Sources */,
 				B20000000000000000000011 /* ConditionalRedactedModifier.swift in Sources */,
 				B20000000000000000000012 /* HomeView.swift in Sources */,
@@ -553,11 +553,11 @@
 				B20000000000000000000017 /* FeedRepository.swift in Sources */,
 				B20000000000000000000018 /* ReaderPages.swift in Sources */,
 				B20000000000000000000019 /* ReaderPageService.swift in Sources */,
-				AD1000000000000000000002 /* UserDetailView.swift in iOS Sources */,
+				AD1000000000000000000002 /* UserDetailView.swift in Sources */,
 				B20000000000000000000030 /* HNReaderiOSApp.swift in Sources */,
 				BFA100000000000000000002 /* IOSStoryList.swift in Sources */,
 				BFA200000000000000000002 /* IOSStoryRow.swift in Sources */,
-				B20000000000000000000037 /* IOSHomeView.swift in iOS Sources */,
+				B20000000000000000000037 /* IOSHomeView.swift in Sources */,
 				AE1000000000000000000001 /* IOSSettingsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -631,16 +631,19 @@
 		B40000000000000000000002 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIconOrange;
 				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "AppIconPlum AppIconMidnight AppIconForest";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIconOrange;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = H89RFW5UZ6;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = HNReader/Platforms/iOS/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				MARKETING_VERSION = 2.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.mattrighetti.HNReader.ios;
 				PRODUCT_NAME = HNReader;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SWIFT_VERSION = 5.0;
@@ -651,16 +654,19 @@
 		B40000000000000000000003 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIconOrange;
 				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "AppIconPlum AppIconMidnight AppIconForest";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIconOrange;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = H89RFW5UZ6;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = HNReader/Platforms/iOS/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				MARKETING_VERSION = 2.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.mattrighetti.HNReader.ios;
 				PRODUCT_NAME = HNReader;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SWIFT_VERSION = 5.0;
