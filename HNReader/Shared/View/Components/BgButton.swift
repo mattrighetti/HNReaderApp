@@ -13,32 +13,38 @@ struct BgButton: View {
     var disabled: Bool = false
     var minSize: CGSize
     var onHover: ((Bool) -> Void)? = nil
-    var action: (() -> ())? = nil
+    var action: (() -> Void)? = nil
 
     var body: some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: 15)
-                .foregroundStyle(Color.gray.opacity(0.1))
-                .frame(width: minSize.width, height: minSize.height)
+        Button {
+            action?()
+        } label: {
+            ZStack {
+                RoundedRectangle(cornerRadius: 15)
+                    .foregroundStyle(Color.gray.opacity(0.1))
+                    .frame(width: minSize.width, height: minSize.height)
 
-            Label(title: {
-                if text != nil {
-                    Text(text!)
-                        .font(.custom("IBMPlexSerif-Regular", size: 13))
-                }
-            }, icon: {
-                Image(systemName: icon)
-            })
-            .foregroundStyle(disabled ? .tertiary : .primary)
-            .padding()
+                Label(
+                    title: {
+                        if text != nil {
+                            Text(text!)
+                                .font(.custom("IBMPlexSerif-Regular", size: 13))
+                        }
+                    },
+                    icon: {
+                        Image(systemName: icon)
+                    }
+                )
+                .foregroundStyle(disabled ? .tertiary : .primary)
+                .padding()
+            }
         }
+        .buttonStyle(.plain)
+        .disabled(disabled)
         .frame(width: minSize.width, height: minSize.height)
         .clickableCursor(enabled: !disabled)
         .onHover {
             onHover?($0)
-        }
-        .onTapGesture {
-            action?()
         }
     }
 }
@@ -59,7 +65,9 @@ struct BgButton: View {
 }
 
 #Preview("Buttons · Dark") {
-    BgButton(text: "Open on GitHub", icon: "arrow.up.right", minSize: CGSize(width: 200, height: 44))
-        .padding(20)
-        .preferredColorScheme(.dark)
+    BgButton(
+        text: "Open on GitHub", icon: "arrow.up.right", minSize: CGSize(width: 200, height: 44)
+    )
+    .padding(20)
+    .preferredColorScheme(.dark)
 }

@@ -1,306 +1,78 @@
 import SwiftUI
 
 struct HomeView: View {
-    @Environment(AppState.self) private var appState
-
-    @State private var viewModel: ItemListViewModel
-
-    @State private var selectedID: Int?
-    @State private var searchText = ""
-    @State private var unreadOnly = false
-    @State private var columnVisibility: NavigationSplitViewVisibility = .all
-
-    private let loadsAutomatically: Bool
-    private let previewComments: [Item]?
-    private let previewThreads: [Int: [Item]]?
-
-    init(
-        viewModel: ItemListViewModel? = nil,
-        selectedID: Int? = nil,
-        loadsAutomatically: Bool = true,
-        previewComments: [Item]? = nil,
-        previewThreads: [Int: [Item]]? = nil
-    ) {
-        _viewModel = State(initialValue: viewModel ?? ItemListViewModel())
-        _selectedID = State(initialValue: selectedID)
-        self.loadsAutomatically = loadsAutomatically
-        self.previewComments = previewComments
-        self.previewThreads = previewThreads
-    }
-
-    private var selection: AppState.SidebarSelection {
-        appState.sidebarSelection ?? .top
-    }
-
-    private var source: [Item] {
-        selection == .saved ? appState.savedItems : viewModel.stories
-    }
-
-    private var selectedItem: Item? {
-        (source + appState.savedItems).first { $0.id == selectedID }
-    }
-
-    private var visibleRows: [StoryRow] {
-        let rows = selection == .saved
-            ? StoryRow.savedRows(for: appState.savedItems)
-            : viewModel.rows
-
-        return rows.filter { row in
-            (!unreadOnly || !appState.readIDs.contains(row.id) || row.id == selectedID)
-                && (
-                    searchText.isEmpty
-                        || [row.item.title, row.item.by, row.item.urlHost, row.item.type == .comment ? row.item.text : nil]
-                        .compactMap { $0 }
-                        .contains { $0.localizedCaseInsensitiveContains(searchText)
-                    }
-                )
-        }
-    }
+    var initialRows: [StoryRow] = []
+    var initialSelection: AppState.SidebarSelection = .top
+    var initialUnreadOnly = false
+    var repository: FeedRepository = .shared
+    var selectedID: Int?
+    var loadsAutomatically = true
+    var previewComments: [Item]?
+    var previewThreads: [Int: [Item]]?
 
     var body: some View {
         #if os(iOS)
-        IOSHomeView(
-            viewModel: viewModel,
-            loadsAutomatically: loadsAutomatically,
-            previewComments: previewComments,
-            previewThreads: previewThreads
-        )
+            IOSHomeView(
+                initialRows: initialRows, repository: repository,
+                loadsAutomatically: loadsAutomatically,
+                previewComments: previewComments, previewThreads: previewThreads)
         #else
-        NavigationSplitView(columnVisibility: $columnVisibility) {
-            Sidebar()
-                .navigationSplitViewColumnWidth(min: 180, ideal: 205, max: 260)
-        } content: {
-            ItemList(
-                rows: visibleRows,
-                revision: viewModel.revision,
-                selectedID: $selectedID,
-                title: selection.rawValue,
-                isLoading: selection != .saved && viewModel.isLoading,
-                isLoadingMore: selection != .saved && viewModel.isLoadingMore,
-                hasMore: selection != .saved && viewModel.hasMore,
-                paginationError: selection == .saved ? nil : viewModel.paginationError,
-                errorMessage: selection == .saved ? nil : viewModel.errorMessage,
-                isSaved: selection == .saved,
-                isSearching: !searchText.isEmpty,
-                unreadOnly: $unreadOnly,
-                refresh: refresh,
-                loadMore: {
-                    if loadsAutomatically {
-                        await viewModel.loadMore()
-                    }
-                }
-            )
-            #if os(macOS)
-            .frame(minWidth: 312)
-            #endif
-            .navigationSplitViewColumnWidth(min: 200, ideal: 312, max: 720)
-            #if os(macOS)
-            .background {
-                SplitColumnWidth(minimum: 200, maximum: 720)
-                    .allowsHitTesting(false)
-            }
-            #endif
-            .toolbar {
-                #if os(macOS)
-                ToolbarItem {
-                    HStack(spacing: 6) {
-                        Image(systemName: "magnifyingglass")
-                            .foregroundStyle(.secondary)
-                            .accessibilityHidden(true)
-
-                        TextField(selection == .saved ? "Search saved items" : "Search loaded stories", text: $searchText)
-                            .textFieldStyle(.plain)
-                            .accessibilityLabel(selection == .saved ? "Search saved items" : "Search loaded stories")
-                    }
-                    .padding(.horizontal, 8)
-                    .frame(width: 260)
-                }
-
-                ToolbarSpacer(.fixed)
-                #endif
-            }
-            #if os(iOS)
-            .searchable(text: $searchText, prompt: "Search loaded stories")
-            #endif
-        } detail: {
-            NavigationStack {
-                if let item = selectedItem {
-                    if item.type == .comment {
-                        SavedCommentDetail(item: item, previewThreads: previewThreads)
-                    } else {
-                        StoryDetail(
-                            item: item,
-                            initialComments: previewComments,
-                            previewThreads: previewThreads,
-                            loadsAutomatically: loadsAutomatically
-                        )
-                            .id(item.id)
-                    }
-                } else {
-                    ContentUnavailableView("Select a story", systemImage: "newspaper")
-                }
-            }
-            .id(selectedItem?.id)
-        }
-        .navigationSplitViewStyle(.balanced)
-        .task(id: selection) {
-            guard loadsAutomatically else {
-                return
-            }
-
-            selectedID = nil
-            searchText = ""
-
-            if let category = selection.category {
-                await viewModel.load(category)
-            } else {
-                viewModel.deactivate()
-            }
-        }
-        .onChange(of: selectedItem?.id) { _, _ in
-            if let item = selectedItem {
-                appState.markRead(item)
-            }
-        }
+            MacReaderView(
+                initialRows: initialRows, initialSelection: initialSelection,
+                initialUnreadOnly: initialUnreadOnly, repository: repository,
+                selectedID: selectedID, loadsAutomatically: loadsAutomatically,
+                previewComments: previewComments, previewThreads: previewThreads)
         #endif
-    }
-
-    private func refresh() async {
-        guard loadsAutomatically else {
-            return
-        }
-
-        if let category = selection.category {
-            await viewModel.load(category, forceRefresh: true)
-        }
-    }
-}
-
-struct Sidebar: View {
-    @Environment(AppState.self) private var appState
-
-    var body: some View {
-        @Bindable var appState = appState
-
-        VStack(spacing: 0) {
-            HStack(spacing: 10) {
-                Image("AppLogo")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 44, height: 44)
-                    .accessibilityHidden(true)
-
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("Hacker News")
-                        .font(.headline)
-
-                    Text("Stay curious.")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-
-                Spacer()
-            }
-            .padding(18)
-
-            List(selection: $appState.sidebarSelection) {
-                Section("Discover") {
-                    ForEach(AppState.SidebarSelection.allCases.filter { $0 != .saved }) { section in
-                        Label(section.rawValue, systemImage: section.iconName)
-                            .contentShape(Rectangle())
-                            .clickableCursor()
-                            .tag(section)
-                            .padding(.vertical, 4)
-                    }
-                }
-
-                Section("Library") {
-                    HStack {
-                        Label("Saved", systemImage: "bookmark")
-
-                        Spacer()
-
-                        Text("\(appState.savedItems.count)")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-                    .contentShape(Rectangle())
-                    .clickableCursor()
-                    .tag(AppState.SidebarSelection.saved)
-                    .padding(.vertical, 4)
-                }
-            }
-            .listStyle(.sidebar)
-
-            HStack {
-                Text("Made for curious minds")
-                    .font(.caption2)
-                    .foregroundStyle(.tertiary)
-
-                Spacer()
-
-                #if os(macOS)
-                SettingsLink {
-                    Image(systemName: "gearshape")
-                }
-                .clickableCursor()
-                .buttonStyle(.plain)
-                .help("Settings")
-                #endif
-            }
-            .padding(16)
-        }
-        .navigationTitle("HNReader")
     }
 }
 
 #if DEBUG && os(macOS)
-#Preview("Reader · Light", traits: .fixedLayout(width: 1600, height: 820)) {
-    HomeView(
-        viewModel: ItemListViewModel(previewRows: PreviewData.rows),
-        selectedID: PreviewData.stories.first?.id,
-        loadsAutomatically: false,
-        previewComments: PreviewData.rootComments,
-        previewThreads: PreviewData.threads
-    )
-    .environment(PreviewData.appState())
-    .preferredColorScheme(.light)
-}
+    #Preview("Reader · Light", traits: .fixedLayout(width: 1600, height: 820)) {
+        HomeView(
+            initialRows: PreviewData.rows,
+            selectedID: PreviewData.stories.first?.id,
+            loadsAutomatically: false,
+            previewComments: PreviewData.rootComments,
+            previewThreads: PreviewData.threads
+        )
+        .environment(PreviewData.appState())
+        .preferredColorScheme(.light)
+    }
 
-#Preview("Reader · Dark", traits: .fixedLayout(width: 1600, height: 820)) {
-    HomeView(
-        viewModel: ItemListViewModel(previewRows: PreviewData.rows),
-        selectedID: PreviewData.stories.first?.id,
-        loadsAutomatically: false,
-        previewComments: PreviewData.rootComments,
-        previewThreads: PreviewData.threads
-    )
-    .environment(PreviewData.appState())
-    .preferredColorScheme(.dark)
-}
+    #Preview("Reader · Dark", traits: .fixedLayout(width: 1600, height: 820)) {
+        HomeView(
+            initialRows: PreviewData.rows,
+            selectedID: PreviewData.stories.first?.id,
+            loadsAutomatically: false,
+            previewComments: PreviewData.rootComments,
+            previewThreads: PreviewData.threads
+        )
+        .environment(PreviewData.appState())
+        .preferredColorScheme(.dark)
+    }
 
-#Preview("Reader · No selection", traits: .fixedLayout(width: 1600, height: 820)) {
-    HomeView(
-        viewModel: ItemListViewModel(previewRows: PreviewData.rows),
-        loadsAutomatically: false
-    )
-    .environment(PreviewData.appState())
-}
+    #Preview("Reader · No selection", traits: .fixedLayout(width: 1600, height: 820)) {
+        HomeView(
+            initialRows: PreviewData.rows,
+            loadsAutomatically: false
+        )
+        .environment(PreviewData.appState())
+    }
 
-#Preview("Sidebar", traits: .fixedLayout(width: 205, height: 600)) {
-    Sidebar()
-        .environment(PreviewData.appState(selection: .saved))
-}
+    #Preview("Sidebar", traits: .fixedLayout(width: 205, height: 600)) {
+        Sidebar(selection: .constant(.top))
+            .environment(PreviewData.appState())
+    }
 #endif
 
 #if DEBUG && os(iOS)
-#Preview("Reader · iOS") {
-    HomeView(
-        viewModel: ItemListViewModel(previewRows: PreviewData.rows),
-        loadsAutomatically: false,
-        previewComments: PreviewData.rootComments,
-        previewThreads: PreviewData.threads
-    )
-    .environment(PreviewData.appState())
-}
+    #Preview("Reader · iOS") {
+        HomeView(
+            initialRows: PreviewData.rows,
+            loadsAutomatically: false,
+            previewComments: PreviewData.rootComments,
+            previewThreads: PreviewData.threads
+        )
+        .environment(PreviewData.appState())
+    }
 #endif

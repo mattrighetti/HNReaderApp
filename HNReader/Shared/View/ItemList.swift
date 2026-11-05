@@ -1,8 +1,16 @@
 import SwiftUI
 
+/// Restart a visible footer when loading finishes or the page cursor advances.
+struct FeedPaginationTrigger: Equatable {
+    let revision: UUID
+    let isLoading: Bool
+    let nextOffset: Int
+}
+
 struct ItemList: View {
     let rows: [StoryRow]
     let revision: UUID
+    let nextOffset: Int
 
     @Binding var selectedID: Int?
 
@@ -61,11 +69,11 @@ struct ItemList: View {
                             rank: row.rank,
                             isSelected: selectedID == row.id
                         )
-                            .help(row.item.title ?? "Saved comment")
-                            .frame(minHeight: StoryRowLayout.minimumHeight)
-                            .tag(row.id)
-                            .listRowInsets(EdgeInsets(top: 0, leading: 12, bottom: 0, trailing: 12))
-                            .listRowSeparator(.hidden)
+                        .help(row.item.title ?? "Saved comment")
+                        .frame(minHeight: StoryRowLayout.minimumHeight)
+                        .tag(row.id)
+                        .listRowInsets(EdgeInsets(top: 0, leading: 12, bottom: 0, trailing: 12))
+                        .listRowSeparator(.hidden)
                     }
 
                     if canLoadMore {
@@ -88,7 +96,10 @@ struct ItemList: View {
             }
             .clickableCursor()
             .toggleStyle(.button)
-            .help(isSaved ? "Show only saved items you haven’t read" : "Show only stories you haven’t read")
+            .help(
+                isSaved
+                    ? "Show only saved items you haven’t read"
+                    : "Show only stories you haven’t read")
 
             if !isSaved {
                 Button {
@@ -129,12 +140,18 @@ struct ItemList: View {
 
     private var emptyStateContent: (title: String, description: String) {
         if isSearching {
-            return (isSaved ? "No matching saved items" : "No matching stories", "Try a different search.")
+            return (
+                isSaved ? "No matching saved items" : "No matching stories",
+                "Try a different search."
+            )
         }
 
         if unreadOnly {
             if canLoadMore {
-                return ("No unread stories in loaded pages", "Load more stories to look for unread items.")
+                return (
+                    "No unread stories in loaded pages",
+                    "Load more stories to look for unread items."
+                )
             }
 
             return isSaved
@@ -146,7 +163,8 @@ struct ItemList: View {
             return ("No saved items", "Use the bookmark button to save a story or comment.")
         }
 
-        let description = canLoadMore ? "Load more stories to continue." : "Refresh to check for stories."
+        let description =
+            canLoadMore ? "Load more stories to continue." : "Refresh to check for stories."
 
         return ("No stories to show", description)
     }
@@ -179,7 +197,7 @@ struct ItemList: View {
             }
         }
         .padding(16)
-        .task(id: revision) {
+        .task(id: paginationTrigger) {
             if paginationError == nil {
                 await loadMore()
             }
@@ -212,544 +230,172 @@ struct ItemList: View {
         .frame(maxWidth: .infinity, minHeight: 48)
         .listRowSeparator(.hidden)
         .id(rows.last?.id)
-        .task(id: revision) {
+        .task(id: paginationTrigger) {
             if paginationError == nil {
                 await loadMore()
             }
         }
     }
 
-}
-
-struct StoryDetail: View {
-    @State private var model: StoryDetailViewModel
-
-    @Environment(AppState.self) private var appState
-
-    @State private var threadsCollapsed = false
-    @State private var commentFrames: [Int: CGRect] = [:]
-    @State private var commentViewportHeight: CGFloat = 0
-    @State private var pendingCommentID: Int?
-
-    private let previewThreads: [Int: [Item]]?
-    private let loadsAutomatically: Bool
-
-    init(
-        item: Item,
-        initialComments: [Item]? = nil,
-        previewThreads: [Int: [Item]]? = nil,
-        loadsAutomatically: Bool = true,
-        isLoading: Bool = false,
-        errorMessage: String? = nil
-    ) {
-        self.previewThreads = previewThreads
-        self.loadsAutomatically = loadsAutomatically
-        _model = State(initialValue: StoryDetailViewModel(
-            item: item,
-            initialComments: initialComments,
-            isLoading: isLoading,
-            errorMessage: errorMessage
-        ))
-    }
-
-    private var item: Item {
-        model.item
-    }
-
-    private var navigation: CommentNavigation {
-        CommentNavigation(
-            ids: model.comments.map(\.id),
-            frames: commentFrames,
-            viewportHeight: commentViewportHeight
-        )
-    }
-
-    var body: some View {
-        ScrollViewReader { proxy in
-            ScrollView {
-                VStack(alignment: .leading, spacing: 24) {
-                    VStack(alignment: .leading, spacing: 16) {
-                        Text(item.urlHost?.uppercased() ?? "HACKER NEWS")
-                            .font(.system(size: 10, weight: .bold, design: .monospaced))
-                            .tracking(1.5)
-                            .foregroundStyle(Color.accentColor)
-
-                        Text(item.title ?? "Untitled story")
-                            .font(.system(size: 30, weight: .semibold, design: .serif))
-                            .textSelection(.enabled)
-
-                        #if os(macOS)
-                        HStack(spacing: 8) {
-                            if let author = item.by {
-                                NavigationLink {
-                                    UserDetailView(username: author)
-                                } label: {
-                                    Text(author)
-                                }
-                                .clickableCursor()
-                                .buttonStyle(.plain)
-                                .accessibilityLabel("View \(author)’s profile")
-                            } else {
-                                Text("Unknown author")
-                            }
-
-                            Text("·")
-
-                            Text("\(item.timeStringRepresentation ?? "") ago")
-
-                            Text("·")
-
-                            Text("\(item.score ?? 0) points")
-                        }
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                        #else
-                        HStack(spacing: 14) {
-                            Label {
-                                Text("\(item.score ?? 0) points")
-                            } icon: {
-                                Image(systemName: "arrow.up")
-                                    .fontWeight(.bold)
-                            }
-
-                            if let time = item.timeStringRepresentation {
-                                Label {
-                                    Text("\(time) ago")
-                                } icon: {
-                                    Image(systemName: "calendar")
-                                        .fontWeight(.bold)
-                                }
-                            }
-
-                            if let author = item.by {
-                                NavigationLink {
-                                    UserDetailView(username: author)
-                                } label: {
-                                    Label {
-                                        Text(author)
-                                    } icon: {
-                                        Image(systemName: "person")
-                                            .fontWeight(.bold)
-                                    }
-                                }
-                                .buttonStyle(.plain)
-                                .accessibilityLabel("View \(author)’s profile")
-                            } else {
-                                Label {
-                                    Text("Unknown author")
-                                } icon: {
-                                    Image(systemName: "person")
-                                        .fontWeight(.bold)
-                                }
-                            }
-                        }
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.85)
-                        #endif
-
-                        #if os(macOS)
-                        HStack(spacing: 12) {
-                            Link(destination: item.articleURL ?? item.discussionURL) {
-                                Label(
-                                    "Open \(item.articleURL == nil ? "on Hacker News" : "Article")",
-                                    systemImage: "arrow.up.right"
-                                )
-                            }
-                            .clickableCursor()
-                            .buttonStyle(.borderedProminent)
-
-                            Button {
-                                appState.toggleSaved(item)
-                            } label: {
-                                Label(
-                                    appState.isSaved(item) ? "Saved" : "Save for Later",
-                                    systemImage: appState.isSaved(item) ? "bookmark.fill" : "bookmark"
-                                )
-                            }
-                            .clickableCursor()
-                            .buttonStyle(.bordered)
-                        }
-                        #endif
-                    }
-
-                    if let text = item.text, !text.isEmpty {
-                        #if os(macOS)
-                        HTMLText(text: text)
-                        #else
-                        HTMLText(text: text, fontSize: 17, lineSpacing: 6)
-                        #endif
-                    }
-
-                    #if os(macOS)
-                    HStack {
-                        Label("Discussion", systemImage: "bubble.left.and.bubble.right")
-                            .font(.headline)
-
-                        Text("\(item.descendants ?? 0)")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-
-                        Spacer()
-
-                        Button {
-                            threadsCollapsed.toggle()
-                        } label: {
-                            Label(
-                                threadsCollapsed ? "Expand threads" : "Collapse threads",
-                                systemImage: threadsCollapsed ? "chevron.down" : "chevron.up"
-                            )
-                        }
-                        .clickableCursor()
-                        .buttonStyle(.plain)
-                        .font(.system(size: 10))
-                        .foregroundStyle(.secondary)
-
-                        Link("View on HN", destination: item.discussionURL)
-                            .clickableCursor()
-                            .font(.system(size: 10))
-                    }
-                    #else
-                    HStack(spacing: 10) {
-                        Label(
-                            "\(item.descendants ?? 0) comments",
-                            systemImage: "bubble.left.and.bubble.right"
-                        )
-                        .font(.subheadline.weight(.medium))
-                        .foregroundStyle(.secondary)
-
-                        Spacer()
-
-                        Button {
-                            threadsCollapsed.toggle()
-                        } label: {
-                            Image(systemName: threadsCollapsed ? "chevron.down" : "chevron.up")
-                                .frame(width: 28, height: 28)
-                                .contentShape(Rectangle())
-                        }
-                        .buttonStyle(.plain)
-                        .accessibilityLabel(threadsCollapsed ? "Expand threads" : "Collapse threads")
-
-                        Link(destination: item.discussionURL) {
-                            Label("View on HN", systemImage: "arrow.up.right")
-                                .contentShape(Rectangle())
-                        }
-                        .buttonStyle(.plain)
-                        .accessibilityLabel("View discussion on Hacker News")
-                    }
-                    .font(.subheadline.weight(.medium))
-                    .foregroundStyle(.secondary)
-                    #endif
-
-                    if model.comments.isEmpty && !model.isLoading && model.errorMessage == nil {
-                        Text("No comments yet. Be the first to join the conversation on Hacker News.")
-                            .foregroundStyle(.secondary)
-                            .padding(.vertical)
-                    }
-
-                    LazyVStack(alignment: .leading, spacing: 0) {
-                        ForEach(model.comments) { comment in
-                            CommentView(
-                                item: comment,
-                                storyAuthor: item.by,
-                                collapseAll: threadsCollapsed,
-                                previewThreads: previewThreads
-                            )
-                            .id(comment.id)
-                            #if os(macOS)
-                            .background {
-                                GeometryReader { geometry in
-                                    Color.clear.preference(
-                                        key: CommentPositions.self,
-                                        value: [comment.id: geometry.frame(in: .named("discussionScroll"))]
-                                    )
-                                }
-                            }
-                            #endif
-                        }
-                    }
-
-                    if let errorMessage = model.errorMessage {
-                        Text(errorMessage)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-
-                        Button("Retry Comments") {
-                            Task {
-                                await model.loadComments()
-                            }
-                        }
-                        .clickableCursor()
-                    }
-
-                    if model.isLoading {
-                        ProgressView("Loading conversation…")
-                            .frame(maxWidth: .infinity)
-                    } else if model.hasMoreComments && model.errorMessage == nil {
-                        Button("Load More Comments") {
-                            Task {
-                                await model.loadComments()
-                            }
-                        }
-                        .clickableCursor()
-                    }
-                }
-                .frame(maxWidth: 760, alignment: .leading)
-                #if os(macOS)
-                .padding(32)
-                #else
-                .padding(16)
-                #endif
-                .padding(.bottom, 40)
-                .frame(maxWidth: .infinity)
-            }
-            #if os(macOS)
-            .coordinateSpace(name: "discussionScroll")
-            .onScrollGeometryChange(for: CGFloat.self) { geometry in
-                geometry.containerSize.height
-            } action: { _, height in
-                commentViewportHeight = height
-            }
-            .onPreferenceChange(CommentPositions.self) { frames in
-                commentFrames = frames
-            }
-            .onChange(of: pendingCommentID) { _, id in
-                guard let id else {
-                    return
-                }
-
-                withAnimation(.easeInOut(duration: 0.2)) {
-                    proxy.scrollTo(id, anchor: .top)
-                }
-
-                pendingCommentID = nil
-            }
-            .overlay(alignment: .bottomTrailing) {
-                if !model.comments.isEmpty {
-                    CommentJumpControls(
-                        canGoUp: navigation.target(for: .previous) != nil,
-                        canGoDown: navigation.target(for: .next) != nil || model.hasMoreComments,
-                        isLoading: model.isLoading,
-                        previous: {
-                            pendingCommentID = navigation.target(for: .previous)
-                        },
-                        next: {
-                            Task {
-                                await jumpToNextComment()
-                            }
-                        }
-                    )
-                    .padding(.trailing, 24)
-                    .padding(.bottom, 20)
-                }
-            }
-            #endif
-        }
-        .background(PlatformColors.textBackground)
-        .toolbar {
-            #if os(iOS)
-            if let articleURL = item.articleURL {
-                Link(destination: articleURL) {
-                    Label("Open Article", systemImage: "safari")
-                }
-                .accessibilityLabel("Open article in browser")
-            }
-            #endif
-
-            Button {
-                appState.toggleSaved(item)
-            } label: {
-                Label(
-                    appState.isSaved(item) ? "Remove from Saved" : "Save Story",
-                    systemImage: appState.isSaved(item) ? "bookmark.fill" : "bookmark"
-                )
-            }
-            .clickableCursor()
-            .keyboardShortcut("d", modifiers: .command)
-
-            ShareLink(item: item.articleURL ?? item.discussionURL)
-                .clickableCursor()
-        }
-        .task {
-            if loadsAutomatically {
-                await model.loadComments()
-            }
-        }
-    }
-
-    @MainActor
-    private func jumpToNextComment() async {
-        if let id = navigation.target(for: .next) {
-            pendingCommentID = id
-            return
-        }
-
-        guard loadsAutomatically, model.hasMoreComments, !model.isLoading else {
-            return
-        }
-
-        let previousCount = model.comments.count
-        await model.loadComments()
-
-        if model.comments.count > previousCount {
-            pendingCommentID = model.comments[previousCount].id
-        }
+    private var paginationTrigger: FeedPaginationTrigger {
+        FeedPaginationTrigger(revision: revision, isLoading: isLoading, nextOffset: nextOffset)
     }
 }
 
 #if DEBUG && os(macOS)
-struct ItemListPreview: View {
-    enum PreviewState {
-        case loaded
-        case loading
-        case emptySaved
-        case emptyUnreadPage
-        case noResults
-        case error
-        case loadingPage
-        case pageError
-    }
+    struct ItemListPreview: View {
+        enum PreviewState {
+            case loaded
+            case loading
+            case emptySaved
+            case emptyUnreadPage
+            case noResults
+            case error
+            case loadingPage
+            case pageError
+        }
 
-    let state: PreviewState
+        let state: PreviewState
 
-    @State private var selection: Int? = PreviewData.stories.first?.id
-    @State private var unreadOnly = false
+        @State private var selection: Int? = PreviewData.stories.first?.id
+        @State private var unreadOnly = false
 
-    init(state: PreviewState) {
-        self.state = state
-        _unreadOnly = State(initialValue: state == .emptyUnreadPage)
-    }
+        init(state: PreviewState) {
+            self.state = state
+            _unreadOnly = State(initialValue: state == .emptyUnreadPage)
+        }
 
-    private var rows: [StoryRow] {
-        switch state {
-        case .loading, .emptySaved, .emptyUnreadPage, .noResults, .error:
-            return []
+        private var rows: [StoryRow] {
+            switch state {
+            case .loading, .emptySaved, .emptyUnreadPage, .noResults, .error:
+                return []
 
-        case .loaded, .loadingPage, .pageError:
-            return PreviewData.rows
+            case .loaded, .loadingPage, .pageError:
+                return PreviewData.rows
+            }
+        }
+
+        var body: some View {
+            ItemList(
+                rows: rows,
+                revision: UUID(),
+                nextOffset: rows.count,
+                selectedID: $selection,
+                title: state == .emptySaved ? "Saved" : "Top Stories",
+                isLoading: state == .loading,
+                isLoadingMore: state == .loadingPage,
+                hasMore: state == .loadingPage || state == .pageError || state == .emptyUnreadPage,
+                paginationError: state == .pageError ? "The next page couldn’t be loaded." : nil,
+                errorMessage: state == .error
+                    ? "You appear to be offline. Check your connection and try again." : nil,
+                isSaved: state == .emptySaved,
+                isSearching: state == .noResults,
+                unreadOnly: $unreadOnly,
+                refresh: {},
+                loadMore: {}
+            )
+            .environment(PreviewData.appState(includeSavedStories: state != .emptySaved))
         }
     }
 
-    var body: some View {
-        ItemList(
-            rows: rows,
-            revision: UUID(),
-            selectedID: $selection,
-            title: state == .emptySaved ? "Saved" : "Top Stories",
-            isLoading: state == .loading,
-            isLoadingMore: state == .loadingPage,
-            hasMore: state == .loadingPage || state == .pageError || state == .emptyUnreadPage,
-            paginationError: state == .pageError ? "The next page couldn’t be loaded." : nil,
-            errorMessage: state == .error ? "You appear to be offline. Check your connection and try again." : nil,
-            isSaved: state == .emptySaved,
-            isSearching: state == .noResults,
-            unreadOnly: $unreadOnly,
-            refresh: {},
-            loadMore: {}
-        )
-        .environment(PreviewData.appState(includeSavedStories: state != .emptySaved))
+    #Preview("Story list · Light", traits: .fixedLayout(width: 560, height: 640)) {
+        ItemListPreview(state: .loaded)
+            .preferredColorScheme(.light)
     }
-}
 
-#Preview("Story list · Light", traits: .fixedLayout(width: 560, height: 640)) {
-    ItemListPreview(state: .loaded)
-        .preferredColorScheme(.light)
-}
-
-#Preview("Story list · Dark", traits: .fixedLayout(width: 560, height: 640)) {
-    ItemListPreview(state: .loaded)
-        .preferredColorScheme(.dark)
-}
-
-#Preview("Story list · Loading", traits: .fixedLayout(width: 560, height: 640)) {
-    ItemListPreview(state: .loading)
-}
-
-#Preview("Story list · Empty saved", traits: .fixedLayout(width: 560, height: 640)) {
-    ItemListPreview(state: .emptySaved)
-}
-
-#Preview("Saved · Empty narrow", traits: .fixedLayout(width: 312, height: 640)) {
-    ItemListPreview(state: .emptySaved)
-        .preferredColorScheme(.dark)
-}
-
-#Preview("Story list · No search results", traits: .fixedLayout(width: 560, height: 640)) {
-    ItemListPreview(state: .noResults)
-}
-
-#Preview("Story list · Empty unread page", traits: .fixedLayout(width: 312, height: 640)) {
-    ItemListPreview(state: .emptyUnreadPage)
-        .preferredColorScheme(.dark)
-}
-
-#Preview("Story list · Offline", traits: .fixedLayout(width: 560, height: 640)) {
-    ItemListPreview(state: .error)
-}
-
-#Preview("Story list · Loading next page", traits: .fixedLayout(width: 560, height: 640)) {
-    ItemListPreview(state: .loadingPage)
-}
-
-#Preview("Story list · Failed page", traits: .fixedLayout(width: 560, height: 640)) {
-    ItemListPreview(state: .pageError)
-}
-
-#Preview("Story detail · Light", traits: .fixedLayout(width: 760, height: 820)) {
-    if let item = PreviewData.stories.first {
-        StoryDetail(
-            item: item,
-            initialComments: PreviewData.rootComments,
-            previewThreads: PreviewData.threads,
-            loadsAutomatically: false
-        )
-        .environment(PreviewData.appState())
-        .preferredColorScheme(.light)
+    #Preview("Story list · Dark", traits: .fixedLayout(width: 560, height: 640)) {
+        ItemListPreview(state: .loaded)
+            .preferredColorScheme(.dark)
     }
-}
 
-#Preview("Story detail · Dark", traits: .fixedLayout(width: 760, height: 820)) {
-    if let item = PreviewData.stories.first {
-        StoryDetail(
-            item: item,
-            initialComments: PreviewData.rootComments,
-            previewThreads: PreviewData.threads,
-            loadsAutomatically: false
-        )
-        .environment(PreviewData.appState())
-        .preferredColorScheme(.dark)
+    #Preview("Story list · Loading", traits: .fixedLayout(width: 560, height: 640)) {
+        ItemListPreview(state: .loading)
     }
-}
 
-#Preview("Story detail · Loading comments", traits: .fixedLayout(width: 760, height: 820)) {
-    if let item = PreviewData.stories.first {
-        StoryDetail(item: item, loadsAutomatically: false, isLoading: true)
+    #Preview("Story list · Empty saved", traits: .fixedLayout(width: 560, height: 640)) {
+        ItemListPreview(state: .emptySaved)
+    }
+
+    #Preview("Saved · Empty narrow", traits: .fixedLayout(width: 312, height: 640)) {
+        ItemListPreview(state: .emptySaved)
+            .preferredColorScheme(.dark)
+    }
+
+    #Preview("Story list · No search results", traits: .fixedLayout(width: 560, height: 640)) {
+        ItemListPreview(state: .noResults)
+    }
+
+    #Preview("Story list · Empty unread page", traits: .fixedLayout(width: 312, height: 640)) {
+        ItemListPreview(state: .emptyUnreadPage)
+            .preferredColorScheme(.dark)
+    }
+
+    #Preview("Story list · Offline", traits: .fixedLayout(width: 560, height: 640)) {
+        ItemListPreview(state: .error)
+    }
+
+    #Preview("Story list · Loading next page", traits: .fixedLayout(width: 560, height: 640)) {
+        ItemListPreview(state: .loadingPage)
+    }
+
+    #Preview("Story list · Failed page", traits: .fixedLayout(width: 560, height: 640)) {
+        ItemListPreview(state: .pageError)
+    }
+
+    #Preview("Story detail · Light", traits: .fixedLayout(width: 760, height: 820)) {
+        if let item = PreviewData.stories.first {
+            StoryDetail(
+                item: item,
+                initialComments: PreviewData.rootComments,
+                previewThreads: PreviewData.threads,
+                loadsAutomatically: false
+            )
             .environment(PreviewData.appState())
+            .preferredColorScheme(.light)
+        }
     }
-}
 
-#Preview("Story detail · No comments", traits: .fixedLayout(width: 760, height: 820)) {
-    if let item = PreviewData.stories.first {
-        StoryDetail(item: item, initialComments: [], loadsAutomatically: false)
+    #Preview("Story detail · Dark", traits: .fixedLayout(width: 760, height: 820)) {
+        if let item = PreviewData.stories.first {
+            StoryDetail(
+                item: item,
+                initialComments: PreviewData.rootComments,
+                previewThreads: PreviewData.threads,
+                loadsAutomatically: false
+            )
             .environment(PreviewData.appState())
+            .preferredColorScheme(.dark)
+        }
     }
-}
 
-#Preview("Story detail · Comment error", traits: .fixedLayout(width: 760, height: 820)) {
-    if let item = PreviewData.stories.first {
-        StoryDetail(
-            item: item,
-            loadsAutomatically: false,
-            errorMessage: "Comments couldn’t be loaded. Please try again."
-        )
-        .environment(PreviewData.appState())
+    #Preview("Story detail · Loading comments", traits: .fixedLayout(width: 760, height: 820)) {
+        if let item = PreviewData.stories.first {
+            StoryDetail(item: item, loadsAutomatically: false, isLoading: true)
+                .environment(PreviewData.appState())
+        }
     }
-}
+
+    #Preview("Story detail · No comments", traits: .fixedLayout(width: 760, height: 820)) {
+        if let item = PreviewData.stories.first {
+            StoryDetail(item: item, initialComments: [], loadsAutomatically: false)
+                .environment(PreviewData.appState())
+        }
+    }
+
+    #Preview("Story detail · Comment error", traits: .fixedLayout(width: 760, height: 820)) {
+        if let item = PreviewData.stories.first {
+            StoryDetail(
+                item: item,
+                loadsAutomatically: false,
+                errorMessage: "Comments couldn’t be loaded. Please try again."
+            )
+            .environment(PreviewData.appState())
+        }
+    }
 #endif
 
 #if DEBUG && os(iOS)
-#Preview("iOS · Native Story List (Mock)") {
-    IOSStoryListCanvas()
-}
+    #Preview("iOS · Native Story List (Mock)") {
+        IOSStoryListCanvas()
+    }
 #endif

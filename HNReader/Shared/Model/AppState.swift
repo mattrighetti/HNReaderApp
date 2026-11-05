@@ -4,7 +4,6 @@ import Observation
 @MainActor
 @Observable
 final class AppState {
-    var sidebarSelection: SidebarSelection? = .top
     private(set) var savedItems: [Item]
     private(set) var readIDs: Set<Int>
 
@@ -13,7 +12,8 @@ final class AppState {
     init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
         // Keep the existing key for compatibility; Item stores stories and comments.
-        savedItems = defaults.data(forKey: "savedStories")
+        savedItems =
+            defaults.data(forKey: "savedStories")
             .flatMap { try? JSONDecoder().decode([Item].self, from: $0) } ?? []
         readIDs = Set(defaults.array(forKey: "readStories") as? [Int] ?? [])
     }
@@ -43,8 +43,13 @@ final class AppState {
     }
 
     enum SidebarSelection: String, CaseIterable, Identifiable {
-        case top = "Top Stories", new = "Latest", best = "Best"
-        case ask = "Ask HN", show = "Show HN", job = "Jobs", saved = "Saved"
+        case top = "Top Stories"
+        case new = "Latest"
+        case best = "Best"
+        case ask = "Ask HN"
+        case show = "Show HN"
+        case job = "Jobs"
+        case saved = "Saved"
 
         var id: String {
             rawValue

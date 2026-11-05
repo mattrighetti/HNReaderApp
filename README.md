@@ -3,7 +3,7 @@
 </p>
 
 # HNReaderApp
-This is the public repository for the HNReader macOS application. 
+This is the public repository for HNReader, a native Hacker News reader for iOS and macOS.
 
 You can report any issue and suggest/request new features in the [issue](https://github.com/mattrighetti/HNReaderApp/issues) section, you can also use the [discussions](https://github.com/mattrighetti/HNReaderApp/discussions) section to chat with others and me about the application.
 
@@ -14,6 +14,20 @@ The application is still in beta for the moment and needs optimizations. When th
 <img src="resources/appstore.png" height="50px" />
 </a>
 </p>
+
+## iOS reader
+
+The iOS app targets iOS 18 or later and supports iPhone and iPad. Run the
+`HNReader iOS` scheme on an iOS device or simulator.
+
+- Browse feeds with search, unread filtering, pull-to-refresh, and automatic pagination.
+- Read discussions, expand replies, and open author profiles and their comments.
+- Save stories and comments for later, including an offline snapshot of saved comments.
+- Choose an orange, plum, midnight, or forest app icon in Settings.
+
+Both apps are version 2.1.0. Views own their presentation and loading state;
+shared services return complete pages, while `HNClient/FeedRepository.swift`
+retains the feed cache. Saved items and read status live in the shared `AppState` store.
 
 ## Modern macOS reader
 

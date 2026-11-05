@@ -155,14 +155,12 @@ enum PreviewData {
     }
 
     static func appState(
-        selection: AppState.SidebarSelection = .top,
         includeSavedStories: Bool = true,
         savedItems: [Item]? = nil
     ) -> AppState {
         let suite = "HNReader.Canvas.\(UUID().uuidString)"
         let defaults = UserDefaults(suiteName: suite)!
         let state = AppState(defaults: defaults)
-        state.sidebarSelection = selection
 
         if let last = stories.last {
             state.markRead(last)

@@ -2,51 +2,35 @@ import SwiftUI
 
 struct IOSHomeView: View {
     @State private var selectedFeed: AppState.SidebarSelection = .top
-    @State private var viewModel: ItemListViewModel
-
-    private let loadsAutomatically: Bool
-    private let previewComments: [Item]?
-    private let previewThreads: [Int: [Item]]?
-
-    @MainActor
-    init() {
-        _viewModel = State(initialValue: ItemListViewModel())
-        loadsAutomatically = true
-        previewComments = nil
-        previewThreads = nil
-    }
-
-    @MainActor
-    init(
-        viewModel: ItemListViewModel,
-        loadsAutomatically: Bool,
-        previewComments: [Item]?,
-        previewThreads: [Int: [Item]]?
-    ) {
-        _viewModel = State(initialValue: viewModel)
-        self.loadsAutomatically = loadsAutomatically
-        self.previewComments = previewComments
-        self.previewThreads = previewThreads
-    }
+    var initialRows: [StoryRow] = []
+    var repository: FeedRepository = .shared
+    var loadsAutomatically = true
+    var previewComments: [Item]?
+    var previewThreads: [Int: [Item]]?
 
     var body: some View {
         TabView {
             IOSStoryList(
                 selection: $selectedFeed,
                 showsSavedStories: false,
-                viewModel: viewModel,
+                initialRows: initialRows,
+                repository: repository,
                 loadsAutomatically: loadsAutomatically,
                 previewComments: previewComments,
                 previewThreads: previewThreads
             )
-                .tabItem {
-                    Label("Stories", systemImage: "newspaper")
-                }
+            .tabItem {
+                Label("Stories", systemImage: "newspaper")
+            }
 
-            IOSStoryList(selection: .constant(.saved), showsSavedStories: true)
-                .tabItem {
-                    Label("Saved", systemImage: "bookmark")
-                }
+            IOSStoryList(
+                selection: .constant(.saved), showsSavedStories: true,
+                repository: repository, loadsAutomatically: loadsAutomatically,
+                previewComments: previewComments, previewThreads: previewThreads
+            )
+            .tabItem {
+                Label("Saved", systemImage: "bookmark")
+            }
 
             IOSSettingsView()
                 .tabItem {
@@ -56,480 +40,124 @@ struct IOSHomeView: View {
     }
 }
 
-private struct IOSStoryList: View {
-    @Environment(AppState.self) private var appState
+#if DEBUG
+    struct IOSStoryListCanvas: View {
+        @State private var appState = PreviewData.appState()
+        @State private var selectedFeed: AppState.SidebarSelection = .top
 
-    @Binding var selection: AppState.SidebarSelection
-    private let showsSavedStories: Bool
-    private let loadsAutomatically: Bool
-    private let previewComments: [Item]?
-    private let previewThreads: [Int: [Item]]?
-
-    @State private var viewModel: ItemListViewModel
-    @State private var searchText = ""
-    @State private var unreadOnly = false
-    @State private var scrollResetRequest = UUID()
-
-    @MainActor
-    init(
-        selection: Binding<AppState.SidebarSelection>,
-        showsSavedStories: Bool
-    ) {
-        _selection = selection
-        self.showsSavedStories = showsSavedStories
-        loadsAutomatically = true
-        previewComments = nil
-        previewThreads = nil
-        _viewModel = State(initialValue: ItemListViewModel())
-    }
-
-    @MainActor
-    init(
-        selection: Binding<AppState.SidebarSelection>,
-        showsSavedStories: Bool,
-        viewModel: ItemListViewModel,
-        loadsAutomatically: Bool,
-        previewComments: [Item]?,
-        previewThreads: [Int: [Item]]?
-    ) {
-        _selection = selection
-        self.showsSavedStories = showsSavedStories
-        self.loadsAutomatically = loadsAutomatically
-        self.previewComments = previewComments
-        self.previewThreads = previewThreads
-        _viewModel = State(initialValue: viewModel)
-    }
-
-    private var rows: [StoryRow] {
-        if showsSavedStories {
-            return StoryRow.savedRows(for: appState.savedItems)
-        }
-
-        return viewModel.rows
-    }
-
-    private var visibleRows: [StoryRow] {
-        rows.filter { row in
-            (!unreadOnly || !appState.readIDs.contains(row.id))
-                && (
-                    searchText.isEmpty
-                        || [row.item.title, row.item.by, row.item.urlHost, row.item.type == .comment ? row.item.text : nil]
-                            .compactMap { $0 }
-                            .contains { $0.localizedCaseInsensitiveContains(searchText) }
-                )
+        var body: some View {
+            IOSStoryList(
+                selection: $selectedFeed,
+                showsSavedStories: false,
+                initialRows: PreviewData.rows,
+                loadsAutomatically: false,
+                previewComments: PreviewData.rootComments,
+                previewThreads: PreviewData.threads
+            )
+            .environment(appState)
         }
     }
 
-    var body: some View {
-        NavigationStack {
-            ScrollViewReader { proxy in
-                List {
-                    if let errorMessage = viewModel.errorMessage, !showsSavedStories {
+    /// The real Saved screen populated with local stories, comments, and replies.
+    struct IOSSavedItemsCanvas: View {
+        @State private var appState = PreviewData.appState(
+            savedItems: zip(PreviewData.stories, PreviewData.comments).flatMap { [$0.0, $0.1] }
+        )
+
+        var body: some View {
+            IOSStoryList(
+                selection: .constant(.saved),
+                showsSavedStories: true,
+                initialRows: PreviewData.rows,
+                loadsAutomatically: false,
+                previewComments: PreviewData.rootComments,
+                previewThreads: PreviewData.threads
+            )
+            .environment(appState)
+        }
+    }
+
+    #Preview("iOS · Saved Stories & Comments · Light (Mock)") {
+        IOSSavedItemsCanvas()
+            .preferredColorScheme(.light)
+    }
+
+    #Preview("iOS · Saved Stories & Comments · Dark (Mock)") {
+        IOSSavedItemsCanvas()
+            .preferredColorScheme(.dark)
+    }
+
+    /// An interactive Canvas backed by the same live API and detail view as the app.
+    private struct IOSLiveArticleCanvas: View {
+        private static let storyID = 8863
+
+        @State private var appState = PreviewData.appState(includeSavedStories: false)
+        @State private var item: Item?
+        @State private var errorMessage: String?
+        @State private var isLoading = false
+        @State private var requestID = UUID()
+
+        var body: some View {
+            NavigationStack {
+                Group {
+                    if let item {
+                        StoryDetail(item: item)
+                            .navigationTitle("Story")
+                            .navigationBarTitleDisplayMode(.inline)
+                    } else if let errorMessage {
                         ContentUnavailableView {
-                            Label("Couldn’t load stories", systemImage: "wifi.exclamationmark")
+                            Label("Couldn’t load the article", systemImage: "wifi.exclamationmark")
                         } description: {
                             Text(errorMessage)
                         } actions: {
                             Button("Try Again") {
-                                Task { await refresh() }
+                                requestID = UUID()
                             }
                         }
-                        .listRowSeparator(.hidden)
-                    } else if viewModel.isLoading && visibleRows.isEmpty && !showsSavedStories {
-                        ProgressView("Loading stories…")
-                            .frame(maxWidth: .infinity)
-                            .listRowSeparator(.hidden)
-                    } else if visibleRows.isEmpty {
-                        ContentUnavailableView(
-                            emptyTitle,
-                            systemImage: showsSavedStories ? "bookmark" : "newspaper",
-                            description: Text(emptyMessage)
-                        )
-                        .listRowSeparator(.hidden)
                     } else {
-                        ForEach(visibleRows) { row in
-                            NavigationLink(value: row.item) {
-                                IOSStoryRow(row: row)
-                            }
-                            .listRowInsets(EdgeInsets(top: 10, leading: 16, bottom: 10, trailing: 16))
-                            .id(row.id)
-                        }
-                    }
-
-                    if !showsSavedStories && viewModel.hasMore && searchText.isEmpty {
-                        paginationRow
+                        ProgressView("Loading a real HN article…")
                     }
                 }
-                .listStyle(.plain)
-                // Keep feed changes and page inserts out of the menu's animation.
-                .transaction { transaction in
-                    transaction.animation = nil
-                    transaction.disablesAnimations = true
-                }
-                .onChange(of: scrollResetRequest) {
-                    if let firstID = visibleRows.first?.id {
-                        proxy.scrollTo(firstID, anchor: .top)
-                    }
-                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
-            .navigationTitle(showsSavedStories ? "Saved" : selection.rawValue)
-            .navigationBarTitleDisplayMode(.large)
-            .searchable(text: $searchText, prompt: showsSavedStories ? "Search saved items" : "Search stories")
-            .toolbar {
-                if !showsSavedStories {
-                    ToolbarItem(placement: .topBarLeading) {
-                        Menu {
-                            Picker("Feed", selection: $selection) {
-                                ForEach(AppState.SidebarSelection.allCases.filter { $0 != .saved }) { feed in
-                                    Label(feed.rawValue, systemImage: feed.iconName)
-                                        .tag(feed)
-                                }
-                            }
+            .environment(appState)
+            .task(id: requestID) {
+                await loadArticle()
+            }
+        }
 
-                            Divider()
+        @MainActor
+        private func loadArticle() async {
+            guard !isLoading else { return }
 
-                            Toggle("Unread only", isOn: $unreadOnly)
-                        } label: {
-                            Label(selection.rawValue, systemImage: selection.iconName)
-                                .labelStyle(.iconOnly)
-                        }
-                        .accessibilityLabel("Choose story feed and filters")
-                    }
-                } else {
-                    ToolbarItem(placement: .topBarTrailing) {
-                        Toggle(isOn: $unreadOnly) {
-                            Label("Unread only", systemImage: "circle.lefthalf.filled")
-                        }
-                        .labelsHidden()
-                    }
+            isLoading = true
+            item = nil
+            errorMessage = nil
+
+            defer {
+                isLoading = false
+            }
+
+            do {
+                guard
+                    let loaded = try await NewsService.shared.item(
+                        id: Self.storyID,
+                        forceRefresh: true
+                    )
+                else {
+                    throw URLError(.resourceUnavailable)
                 }
 
-                if !showsSavedStories {
-                    ToolbarItem(placement: .topBarTrailing) {
-                        Button {
-                            Task { await refresh() }
-                        } label: {
-                            Group {
-                                if viewModel.isLoading {
-                                    ProgressView()
-                                        .controlSize(.small)
-                                } else {
-                                    Image(systemName: "arrow.clockwise")
-                                }
-                            }
-                            .frame(width: 20, height: 20)
-                        }
-                        .accessibilityLabel(viewModel.isLoading ? "Refreshing stories" : "Refresh stories")
-                        .disabled(viewModel.isLoading)
-                    }
-                }
-            }
-            .refreshable {
-                await refresh()
-            }
-            .navigationDestination(for: Item.self) { item in
-                Group {
-                    if item.type == .comment {
-                        SavedCommentDetail(item: item, previewThreads: previewThreads)
-                    } else {
-                        StoryDetail(
-                            item: item,
-                            initialComments: previewComments,
-                            previewThreads: previewThreads,
-                            loadsAutomatically: loadsAutomatically
-                        )
-                    }
-                }
-                    .environment(appState)
-                    .navigationTitle(item.type == .comment ? "Saved Comment" : "Story")
-                    .navigationBarTitleDisplayMode(.inline)
-                    .task {
-                        appState.markRead(item)
-                    }
-            }
-            .task(id: selection) {
-                guard loadsAutomatically, !showsSavedStories else { return }
-                searchText = ""
-                unreadOnly = false
-
-                if let category = selection.category {
-                    await viewModel.load(category)
-                    guard !Task.isCancelled else { return }
-                    scrollResetRequest = UUID()
+                item = loaded
+            } catch {
+                if !Task.isCancelled {
+                    errorMessage = error.localizedDescription
                 }
             }
         }
     }
 
-    private var emptyTitle: String {
-        if !searchText.isEmpty { return showsSavedStories ? "No matching saved items" : "No matching stories" }
-        if unreadOnly { return showsSavedStories ? "No unread saved items" : "No unread stories" }
-        if showsSavedStories { return "No saved items" }
-        return "No stories yet"
+    #Preview("iOS · Live HN Article") {
+        IOSLiveArticleCanvas()
     }
-
-    private var emptyMessage: String {
-        if !searchText.isEmpty { return "Try a different search." }
-        if unreadOnly { return showsSavedStories ? "Turn off Unread only to see saved items you’ve read." : "Turn off Unread only to see stories you’ve read." }
-        if showsSavedStories { return "Save a story or comment to keep it here for later." }
-        return "Pull down to refresh the feed."
-    }
-
-    private var paginationRow: some View {
-        VStack(spacing: 8) {
-            if let error = viewModel.paginationError {
-                Text(error)
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-                Button("Retry") {
-                    Task { await viewModel.loadMore() }
-                }
-            } else if viewModel.isLoadingMore {
-                ProgressView("Loading more stories…")
-            } else {
-                Text("More stories")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-            }
-        }
-        .frame(maxWidth: .infinity, minHeight: 48)
-        .listRowSeparator(.hidden)
-        .id(viewModel.rows.last?.id)
-        .task(id: viewModel.revision) {
-            guard loadsAutomatically, viewModel.paginationError == nil else { return }
-            await viewModel.loadMore()
-        }
-    }
-
-    private func refresh() async {
-        guard loadsAutomatically, !showsSavedStories, let category = selection.category else { return }
-        await viewModel.load(category, forceRefresh: true)
-    }
-}
-
-private struct IOSStoryRow: View {
-    @Environment(AppState.self) private var appState
-
-    let row: StoryRow
-
-    private var isRead: Bool {
-        appState.readIDs.contains(row.id)
-    }
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack(spacing: 7) {
-                Group {
-                    if row.item.type == .comment {
-                        Image(systemName: "bubble.left")
-                            .font(.caption)
-                            .accessibilityHidden(true)
-                    } else {
-                        Text("\(row.rank)")
-                            .font(.caption2.monospacedDigit().weight(.medium))
-                    }
-                }
-                .foregroundStyle(.tertiary)
-
-                Text(row.item.type == .comment ? "Comment by \(row.item.by ?? "Deleted user")" : row.item.urlHost ?? "news.ycombinator.com")
-                    .font(.caption.weight(.medium))
-                    .foregroundStyle(.secondary)
-                    .lineLimit(1)
-                    .truncationMode(.middle)
-
-                Spacer(minLength: 4)
-
-                if !isRead {
-                    Circle()
-                        .fill(Color.accentColor)
-                        .frame(width: 7, height: 7)
-                        .accessibilityLabel("Unread")
-                }
-
-                if appState.isSaved(row.item) {
-                    Image(systemName: "bookmark.fill")
-                        .font(.caption2)
-                        .foregroundStyle(Color.accentColor)
-                        .accessibilityLabel("Saved")
-                }
-            }
-
-            ItemRowTitle(item: row.item)
-                .font(row.item.type == .comment
-                      ? .system(size: 16)
-                      : .system(size: 17, weight: .semibold, design: .rounded))
-                .foregroundStyle(isRead ? .secondary : .primary)
-                .lineLimit(3)
-                .fixedSize(horizontal: false, vertical: true)
-
-            HStack(spacing: 14) {
-                if row.item.type != .comment {
-                    metadataValue("\(row.item.score ?? 0)", systemImage: "arrow.up")
-                }
-                metadataValue("\(row.item.type == .comment ? row.item.kids?.count ?? 0 : row.item.descendants ?? 0)", systemImage: "bubble.left")
-
-                if row.item.type != .comment, let author = row.item.by {
-                    Text(author)
-                        .lineLimit(1)
-                        .truncationMode(.middle)
-                }
-
-                Spacer(minLength: 6)
-
-                Text(row.item.timeStringRepresentation.map { "\($0) ago" } ?? "")
-                    .lineLimit(1)
-                    .fixedSize()
-            }
-            .font(.caption)
-            .foregroundStyle(.secondary)
-        }
-        .padding(.vertical, 2)
-        .accessibilityIdentifier(row.item.type == .comment ? "savedComment.\(row.id)" : "story.\(row.id)")
-        .contextMenu {
-            Button(appState.isSaved(row.item) ? "Remove from Saved" : "Save for Later", systemImage: "bookmark") {
-                appState.toggleSaved(row.item)
-            }
-            if row.item.type != .comment {
-                Link("Open Article", destination: row.item.articleURL ?? row.item.discussionURL)
-            }
-            Link("Open Discussion", destination: row.item.discussionURL)
-            ShareLink(item: row.item.articleURL ?? row.item.discussionURL)
-        }
-    }
-
-    private func metadataValue(_ value: String, systemImage: String) -> some View {
-        HStack(spacing: 3) {
-            Image(systemName: systemImage)
-                .font(.system(size: 10, weight: .semibold))
-                .foregroundStyle(.tertiary)
-
-            Text(value)
-                .fontWeight(.medium)
-                .monospacedDigit()
-        }
-        .fixedSize()
-    }
-}
-
-#if DEBUG
-struct IOSStoryListCanvas: View {
-    @State private var appState = PreviewData.appState()
-    @State private var selectedFeed: AppState.SidebarSelection = .top
-    @State private var viewModel = ItemListViewModel(previewRows: PreviewData.rows)
-
-    var body: some View {
-        IOSStoryList(
-            selection: $selectedFeed,
-            showsSavedStories: false,
-            viewModel: viewModel,
-            loadsAutomatically: false,
-            previewComments: PreviewData.rootComments,
-            previewThreads: PreviewData.threads
-        )
-        .environment(appState)
-    }
-}
-
-/// The real Saved screen populated with local stories, comments, and replies.
-struct IOSSavedItemsCanvas: View {
-    @State private var appState = PreviewData.appState(
-        selection: .saved,
-        savedItems: zip(PreviewData.stories, PreviewData.comments).flatMap { [$0.0, $0.1] }
-    )
-    @State private var viewModel = ItemListViewModel(previewRows: [])
-
-    var body: some View {
-        IOSStoryList(
-            selection: .constant(.saved),
-            showsSavedStories: true,
-            viewModel: viewModel,
-            loadsAutomatically: false,
-            previewComments: PreviewData.rootComments,
-            previewThreads: PreviewData.threads
-        )
-        .environment(appState)
-    }
-}
-
-#Preview("iOS · Saved Stories & Comments · Light (Mock)") {
-    IOSSavedItemsCanvas()
-        .preferredColorScheme(.light)
-}
-
-#Preview("iOS · Saved Stories & Comments · Dark (Mock)") {
-    IOSSavedItemsCanvas()
-        .preferredColorScheme(.dark)
-}
-
-/// An interactive Canvas backed by the same live API and detail view as the app.
-private struct IOSLiveArticleCanvas: View {
-    private static let storyID = 8863
-
-    @State private var appState = PreviewData.appState(includeSavedStories: false)
-    @State private var item: Item?
-    @State private var errorMessage: String?
-    @State private var isLoading = false
-    @State private var requestID = UUID()
-
-    var body: some View {
-        NavigationStack {
-            Group {
-                if let item {
-                    StoryDetail(item: item)
-                        .navigationTitle("Story")
-                        .navigationBarTitleDisplayMode(.inline)
-                } else if let errorMessage {
-                    ContentUnavailableView {
-                        Label("Couldn’t load the article", systemImage: "wifi.exclamationmark")
-                    } description: {
-                        Text(errorMessage)
-                    } actions: {
-                        Button("Try Again") {
-                            requestID = UUID()
-                        }
-                    }
-                } else {
-                    ProgressView("Loading a real HN article…")
-                }
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-        }
-        .environment(appState)
-        .task(id: requestID) {
-            await loadArticle()
-        }
-    }
-
-    @MainActor
-    private func loadArticle() async {
-        guard !isLoading else { return }
-
-        isLoading = true
-        item = nil
-        errorMessage = nil
-
-        defer {
-            isLoading = false
-        }
-
-        do {
-            guard let loaded = try await NewsService.shared.item(
-                id: Self.storyID,
-                forceRefresh: true
-            ) else {
-                throw URLError(.resourceUnavailable)
-            }
-
-            item = loaded
-        } catch {
-            if !Task.isCancelled {
-                errorMessage = error.localizedDescription
-            }
-        }
-    }
-}
-
-#Preview("iOS · Live HN Article") {
-    IOSLiveArticleCanvas()
-}
 #endif

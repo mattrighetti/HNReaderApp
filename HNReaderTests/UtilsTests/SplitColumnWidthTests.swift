@@ -1,5 +1,6 @@
 import SwiftUI
 import XCTest
+
 @testable import HNReader
 
 final class SplitColumnWidthTests: XCTestCase {
@@ -10,11 +11,11 @@ final class SplitColumnWidthTests: XCTestCase {
         defer { defaults.removePersistentDomain(forName: suite) }
 
         let state = AppState(defaults: defaults)
-        state.sidebarSelection = .saved
 
-        let host = NSHostingController(rootView: HomeView()
-            .environment(state)
-            .frame(minWidth: 864, minHeight: 600))
+        let host = NSHostingController(
+            rootView: HomeView(initialSelection: .saved)
+                .environment(state)
+                .frame(minWidth: 864, minHeight: 600))
 
         let window = NSWindow(
             contentRect: NSRect(x: 0, y: 0, width: 1600, height: 800),
@@ -82,7 +83,8 @@ final class SplitColumnWidthTests: XCTestCase {
     @MainActor
     private static func storyPane(in view: NSView) -> (NSSplitViewController, NSSplitViewItem)? {
         if let splitView = view as? NSSplitView,
-           let controller = splitView.delegate as? NSSplitViewController {
+            let controller = splitView.delegate as? NSSplitViewController
+        {
             for item in controller.splitViewItems where item.viewController.isViewLoaded {
                 if item.viewController.view.constraints.contains(where: {
                     $0.identifier == "HNReader.storyColumn.minimumWidth"

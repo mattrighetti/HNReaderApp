@@ -1,61 +1,13 @@
-import Foundation
-import Observation
 import SwiftUI
 
-@MainActor
-@Observable
-private final class UserDetailViewModel {
-    let username: String
-
-    private(set) var user: User?
-    private(set) var isLoading: Bool
-    private(set) var errorMessage: String?
-
-    private let service: NewsService
-
-    init(
-        username: String,
-        service: NewsService = .shared,
-        user: User? = nil
-    ) {
-        self.username = username
-        self.service = service
-        self.user = user
-        isLoading = false
-    }
-
-    func load(forceRefresh: Bool = false) async {
-        guard !isLoading, !Task.isCancelled else { return }
-        if user != nil && !forceRefresh { return }
-
-        isLoading = true
-        errorMessage = nil
-
-        defer {
-            isLoading = false
-        }
-
-        do {
-            guard let loadedUser = try await service.user(
-                id: username,
-                forceRefresh: forceRefresh
-            ) else {
-                throw URLError(.resourceUnavailable)
-            }
-
-            try Task.checkCancellation()
-            user = loadedUser
-        } catch {
-            if !Task.isCancelled {
-                errorMessage = error.localizedDescription
-            }
-        }
-    }
-
-}
-
 struct UserDetailView: View {
-    @State private var model: UserDetailViewModel
+    let username: String
+    @State private var user: User?
+    @State private var isLoading = false
+    @State private var errorMessage: String?
+    @State private var retryRequest = 0
+    @State private var activeRequest = UUID()
+    private let service = NewsService.shared
 
     @Environment(\.dismiss) private var dismiss
 
@@ -70,12 +22,8 @@ struct UserDetailView: View {
         previewThreads: [Int: [Item]]? = nil,
         loadsAutomatically: Bool = true
     ) {
-        _model = State(
-            initialValue: UserDetailViewModel(
-                username: username,
-                user: user
-            )
-        )
+        self.username = username
+        _user = State(initialValue: user)
         self.initialComments = initialComments
         self.previewThreads = previewThreads
         self.loadsAutomatically = loadsAutomatically
@@ -88,19 +36,21 @@ struct UserDetailView: View {
     var body: some View {
         ScrollView {
             Group {
-                if let user = model.user {
+                if let user = user {
                     profile(user)
-                } else if model.isLoading || model.errorMessage == nil {
+                } else if isLoading || errorMessage == nil {
                     ProgressView("Loading profile…")
                         .frame(maxWidth: .infinity, minHeight: 240)
-                } else if let errorMessage = model.errorMessage {
+                } else if let errorMessage = errorMessage {
                     ContentUnavailableView {
-                        Label("Couldn’t load profile", systemImage: "person.crop.circle.badge.exclamationmark")
+                        Label(
+                            "Couldn’t load profile",
+                            systemImage: "person.crop.circle.badge.exclamationmark")
                     } description: {
                         Text(errorMessage)
                     } actions: {
                         Button("Try Again") {
-                            Task { await model.load(forceRefresh: true) }
+                            retryRequest += 1
                         }
                     }
                     .frame(maxWidth: .infinity, minHeight: 320)
@@ -111,38 +61,60 @@ struct UserDetailView: View {
             .frame(maxWidth: .infinity)
         }
         .background(PlatformColors.textBackground)
-        .navigationTitle(model.username)
+        .navigationTitle(username)
         #if os(iOS)
-        .navigationBarTitleDisplayMode(.inline)
+            .navigationBarTitleDisplayMode(.inline)
         #endif
         .toolbar {
             #if os(macOS)
-            ToolbarItem(placement: .navigation) {
-                Button {
-                    dismiss()
-                } label: {
-                    Image(systemName: "chevron.left")
+                ToolbarItem(placement: .navigation) {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Image(systemName: "chevron.left")
+                    }
+                    .buttonStyle(.plain)
+                    .help("Back to story")
+                    .accessibilityLabel("Back to story")
                 }
-                .buttonStyle(.plain)
-                .help("Back to story")
-                .accessibilityLabel("Back to story")
-            }
             #else
-            Link(destination: profileURL) {
-                Label("View on HN", systemImage: "safari")
-            }
-            .clickableCursor()
-            .help("View profile on Hacker News")
+                Link(destination: profileURL) {
+                    Label("View on HN", systemImage: "safari")
+                }
+                .clickableCursor()
+                .help("View profile on Hacker News")
             #endif
         }
         .refreshable {
             if loadsAutomatically {
-                await model.load(forceRefresh: true)
+                await loadUser(forceRefresh: true)
             }
         }
-        .task {
-            if loadsAutomatically {
-                await model.load()
+        .task(id: retryRequest) {
+            if loadsAutomatically { await loadUser() }
+        }
+    }
+
+    @MainActor
+    private func loadUser(forceRefresh: Bool = false) async {
+        guard !Task.isCancelled else { return }
+        if user != nil && !forceRefresh { return }
+        let request = UUID()
+        activeRequest = request
+        isLoading = true
+        errorMessage = nil
+        defer { if activeRequest == request { isLoading = false } }
+        do {
+            guard let result = try await service.user(id: username, forceRefresh: forceRefresh)
+            else {
+                throw URLError(.resourceUnavailable)
+            }
+            try Task.checkCancellation()
+            guard activeRequest == request else { return }
+            user = result
+        } catch {
+            if activeRequest == request && !Task.isCancelled {
+                errorMessage = error.localizedDescription
             }
         }
     }
@@ -181,9 +153,9 @@ struct UserDetailView: View {
                         .font(.headline)
 
                     #if os(macOS)
-                    HTMLText(text: about)
+                        HTMLText(text: about)
                     #else
-                    HTMLText(text: about, fontSize: 17, lineSpacing: 6)
+                        HTMLText(text: about, fontSize: 17, lineSpacing: 6)
                     #endif
                 }
             }
@@ -269,211 +241,8 @@ struct UserDetailView: View {
 
     private func userURL(path: String) -> URL {
         var components = URLComponents(string: "https://news.ycombinator.com/\(path)")!
-        components.queryItems = [URLQueryItem(name: "id", value: model.username)]
+        components.queryItems = [URLQueryItem(name: "id", value: username)]
         return components.url!
-    }
-}
-
-@MainActor
-@Observable
-private final class UserCommentsViewModel {
-    let username: String
-
-    private(set) var comments: [Item]
-    private(set) var isLoading = false
-    private(set) var errorMessage: String?
-
-    private let submitted: [Int]
-    private let service: NewsService
-    private var submittedOffset = 0
-
-    var hasMoreComments: Bool {
-        submittedOffset < submitted.count
-    }
-
-    init(
-        username: String,
-        submitted: [Int],
-        service: NewsService = .shared,
-        comments: [Item] = []
-    ) {
-        self.username = username
-        self.submitted = submitted
-        self.service = service
-        self.comments = comments
-    }
-
-    func load(forceRefresh: Bool = false) async {
-        guard !isLoading, !Task.isCancelled else { return }
-
-        if forceRefresh {
-            submittedOffset = 0
-            comments = []
-        }
-
-        guard hasMoreComments else { return }
-
-        isLoading = true
-        errorMessage = nil
-
-        defer {
-            isLoading = false
-        }
-
-        do {
-            var page: [Item] = []
-            var scannedCount = 0
-
-            // The HN API combines stories and comments in `submitted`. Scan a
-            // bounded window so opening a prolific user's comments stays quick.
-            repeat {
-                let ids = Array(submitted.dropFirst(submittedOffset).prefix(20))
-                guard !ids.isEmpty else { break }
-
-                let items = try await service.items(ids: ids, forceRefresh: forceRefresh)
-                try Task.checkCancellation()
-
-                page += items.filter {
-                    $0.type == .comment
-                        && $0.isVisibleComment
-                        && $0.by == username
-                }
-                submittedOffset += ids.count
-                scannedCount += ids.count
-            } while page.count < 15 && hasMoreComments && scannedCount < 80
-
-            let knownIDs = Set(comments.map(\.id))
-            comments += page.filter { !knownIDs.contains($0.id) }
-        } catch {
-            if !Task.isCancelled {
-                errorMessage = error.localizedDescription
-            }
-        }
-    }
-}
-
-private struct UserCommentsView: View {
-    @State private var model: UserCommentsViewModel
-
-    @Environment(\.dismiss) private var dismiss
-
-    private let loadsAutomatically: Bool
-    private let previewThreads: [Int: [Item]]?
-
-    init(
-        username: String,
-        submitted: [Int],
-        initialComments: [Item] = [],
-        previewThreads: [Int: [Item]]? = nil,
-        loadsAutomatically: Bool = true
-    ) {
-        _model = State(
-            initialValue: UserCommentsViewModel(
-                username: username,
-                submitted: submitted,
-                comments: initialComments
-            )
-        )
-        self.previewThreads = previewThreads
-        self.loadsAutomatically = loadsAutomatically
-    }
-
-    private var threadsURL: URL {
-        var components = URLComponents(string: "https://news.ycombinator.com/threads")!
-        components.queryItems = [URLQueryItem(name: "id", value: model.username)]
-        return components.url!
-    }
-
-    var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 12) {
-                if model.comments.isEmpty && model.isLoading {
-                    ProgressView("Loading comments…")
-                        .frame(maxWidth: .infinity, minHeight: 240)
-                } else if model.comments.isEmpty && !model.hasMoreComments {
-                    ContentUnavailableView(
-                        "No Comments",
-                        systemImage: "bubble.left",
-                        description: Text("This user doesn’t have any visible comments.")
-                    )
-                    .frame(maxWidth: .infinity, minHeight: 320)
-                } else {
-                    LazyVStack(alignment: .leading, spacing: 0) {
-                        ForEach(model.comments) { comment in
-                            CommentView(
-                                item: comment,
-                                previewThreads: previewThreads
-                            )
-                        }
-                    }
-                }
-
-                if let errorMessage = model.errorMessage {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text(errorMessage)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-
-                        Button("Retry") {
-                            Task { await model.load() }
-                        }
-                        .buttonStyle(.plain)
-                        .font(.subheadline.weight(.medium))
-                    }
-                    .padding(.vertical, 12)
-                } else if model.isLoading && !model.comments.isEmpty {
-                    ProgressView("Loading more comments…")
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 12)
-                } else if model.hasMoreComments && loadsAutomatically {
-                    Button("Load More Comments") {
-                        Task { await model.load() }
-                    }
-                    .buttonStyle(.plain)
-                    .font(.subheadline.weight(.medium))
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 12)
-                }
-            }
-            .frame(maxWidth: 680, alignment: .leading)
-            .padding(20)
-            .frame(maxWidth: .infinity)
-        }
-        .background(PlatformColors.textBackground)
-        .navigationTitle("Comments")
-        #if os(iOS)
-        .navigationBarTitleDisplayMode(.inline)
-        #endif
-        .toolbar {
-            #if os(macOS)
-            ToolbarItem(placement: .navigation) {
-                Button {
-                    dismiss()
-                } label: {
-                    Image(systemName: "chevron.left")
-                }
-                .buttonStyle(.plain)
-                .help("Back to profile")
-                .accessibilityLabel("Back to profile")
-            }
-            #else
-            Link(destination: threadsURL) {
-                Label("View on HN", systemImage: "safari")
-            }
-            .clickableCursor()
-            .help("View comments on Hacker News")
-            #endif
-        }
-        .refreshable {
-            if loadsAutomatically {
-                await model.load(forceRefresh: true)
-            }
-        }
-        .task {
-            if loadsAutomatically {
-                await model.load()
-            }
-        }
     }
 }
 
@@ -500,29 +269,30 @@ private struct UserAvatar: View {
 }
 
 #if DEBUG
-#Preview("User profile") {
-    NavigationStack {
-        UserDetailView(
-            username: "pg",
-            user: User(
-                id: "pg",
-                created: 1160418092,
-                karma: 155_782,
-                about: "Bug fixer. <a href=\"https://ycombinator.com\">Y Combinator</a> cofounder.",
-                submitted: Array(1 ... 1320)
-            ),
-            initialComments: PreviewData.rootComments,
-            previewThreads: PreviewData.threads,
-            loadsAutomatically: false
-        )
+    #Preview("User profile") {
+        NavigationStack {
+            UserDetailView(
+                username: "pg",
+                user: User(
+                    id: "pg",
+                    created: 1_160_418_092,
+                    karma: 155_782,
+                    about:
+                        "Bug fixer. <a href=\"https://ycombinator.com\">Y Combinator</a> cofounder.",
+                    submitted: Array(1...1320)
+                ),
+                initialComments: PreviewData.rootComments,
+                previewThreads: PreviewData.threads,
+                loadsAutomatically: false
+            )
+        }
+        .environment(PreviewData.appState())
     }
-    .environment(PreviewData.appState())
-}
 
-#Preview("iOS · Live mattrighetti") {
-    NavigationStack {
-        UserDetailView(username: "mattrighetti")
+    #Preview("iOS · Live mattrighetti") {
+        NavigationStack {
+            UserDetailView(username: "mattrighetti")
+        }
+        .environment(PreviewData.appState())
     }
-    .environment(PreviewData.appState())
-}
 #endif

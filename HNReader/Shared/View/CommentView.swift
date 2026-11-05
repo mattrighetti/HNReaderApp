@@ -1,31 +1,32 @@
 import SwiftUI
+
 #if os(macOS)
-import AppKit
+    import AppKit
 #else
-import UIKit
+    import UIKit
 #endif
 
 private enum CommentThreadLayout {
     #if os(macOS)
-    static let avatarSize: CGFloat = 20
-    static let headerHeight: CGFloat = 22
-    static let verticalPadding: CGFloat = 10
-    static let contentSpacing: CGFloat = 8
-    static let childIndent: CGFloat = 24
-    static let headerFontSize: CGFloat = 11
-    static let metadataFontSize: CGFloat = 10
-    static let actionFontSize: CGFloat = 10
-    static let touchTarget: CGFloat = 22
+        static let avatarSize: CGFloat = 20
+        static let headerHeight: CGFloat = 22
+        static let verticalPadding: CGFloat = 10
+        static let contentSpacing: CGFloat = 8
+        static let childIndent: CGFloat = 24
+        static let headerFontSize: CGFloat = 11
+        static let metadataFontSize: CGFloat = 10
+        static let actionFontSize: CGFloat = 10
+        static let touchTarget: CGFloat = 22
     #else
-    static let avatarSize: CGFloat = 22
-    static let headerHeight: CGFloat = 36
-    static let verticalPadding: CGFloat = 10
-    static let contentSpacing: CGFloat = 10
-    static let childIndent: CGFloat = 20
-    static let headerFontSize: CGFloat = 13
-    static let metadataFontSize: CGFloat = 12
-    static let actionFontSize: CGFloat = 13
-    static let touchTarget: CGFloat = 32
+        static let avatarSize: CGFloat = 22
+        static let headerHeight: CGFloat = 36
+        static let verticalPadding: CGFloat = 10
+        static let contentSpacing: CGFloat = 10
+        static let childIndent: CGFloat = 20
+        static let headerFontSize: CGFloat = 13
+        static let metadataFontSize: CGFloat = 12
+        static let actionFontSize: CGFloat = 13
+        static let touchTarget: CGFloat = 32
     #endif
 
     static let maximumIndentDepth = 5
@@ -63,7 +64,16 @@ struct CommentView: View {
     @Environment(\.colorScheme) private var colorScheme
     @Environment(AppState.self) private var appState
 
-    @State private var model: CommentRepliesModel
+    @State private var replies: [Item]
+    @State private var nextOffset: Int
+    @State private var hasLoaded: Bool
+    @State private var isLoading = false
+    @State private var errorMessage: String?
+    @State private var replyAttempt = 0
+    @State private var completedAttempt = 0
+    @State private var activeRequest = UUID()
+    private let service = NewsService.shared
+    private var hasMore: Bool { nextOffset < (item.kids?.count ?? 0) }
     @State private var isCollapsed: Bool
     @State private var repliesExpanded: Bool
 
@@ -84,12 +94,10 @@ struct CommentView: View {
         self.previewThreads = previewThreads
         self.expandPreview = expandPreview
 
-        _model = State(
-            initialValue: CommentRepliesModel(
-                item: item,
-                previewReplies: previewThreads?[item.id]
-            )
-        )
+        let initial = previewThreads?[item.id]
+        _replies = State(initialValue: (initial ?? []).filter(\.isVisibleComment))
+        _nextOffset = State(initialValue: initial == nil ? 0 : item.kids?.count ?? 0)
+        _hasLoaded = State(initialValue: initial != nil)
         _isCollapsed = State(initialValue: collapseAll)
         _repliesExpanded = State(initialValue: expandPreview)
     }
@@ -99,7 +107,7 @@ struct CommentView: View {
     }
 
     private var replyCount: Int {
-        model.visibleReplyCountEstimate
+        replies.count + max(0, (item.kids?.count ?? 0) - nextOffset)
     }
 
     private var replyLabel: String {
@@ -120,11 +128,14 @@ struct CommentView: View {
                 }
             }
             .overlay(alignment: .leading) {
-                if !isCollapsed && repliesExpanded && replyCount > 0 && depth < CommentThreadLayout.maximumIndentDepth {
+                if !isCollapsed && repliesExpanded && replyCount > 0
+                    && depth < CommentThreadLayout.maximumIndentDepth
+                {
                     ThreadStem()
                         .stroke(
                             CommentThreadLayout.lineColor(for: colorScheme),
-                            style: StrokeStyle(lineWidth: CommentThreadLayout.lineWidth, lineCap: .butt)
+                            style: StrokeStyle(
+                                lineWidth: CommentThreadLayout.lineWidth, lineCap: .butt)
                         )
                         .padding(.bottom, -CommentThreadLayout.contentSpacing)
                         .frame(width: CommentThreadLayout.childIndent)
@@ -143,6 +154,14 @@ struct CommentView: View {
         }
         .padding(.vertical, CommentThreadLayout.verticalPadding)
         .frame(maxWidth: .infinity, alignment: .leading)
+        .task(
+            id: ReplyLoadRequest(expanded: !isCollapsed && repliesExpanded, attempt: replyAttempt)
+        ) {
+            guard !isCollapsed, repliesExpanded, hasMore,
+                !hasLoaded || completedAttempt != replyAttempt
+            else { return }
+            await loadReplies()
+        }
         .onChange(of: collapseAll) { _, collapsed in
             isCollapsed = collapsed
         }
@@ -167,10 +186,10 @@ struct CommentView: View {
 
         Button {
             #if os(macOS)
-            NSPasteboard.general.clearContents()
-            NSPasteboard.general.setString(item.discussionURL.absoluteString, forType: .string)
+                NSPasteboard.general.clearContents()
+                NSPasteboard.general.setString(item.discussionURL.absoluteString, forType: .string)
             #else
-            UIPasteboard.general.url = item.discussionURL
+                UIPasteboard.general.url = item.discussionURL
             #endif
         } label: {
             Label("Copy Comment Link", systemImage: "doc.on.doc")
@@ -218,7 +237,9 @@ struct CommentView: View {
                     Spacer(minLength: 4)
 
                     Image(systemName: isCollapsed ? "plus" : "minus")
-                        .font(.system(size: CommentThreadLayout.metadataFontSize, weight: .semibold))
+                        .font(
+                            .system(size: CommentThreadLayout.metadataFontSize, weight: .semibold)
+                        )
                         .foregroundStyle(.secondary)
                         .frame(
                             width: CommentThreadLayout.touchTarget,
@@ -233,7 +254,8 @@ struct CommentView: View {
             .buttonStyle(.plain)
             .help(isCollapsed ? "Expand comment" : "Collapse comment and replies")
             .accessibilityLabel(isCollapsed ? "Expand comment" : "Collapse comment and replies")
-            .accessibilityHint(isCollapsed ? "Expands this comment" : "Collapses this comment and its replies")
+            .accessibilityHint(
+                isCollapsed ? "Expands this comment" : "Collapses this comment and its replies")
         }
         .frame(height: CommentThreadLayout.headerHeight)
     }
@@ -270,62 +292,64 @@ struct CommentView: View {
 
     private var actions: some View {
         #if os(macOS)
-        HStack(spacing: 16) {
-            if replyCount > 0 {
-                Button {
-                    toggleReplies()
-                } label: {
-                    Label(
-                        repliesExpanded ? "Hide replies" : replyLabel,
-                        systemImage: repliesExpanded ? "chevron.up" : "bubble.left"
-                    )
+            HStack(spacing: 16) {
+                if replyCount > 0 {
+                    Button {
+                        toggleReplies()
+                    } label: {
+                        Label(
+                            repliesExpanded ? "Hide replies" : replyLabel,
+                            systemImage: repliesExpanded ? "chevron.up" : "bubble.left"
+                        )
+                    }
+                    .clickableCursor()
+                    .foregroundStyle(Color.accentColor)
+                }
+
+                Link(destination: item.discussionURL) {
+                    Label("Reply on HN", systemImage: "arrowshape.turn.up.left")
                 }
                 .clickableCursor()
-                .foregroundStyle(Color.accentColor)
-            }
+                .help("Open this comment on Hacker News to reply")
 
-            Link(destination: item.discussionURL) {
-                Label("Reply on HN", systemImage: "arrowshape.turn.up.left")
-            }
-            .clickableCursor()
-            .help("Open this comment on Hacker News to reply")
-
-            ShareLink(item: item.discussionURL) {
-                Label("Share", systemImage: "square.and.arrow.up")
-            }
-            .clickableCursor()
-
-            saveButton
-
-            Spacer(minLength: 0)
-        }
-        .font(.system(size: 10, weight: .medium))
-        .foregroundStyle(.secondary)
-        .buttonStyle(.plain)
-        #else
-        HStack(spacing: 8) {
-            if replyCount > 0 {
-                Button {
-                    toggleReplies()
-                } label: {
-                    Label(
-                        repliesExpanded ? "Hide replies" : replyLabel,
-                        systemImage: repliesExpanded ? "chevron.up" : "bubble.left"
-                    )
-                    .frame(minHeight: CommentThreadLayout.touchTarget)
-                    .contentShape(Rectangle())
+                ShareLink(item: item.discussionURL) {
+                    Label("Share", systemImage: "square.and.arrow.up")
                 }
-                .foregroundStyle(Color.accentColor)
-                .accessibilityHint(repliesExpanded ? "Collapses this comment thread" : "Expands this comment thread")
+                .clickableCursor()
+
+                saveButton
+
+                Spacer(minLength: 0)
             }
+            .font(.system(size: 10, weight: .medium))
+            .foregroundStyle(.secondary)
+            .buttonStyle(.plain)
+        #else
+            HStack(spacing: 8) {
+                if replyCount > 0 {
+                    Button {
+                        toggleReplies()
+                    } label: {
+                        Label(
+                            repliesExpanded ? "Hide replies" : replyLabel,
+                            systemImage: repliesExpanded ? "chevron.up" : "bubble.left"
+                        )
+                        .frame(minHeight: CommentThreadLayout.touchTarget)
+                        .contentShape(Rectangle())
+                    }
+                    .foregroundStyle(Color.accentColor)
+                    .accessibilityHint(
+                        repliesExpanded
+                            ? "Collapses this comment thread" : "Expands this comment thread")
+                }
 
-            Spacer(minLength: 0)
+                Spacer(minLength: 0)
 
-            saveButton
-        }
-        .font(.system(size: CommentThreadLayout.actionFontSize, weight: .semibold))
-        .foregroundStyle(.secondary)
-        .buttonStyle(.plain)
+                saveButton
+            }
+            .font(.system(size: CommentThreadLayout.actionFontSize, weight: .semibold))
+            .foregroundStyle(.secondary)
+            .buttonStyle(.plain)
         #endif
     }
 
@@ -348,7 +372,7 @@ struct CommentView: View {
 
     private var replyThread: some View {
         VStack(alignment: .leading, spacing: 0) {
-            ForEach(Array(model.replies.enumerated()), id: \.element.id) { index, reply in
+            ForEach(Array(replies.enumerated()), id: \.element.id) { index, reply in
                 CommentView(
                     item: reply,
                     storyAuthor: storyAuthor,
@@ -358,10 +382,14 @@ struct CommentView: View {
                     previewThreads: previewThreads,
                     expandPreview: expandPreview
                 )
-                .padding(.leading, depth < CommentThreadLayout.maximumIndentDepth ? CommentThreadLayout.childIndent : 0)
+                .padding(
+                    .leading,
+                    depth < CommentThreadLayout.maximumIndentDepth
+                        ? CommentThreadLayout.childIndent : 0
+                )
                 .overlay(alignment: .leading) {
                     if depth < CommentThreadLayout.maximumIndentDepth {
-                        ThreadBranch(isLast: index == model.replies.count - 1 && !model.hasMore)
+                        ThreadBranch(isLast: index == replies.count - 1 && !hasMore)
                             .stroke(
                                 CommentThreadLayout.lineColor(for: colorScheme),
                                 style: StrokeStyle(
@@ -376,22 +404,20 @@ struct CommentView: View {
                 }
             }
 
-            if model.isLoading {
+            if isLoading {
                 ProgressView("Loading replies…")
                     .font(.system(size: CommentThreadLayout.metadataFontSize))
                     .controlSize(.small)
                     .padding(.leading, CommentThreadLayout.bodyIndent)
                     .padding(.vertical, 12)
-            } else if let error = model.errorMessage {
+            } else if let error = errorMessage {
                 VStack(alignment: .leading, spacing: 6) {
                     Text(error)
                         .font(.caption)
                         .foregroundStyle(.secondary)
 
                     Button("Retry Replies") {
-                        Task {
-                            await model.loadNextPage()
-                        }
+                        replyAttempt += 1
                     }
                     .clickableCursor()
                     .font(.system(size: CommentThreadLayout.actionFontSize, weight: .medium))
@@ -400,11 +426,9 @@ struct CommentView: View {
                 }
                 .padding(.leading, CommentThreadLayout.bodyIndent)
                 .padding(.vertical, 10)
-            } else if model.hasMore && model.hasLoaded {
+            } else if hasMore && hasLoaded {
                 Button {
-                    Task {
-                        await model.loadNextPage()
-                    }
+                    replyAttempt += 1
                 } label: {
                     Label("More replies", systemImage: "arrow.turn.down.right")
                         .font(.system(size: CommentThreadLayout.actionFontSize, weight: .medium))
@@ -414,7 +438,7 @@ struct CommentView: View {
                 .foregroundStyle(Color.accentColor)
                 .padding(.leading, CommentThreadLayout.bodyIndent)
                 .frame(minHeight: CommentThreadLayout.touchTarget)
-            } else if model.hasMore {
+            } else if hasMore {
                 ProgressView("Loading replies…")
                     .font(.system(size: CommentThreadLayout.actionFontSize, weight: .medium))
                     .padding(.leading, CommentThreadLayout.bodyIndent)
@@ -424,55 +448,34 @@ struct CommentView: View {
         }
     }
 
-    private func toggleReplies() {
-        repliesExpanded.toggle()
-
-        guard repliesExpanded, !model.hasLoaded else {
-            return
-        }
-
-        Task {
-            await model.loadNextPage()
-        }
+    private struct ReplyLoadRequest: Equatable {
+        let expanded: Bool
+        let attempt: Int
     }
-}
 
-/// Open the saved snapshot immediately, including when the device is offline.
-struct SavedCommentDetail: View {
-    let item: Item
-    var previewThreads: [Int: [Item]]? = nil
+    private func toggleReplies() { repliesExpanded.toggle() }
 
-    @Environment(AppState.self) private var appState
-
-    var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 16) {
-                CommentView(item: item, previewThreads: previewThreads)
-
-                Link("View Comment on Hacker News", destination: item.discussionURL)
-                    .clickableCursor()
-                    .font(.callout)
-            }
-            .padding()
-            .frame(maxWidth: 760, alignment: .leading)
-            .frame(maxWidth: .infinity)
-        }
-        .background(PlatformColors.textBackground)
-        .navigationTitle("Saved Comment")
-        .toolbar {
-            Button(
-                appState.isSaved(item) ? "Remove Comment from Saved" : "Save Comment",
-                systemImage: appState.isSaved(item) ? "bookmark.fill" : "bookmark"
-            ) {
-                appState.toggleSaved(item)
-            }
-            .clickableCursor()
-
-            ShareLink(item: item.discussionURL)
-                .clickableCursor()
-        }
-        .task {
-            appState.markRead(item)
+    @MainActor
+    private func loadReplies() async {
+        let attempt = replyAttempt
+        let request = UUID()
+        activeRequest = request
+        isLoading = true
+        errorMessage = nil
+        defer { if activeRequest == request { isLoading = false } }
+        do {
+            let page = try await service.commentPage(
+                ids: item.kids ?? [], offset: nextOffset, pageSize: 15)
+            guard activeRequest == request, replyAttempt == attempt,
+                repliesExpanded, !isCollapsed, !Task.isCancelled
+            else { return }
+            replies += page.comments
+            nextOffset = page.nextOffset
+            hasLoaded = true
+            completedAttempt = attempt
+        } catch {
+            guard activeRequest == request, !Task.isCancelled else { return }
+            errorMessage = error.localizedDescription
         }
     }
 }
@@ -481,7 +484,8 @@ struct SavedCommentDetail: View {
 /// a quarter-circle elbow ending at its avatar; the last child's spine stops there.
 private struct ThreadStem: Shape {
     func path(in rect: CGRect) -> Path {
-        let startY = CommentThreadLayout.headerHeight / 2
+        let startY =
+            CommentThreadLayout.headerHeight / 2
             + CommentThreadLayout.avatarSize / 2
             + 3
 
@@ -540,105 +544,105 @@ private struct CommentAvatar: View {
 }
 
 #if DEBUG
-struct CommentsPreview: View {
-    @State private var collapsed: Bool
-    @State private var appState = PreviewData.appState()
+    struct CommentsPreview: View {
+        @State private var collapsed: Bool
+        @State private var appState = PreviewData.appState()
 
-    private let comments: [Item]
-    private let threads: [Int: [Item]]
+        private let comments: [Item]
+        private let threads: [Int: [Item]]
 
-    init(collapsed: Bool = false) {
-        _collapsed = State(initialValue: collapsed)
+        init(collapsed: Bool = false) {
+            _collapsed = State(initialValue: collapsed)
 
-        comments = PreviewData.comments
-        threads = PreviewData.threads
+            comments = PreviewData.comments
+            threads = PreviewData.threads
+        }
+
+        var body: some View {
+            VStack(alignment: .leading, spacing: 12) {
+                HStack {
+                    Text("Discussion")
+                        .font(.system(size: 15, weight: .semibold))
+
+                    Text("6 comments")
+                        .font(.system(size: 11))
+                        .foregroundStyle(.secondary)
+
+                    Spacer()
+
+                    Button(collapsed ? "Expand threads" : "Collapse threads") {
+                        collapsed.toggle()
+                    }
+                    .clickableCursor()
+                    .buttonStyle(.plain)
+                    .font(.system(size: 10))
+                    .foregroundStyle(.secondary)
+                }
+
+                Divider()
+
+                VStack(alignment: .leading, spacing: 0) {
+                    ForEach(comments.filter { $0.parent == nil }) { comment in
+                        CommentView(
+                            item: comment,
+                            storyAuthor: "alex",
+                            collapseAll: collapsed,
+                            previewThreads: threads,
+                            expandPreview: true
+                        )
+
+                        Divider()
+                            .padding(.vertical, 4)
+                    }
+                }
+            }
+            .padding(20)
+            .background(PlatformColors.textBackground)
+            .environment(appState)
+        }
     }
 
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Text("Discussion")
-                    .font(.system(size: 15, weight: .semibold))
+    #Preview("Comment threads · Dark", traits: .fixedLayout(width: 640, height: 780)) {
+        ScrollView {
+            CommentsPreview()
+        }
+        .preferredColorScheme(.dark)
+    }
 
-                Text("6 comments")
-                    .font(.system(size: 11))
-                    .foregroundStyle(.secondary)
+    #Preview("Comment threads · Light", traits: .fixedLayout(width: 640, height: 780)) {
+        ScrollView {
+            CommentsPreview()
+        }
+        .preferredColorScheme(.light)
+    }
 
-                Spacer()
-
-                Button(collapsed ? "Expand threads" : "Collapse threads") {
-                    collapsed.toggle()
-                }
-                .clickableCursor()
-                .buttonStyle(.plain)
-                .font(.system(size: 10))
-                .foregroundStyle(.secondary)
-            }
-
-            Divider()
-
-            VStack(alignment: .leading, spacing: 0) {
-                ForEach(comments.filter { $0.parent == nil }) { comment in
-                    CommentView(
-                        item: comment,
-                        storyAuthor: "alex",
-                        collapseAll: collapsed,
-                        previewThreads: threads,
-                        expandPreview: true
-                    )
-
-                    Divider()
-                        .padding(.vertical, 4)
-                }
+    #Preview("Comment threads · Deep replies", traits: .fixedLayout(width: 640, height: 800)) {
+        ScrollView {
+            if let root = PreviewData.deepComments.first {
+                CommentView(
+                    item: root,
+                    storyAuthor: root.by,
+                    previewThreads: PreviewData.deepThreads,
+                    expandPreview: true
+                )
+                .padding(20)
+                .environment(PreviewData.appState())
             }
         }
-        .padding(20)
-        .background(PlatformColors.textBackground)
-        .environment(appState)
+        .preferredColorScheme(.dark)
     }
-}
 
-#Preview("Comment threads · Dark", traits: .fixedLayout(width: 640, height: 780)) {
-    ScrollView {
-        CommentsPreview()
+    #Preview("Comment threads · Collapsed", traits: .fixedLayout(width: 640, height: 240)) {
+        CommentsPreview(collapsed: true)
+            .preferredColorScheme(.dark)
     }
-    .preferredColorScheme(.dark)
-}
 
-#Preview("Comment threads · Light", traits: .fixedLayout(width: 640, height: 780)) {
-    ScrollView {
-        CommentsPreview()
-    }
-    .preferredColorScheme(.light)
-}
-
-#Preview("Comment threads · Deep replies", traits: .fixedLayout(width: 640, height: 800)) {
-    ScrollView {
-        if let root = PreviewData.deepComments.first {
-            CommentView(
-                item: root,
-                storyAuthor: root.by,
-                previewThreads: PreviewData.deepThreads,
-                expandPreview: true
-            )
-            .padding(20)
+    #Preview("Saved comment", traits: .fixedLayout(width: 390, height: 600)) {
+        if let comment = PreviewData.comments.first {
+            NavigationStack {
+                SavedCommentDetail(item: comment, previewThreads: PreviewData.threads)
+            }
             .environment(PreviewData.appState())
         }
     }
-    .preferredColorScheme(.dark)
-}
-
-#Preview("Comment threads · Collapsed", traits: .fixedLayout(width: 640, height: 240)) {
-    CommentsPreview(collapsed: true)
-        .preferredColorScheme(.dark)
-}
-
-#Preview("Saved comment", traits: .fixedLayout(width: 390, height: 600)) {
-    if let comment = PreviewData.comments.first {
-        NavigationStack {
-            SavedCommentDetail(item: comment, previewThreads: PreviewData.threads)
-        }
-        .environment(PreviewData.appState())
-    }
-}
 #endif
