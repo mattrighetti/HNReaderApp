@@ -1,15 +1,44 @@
 import SwiftUI
 
 struct IOSHomeView: View {
+    enum Tab: Hashable {
+        case stories
+        case saved
+        case profile
+    }
+
+    @State private var selectedTab: Tab
     @State private var selectedFeed: AppState.SidebarSelection = .top
-    var initialRows: [StoryRow] = []
-    var repository: FeedRepository = .shared
-    var loadsAutomatically = true
-    var previewComments: [Item]?
-    var previewThreads: [Int: [Item]]?
+    private let initialRows: [StoryRow]
+    private let repository: FeedRepository
+    private let loadsAutomatically: Bool
+    private let previewComments: [Item]?
+    private let previewThreads: [Int: [Item]]?
+    private let profileAccount: HNAuthenticatedAccount?
+    private let profileUser: User?
+
+    init(
+        initialRows: [StoryRow] = [],
+        repository: FeedRepository = .shared,
+        loadsAutomatically: Bool = true,
+        previewComments: [Item]? = nil,
+        previewThreads: [Int: [Item]]? = nil,
+        initialTab: Tab = .stories,
+        profileAccount: HNAuthenticatedAccount? = nil,
+        profileUser: User? = nil
+    ) {
+        self.initialRows = initialRows
+        self.repository = repository
+        self.loadsAutomatically = loadsAutomatically
+        self.previewComments = previewComments
+        self.previewThreads = previewThreads
+        self.profileAccount = profileAccount
+        self.profileUser = profileUser
+        _selectedTab = State(initialValue: initialTab)
+    }
 
     var body: some View {
-        TabView {
+        TabView(selection: $selectedTab) {
             IOSStoryList(
                 selection: $selectedFeed,
                 showsSavedStories: false,
@@ -22,6 +51,7 @@ struct IOSHomeView: View {
             .tabItem {
                 Label("Stories", systemImage: "newspaper")
             }
+            .tag(Tab.stories)
 
             IOSStoryList(
                 selection: .constant(.saved), showsSavedStories: true,
@@ -31,11 +61,19 @@ struct IOSHomeView: View {
             .tabItem {
                 Label("Saved", systemImage: "bookmark")
             }
+            .tag(Tab.saved)
 
-            IOSSettingsView()
-                .tabItem {
-                    Label("Settings", systemImage: "gearshape")
-                }
+            NavigationStack {
+                HNAccountView(
+                    account: profileAccount,
+                    previewUser: profileUser,
+                    loadsAutomatically: loadsAutomatically
+                )
+            }
+            .tabItem {
+                Label("Profile", systemImage: "person.crop.circle")
+            }
+            .tag(Tab.profile)
         }
     }
 }

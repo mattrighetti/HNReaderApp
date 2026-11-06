@@ -4,6 +4,8 @@ import XCTest
 
 final class HNAuthenticationClientTests: XCTestCase {
     private var cookieStorage: HTTPCookieStorage!
+    private var defaults: UserDefaults!
+    private var defaultsSuite: String!
     private var session: URLSession!
     private let loginURL = URL(string: "https://auth.hnreader.test/login")!
 
@@ -13,6 +15,8 @@ final class HNAuthenticationClientTests: XCTestCase {
         cookieStorage = HTTPCookieStorage.sharedCookieStorage(
             forGroupContainerIdentifier: "HNAuthenticationClientTests-\(UUID().uuidString)"
         )
+        defaultsSuite = "HNAuthenticationClientTests-\(UUID().uuidString)"
+        defaults = UserDefaults(suiteName: defaultsSuite)
         let configuration = URLSessionConfiguration.ephemeral
         configuration.httpCookieStorage = cookieStorage
         configuration.protocolClasses = [HNAuthenticationTestProtocol.self]
@@ -23,6 +27,9 @@ final class HNAuthenticationClientTests: XCTestCase {
         session.invalidateAndCancel()
         session = nil
         cookieStorage = nil
+        defaults.removePersistentDomain(forName: defaultsSuite)
+        defaults = nil
+        defaultsSuite = nil
         HNAuthenticationTestProtocol.handler = nil
         super.tearDown()
     }
@@ -55,6 +62,8 @@ final class HNAuthenticationClientTests: XCTestCase {
         let hasActiveSession = await client.hasActiveSession()
         XCTAssertTrue(hasActiveSession)
         XCTAssertEqual(cookieStorage.cookies(for: loginURL)?.first { $0.name == "user" }?.value, "session-token")
+        let restoredAccount = await client.currentAccount()
+        XCTAssertEqual(restoredAccount, account)
     }
 
     func testMissingCredentialsDoesNotMakeARequest() async {
@@ -122,6 +131,7 @@ final class HNAuthenticationClientTests: XCTestCase {
             ])
         )
         cookieStorage.setCookie(previousCookie)
+        defaults.set("alice", forKey: "hnAuthenticationUsername")
         HNAuthenticationTestProtocol.handler = { request in
             Self.response(for: request, body: "Bad login.")
         }
@@ -134,6 +144,8 @@ final class HNAuthenticationClientTests: XCTestCase {
         XCTAssertEqual(cookieStorage.cookies(for: loginURL)?.first { $0.name == "user" }?.value, "previous-token")
         let hasActiveSession = await client.hasActiveSession()
         XCTAssertTrue(hasActiveSession)
+        let restoredAccount = await client.currentAccount()
+        XCTAssertEqual(restoredAccount, HNAuthenticatedAccount(username: "alice"))
     }
 
     func testLogoutRemovesOnlyHackerNewsSessionCookie() async throws {
@@ -157,6 +169,7 @@ final class HNAuthenticationClientTests: XCTestCase {
         )
         cookieStorage.setCookie(authCookie)
         cookieStorage.setCookie(unrelatedCookie)
+        defaults.set("alice", forKey: "hnAuthenticationUsername")
 
         let client = makeClient()
         await client.logout()
@@ -164,13 +177,16 @@ final class HNAuthenticationClientTests: XCTestCase {
         let cookies = cookieStorage.cookies(for: loginURL) ?? []
         XCTAssertNil(cookies.first { $0.name == "user" })
         XCTAssertEqual(cookies.first { $0.name == "preferences" }?.value, "compact")
+        let restoredAccount = await client.currentAccount()
+        XCTAssertNil(restoredAccount)
     }
 
     private func makeClient() -> HNAuthenticationClient {
         HNAuthenticationClient(
             session: session,
             cookieStorage: cookieStorage,
-            loginURL: loginURL
+            loginURL: loginURL,
+            defaults: defaults
         )
     }
 

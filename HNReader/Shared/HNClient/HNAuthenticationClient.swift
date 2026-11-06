@@ -37,19 +37,23 @@ actor HNAuthenticationClient {
     static let shared = HNAuthenticationClient()
 
     private static let sessionCookieName = "user"
+    private static let usernameDefaultsKey = "hnAuthenticationUsername"
 
     private let session: URLSession
     private let cookieStorage: HTTPCookieStorage
     private let loginURL: URL
+    private let defaults: UserDefaults
 
     init(
         session: URLSession = .shared,
         cookieStorage: HTTPCookieStorage = .shared,
-        loginURL: URL = URL(string: "https://news.ycombinator.com/login")!
+        loginURL: URL = URL(string: "https://news.ycombinator.com/login")!,
+        defaults: UserDefaults = .standard
     ) {
         self.session = session
         self.cookieStorage = cookieStorage
         self.loginURL = loginURL
+        self.defaults = defaults
     }
 
     func login(username: String, password: String) async throws -> HNAuthenticatedAccount {
@@ -97,6 +101,7 @@ actor HNAuthenticationClient {
                 throw classifyFailedLogin(data)
             }
 
+            defaults.set(username, forKey: Self.usernameDefaultsKey)
             return HNAuthenticatedAccount(username: username)
         } catch {
             replaceAuthenticationCookies(with: previousCookies)
@@ -108,9 +113,26 @@ actor HNAuthenticationClient {
         !authenticationCookies.isEmpty
     }
 
+    func currentAccount() -> HNAuthenticatedAccount? {
+        guard !authenticationCookies.isEmpty else {
+            defaults.removeObject(forKey: Self.usernameDefaultsKey)
+            return nil
+        }
+
+        guard
+            let username = defaults.string(forKey: Self.usernameDefaultsKey),
+            !username.isEmpty
+        else {
+            return nil
+        }
+
+        return HNAuthenticatedAccount(username: username)
+    }
+
     /// Removes the local session. Hacker News credentials are never retained by this client.
     func logout() {
         replaceAuthenticationCookies(with: [])
+        defaults.removeObject(forKey: Self.usernameDefaultsKey)
     }
 
     private var authenticationCookies: [HTTPCookie] {

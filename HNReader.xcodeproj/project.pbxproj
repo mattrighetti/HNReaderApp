@@ -85,6 +85,8 @@
 		BAA100000000000000000001 /* HNAuthenticationClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAA100000000000000000004 /* HNAuthenticationClient.swift */; };
 		BAA100000000000000000002 /* HNAuthenticationClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAA100000000000000000004 /* HNAuthenticationClient.swift */; };
 		BAA100000000000000000003 /* HNAuthenticationClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAA100000000000000000005 /* HNAuthenticationClientTests.swift */; };
+		BAA200000000000000000001 /* HNAccountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAA200000000000000000003 /* HNAccountView.swift */; };
+		BAA200000000000000000002 /* HNAccountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAA200000000000000000003 /* HNAccountView.swift */; };
 		C93F99B6267554F00046F870 /* ItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C93F99B5267554F00046F870 /* ItemCell.swift */; };
 		C93F99B8267557FC0046F870 /* ItemList.swift in Sources */ = {isa = PBXBuildFile; fileRef = C93F99B7267557FC0046F870 /* ItemList.swift */; };
 		C93F99BA267580CE0046F870 /* HTMLText.swift in Sources */ = {isa = PBXBuildFile; fileRef = C93F99B9267580CE0046F870 /* HTMLText.swift */; };
@@ -170,6 +172,7 @@
 		C9E9BD022674D095001B4E19 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		BAA100000000000000000004 /* HNAuthenticationClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HNAuthenticationClient.swift; sourceTree = "<group>"; };
 		BAA100000000000000000005 /* HNAuthenticationClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HNAuthenticationClientTests.swift; sourceTree = "<group>"; };
+		BAA200000000000000000003 /* HNAccountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HNAccountView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -351,6 +354,7 @@
 		C9D093A726741BE1002CC786 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				BAA200000000000000000003 /* HNAccountView.swift */,
 				AB3000000000000000000002 /* CommentNavigator.swift */,
 				AB2000000000000000000002 /* CommentView.swift */,
 				C9D0937826741BBE002CC786 /* HomeView.swift */,
@@ -532,6 +536,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BAA200000000000000000002 /* HNAccountView.swift in Sources */,
 				BAA100000000000000000002 /* HNAuthenticationClient.swift in Sources */,
 				B20000000000000000000000 /* HackerNews.swift in Sources */,
 				B20000000000000000000002 /* ItemCache.swift in Sources */,
@@ -574,6 +579,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BAA200000000000000000001 /* HNAccountView.swift in Sources */,
 				BAA100000000000000000001 /* HNAuthenticationClient.swift in Sources */,
 				AB6000000000000000000001 /* AppInfo.swift in Sources */,
 				AB5000000000000000000003 /* SettingsView.swift in Sources */,

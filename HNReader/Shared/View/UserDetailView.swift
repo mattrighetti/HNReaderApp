@@ -14,19 +14,25 @@ struct UserDetailView: View {
     private let loadsAutomatically: Bool
     private let initialComments: [Item]
     private let previewThreads: [Int: [Item]]?
+    private let title: String
+    private let showsMacDismissButton: Bool
 
     init(
         username: String,
         user: User? = nil,
         initialComments: [Item] = [],
         previewThreads: [Int: [Item]]? = nil,
-        loadsAutomatically: Bool = true
+        loadsAutomatically: Bool = true,
+        title: String? = nil,
+        showsMacDismissButton: Bool = true
     ) {
         self.username = username
         _user = State(initialValue: user)
         self.initialComments = initialComments
         self.previewThreads = previewThreads
         self.loadsAutomatically = loadsAutomatically
+        self.title = title ?? username
+        self.showsMacDismissButton = showsMacDismissButton
     }
 
     private var profileURL: URL {
@@ -61,21 +67,23 @@ struct UserDetailView: View {
             .frame(maxWidth: .infinity)
         }
         .background(PlatformColors.textBackground)
-        .navigationTitle(username)
+        .navigationTitle(title)
         #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
         #endif
         .toolbar {
             #if os(macOS)
-                ToolbarItem(placement: .navigation) {
-                    Button {
-                        dismiss()
-                    } label: {
-                        Image(systemName: "chevron.left")
+                if showsMacDismissButton {
+                    ToolbarItem(placement: .navigation) {
+                        Button {
+                            dismiss()
+                        } label: {
+                            Image(systemName: "chevron.left")
+                        }
+                        .buttonStyle(.plain)
+                        .help("Back to story")
+                        .accessibilityLabel("Back to story")
                     }
-                    .buttonStyle(.plain)
-                    .help("Back to story")
-                    .accessibilityLabel("Back to story")
                 }
             #else
                 Link(destination: profileURL) {

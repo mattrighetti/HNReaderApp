@@ -19,6 +19,8 @@ struct IOSStoryList: View {
     @State private var searchText = ""
     @State private var unreadOnly = false
     @State private var scrollResetRequest = UUID()
+    @State private var navigationPath: [Item] = []
+    @State private var showsSettings = false
 
     @MainActor
     init(
@@ -75,7 +77,7 @@ struct IOSStoryList: View {
     }
 
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $navigationPath) {
             ScrollViewReader { proxy in
                 List {
                     if let errorMessage = errorMessage, !showsSavedStories {
@@ -184,6 +186,17 @@ struct IOSStoryList: View {
                         .disabled(isLoading)
                     }
                 }
+
+                if !showsSavedStories && navigationPath.isEmpty {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button {
+                            showsSettings = true
+                        } label: {
+                            Image(systemName: "gearshape")
+                        }
+                        .accessibilityLabel("Settings")
+                    }
+                }
             }
             .refreshable {
                 await refresh()
@@ -207,6 +220,9 @@ struct IOSStoryList: View {
                 .task {
                     appState.markRead(item)
                 }
+            }
+            .sheet(isPresented: $showsSettings) {
+                IOSSettingsView()
             }
             .task(id: selection) {
                 guard loadsAutomatically, !showsSavedStories else { return }
