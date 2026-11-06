@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="https://user-images.githubusercontent.com/16304728/121924791-85b69780-cd3c-11eb-90d8-9861d0bf424e.png" height="250">
+    <img src="HNReader/Assets.xcassets/AppLogo.imageset/AppLogo.png" height="180" alt="HNReader icon" style="border-radius: 24px;">
 </p>
 
 # HNReaderApp
@@ -11,11 +11,15 @@ The application is still in beta for the moment and needs optimizations. When th
 
 <p align="center">
 <a href="https://apps.apple.com/it/app/hnews-reader/id1572480416?l=en&mt=12">
-<img src="resources/appstore.png" height="50px" />
+<img src="resources/appstore.png" height="50px" style="border-radius: 24px;" />
 </a>
 </p>
 
 ## iOS reader
+
+<p align="center">
+<img src="resources/app-store/ios/redesign/upload/search-results/hnreader-search-3840x2560.png" style="border-radius: 24px;">
+</p>
 
 The iOS app targets iOS 18 or later and supports iPhone and iPad. Run the
 `HNReader iOS` scheme on an iOS device or simulator.
@@ -28,6 +32,14 @@ The iOS app targets iOS 18 or later and supports iPhone and iPad. Run the
 Both apps are version 2.1.0. Views own their presentation and loading state;
 shared services return complete pages, while `HNClient/FeedRepository.swift`
 retains the feed cache. Saved items and read status live in the shared `AppState` store.
+
+### App preview
+
+<p align="center">
+    <img src="resources/app-store/ios/redesign/upload/iphone-large/01-a-better-read.png" width="31%" alt="HNReader feed" style="border-radius: 24px;">
+    <img src="resources/app-store/ios/redesign/upload/iphone-large/02-follow-the-conversation.png" width="31%" alt="HNReader discussion" style="border-radius: 24px;">
+    <img src="resources/app-store/ios/redesign/upload/iphone-large/05-light-and-dark.png" width="31%" alt="HNReader appearance options" style="border-radius: 24px;">
+</p>
 
 ## Modern macOS reader
 
@@ -46,6 +58,12 @@ Open `HNReader.xcodeproj` in Xcode and run the `HNReader` scheme.
 Use **⌘R** to refresh a feed and **⌘D** to save or unsave the selected story.
 Articles open in your default browser. Saved story metadata is available offline;
 discussions require a connection. Bookmarks and read status are stored on this Mac.
+
+### macOS marketing preview
+
+<p align="center">
+    <img src="resources/marketing/hnreader-macos-marketing.png" alt="HNReader for Mac marketing composition" style="border-radius: 24px;">
+</p>
 
 Feed data comes from the official Hacker News Firebase REST API. The app loads
 30 stories per page, with at most eight item requests in flight. A page appears
