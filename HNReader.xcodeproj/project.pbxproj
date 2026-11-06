@@ -82,6 +82,9 @@
 		BFA200000000000000000002 /* IOSStoryRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFA200000000000000000001 /* IOSStoryRow.swift */; };
 		BFA300000000000000000002 /* MacReaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFA300000000000000000001 /* MacReaderView.swift */; };
 		BFA400000000000000000002 /* Sidebar.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFA400000000000000000001 /* Sidebar.swift */; };
+		BAA100000000000000000001 /* HNAuthenticationClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAA100000000000000000004 /* HNAuthenticationClient.swift */; };
+		BAA100000000000000000002 /* HNAuthenticationClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAA100000000000000000004 /* HNAuthenticationClient.swift */; };
+		BAA100000000000000000003 /* HNAuthenticationClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAA100000000000000000005 /* HNAuthenticationClientTests.swift */; };
 		C93F99B6267554F00046F870 /* ItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C93F99B5267554F00046F870 /* ItemCell.swift */; };
 		C93F99B8267557FC0046F870 /* ItemList.swift in Sources */ = {isa = PBXBuildFile; fileRef = C93F99B7267557FC0046F870 /* ItemList.swift */; };
 		C93F99BA267580CE0046F870 /* HTMLText.swift in Sources */ = {isa = PBXBuildFile; fileRef = C93F99B9267580CE0046F870 /* HTMLText.swift */; };
@@ -165,6 +168,8 @@
 		C9E9BCFC2674C80E001B4E19 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
 		C9E9BD002674D007001B4E19 /* HackerNews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HackerNews.swift; sourceTree = "<group>"; };
 		C9E9BD022674D095001B4E19 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		BAA100000000000000000004 /* HNAuthenticationClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HNAuthenticationClient.swift; sourceTree = "<group>"; };
+		BAA100000000000000000005 /* HNAuthenticationClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HNAuthenticationClientTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -213,6 +218,7 @@
 		33071AE1286F3A139C23E0A9 /* HNClientTests */ = {
 			isa = PBXGroup;
 			children = (
+				BAA100000000000000000005 /* HNAuthenticationClientTests.swift */,
 				AB3000000000000000000004 /* CommentNavigationTests.swift */,
 				AB1000000000000000000002 /* FeedLoadingTests.swift */,
 				33071291447141A6D31E671B /* HackerNewsTests.swift */,
@@ -376,6 +382,7 @@
 		C9D093AA26741BFD002CC786 /* HNClient */ = {
 			isa = PBXGroup;
 			children = (
+				BAA100000000000000000004 /* HNAuthenticationClient.swift */,
 				AB9000000000000000000002 /* ReaderPageService.swift */,
 				AB2000000000000000000004 /* FeedRepository.swift */,
 				AB1000000000000000000004 /* NewsService.swift */,
@@ -525,6 +532,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BAA100000000000000000002 /* HNAuthenticationClient.swift in Sources */,
 				B20000000000000000000000 /* HackerNews.swift in Sources */,
 				B20000000000000000000002 /* ItemCache.swift in Sources */,
 				B20000000000000000000004 /* NewsService.swift in Sources */,
@@ -566,6 +574,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BAA100000000000000000001 /* HNAuthenticationClient.swift in Sources */,
 				AB6000000000000000000001 /* AppInfo.swift in Sources */,
 				AB5000000000000000000003 /* SettingsView.swift in Sources */,
 				AB5000000000000000000001 /* PreviewData.swift in Sources */,
@@ -608,6 +617,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BAA100000000000000000003 /* HNAuthenticationClientTests.swift in Sources */,
 				AB4000000000000000000003 /* SplitColumnWidthTests.swift in Sources */,
 				AB3000000000000000000003 /* CommentNavigationTests.swift in Sources */,
 				AB1000000000000000000001 /* FeedLoadingTests.swift in Sources */,
