@@ -16,7 +16,6 @@ struct IOSStoryList: View {
     @State private var paginationError: String?
     @State private var revision = UUID()
     private let repository: FeedRepository
-    @State private var searchText = ""
     @State private var unreadOnly = false
     @State private var scrollResetRequest = UUID()
     @State private var navigationPath: [Item] = []
@@ -64,16 +63,7 @@ struct IOSStoryList: View {
     }
 
     private var visibleRows: [StoryRow] {
-        rows.filter { row in
-            (!unreadOnly || !appState.readIDs.contains(row.id))
-                && (searchText.isEmpty
-                    || [
-                        row.item.title, row.item.by, row.item.urlHost,
-                        row.item.type == .comment ? row.item.text : nil,
-                    ]
-                    .compactMap { $0 }
-                    .contains { $0.localizedCaseInsensitiveContains(searchText) })
-        }
+        rows.filter { !unreadOnly || !appState.readIDs.contains($0.id) }
     }
 
     var body: some View {
@@ -118,7 +108,7 @@ struct IOSStoryList: View {
                         }
                     }
 
-                    if !showsSavedStories && feed.hasMore && searchText.isEmpty {
+                    if !showsSavedStories && feed.hasMore {
                         paginationRow
                     }
                 }
@@ -136,10 +126,6 @@ struct IOSStoryList: View {
             }
             .navigationTitle(showsSavedStories ? "Saved" : "")
             .navigationBarTitleDisplayMode(showsSavedStories ? .large : .inline)
-            .searchable(
-                text: $searchText,
-                prompt: showsSavedStories ? "Search saved items" : "Search stories"
-            )
             .toolbar {
                 if !showsSavedStories {
                     ToolbarItem(placement: .topBarLeading) {
@@ -231,7 +217,6 @@ struct IOSStoryList: View {
             }
             .task(id: selection) {
                 guard loadsAutomatically, !showsSavedStories else { return }
-                searchText = ""
                 unreadOnly = false
 
                 if selection.category != nil {
@@ -244,16 +229,12 @@ struct IOSStoryList: View {
     }
 
     private var emptyTitle: String {
-        if !searchText.isEmpty {
-            return showsSavedStories ? "No matching saved items" : "No matching stories"
-        }
         if unreadOnly { return showsSavedStories ? "No unread saved items" : "No unread stories" }
         if showsSavedStories { return "No saved items" }
         return "No stories yet"
     }
 
     private var emptyMessage: String {
-        if !searchText.isEmpty { return "Try a different search." }
         if unreadOnly {
             return showsSavedStories
                 ? "Turn off Unread only to see saved items you’ve read."

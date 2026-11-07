@@ -15,11 +15,11 @@ struct IOSStoryRow: View {
                 Group {
                     if row.item.type == .comment {
                         Image(systemName: "bubble.left")
-                            .font(.system(size: 14, weight: .medium))
+                            .font(.system(size: 12, weight: .medium))
                             .accessibilityHidden(true)
                     } else {
                         Text("\(row.rank).")
-                            .font(.system(size: 14, weight: .medium).monospacedDigit())
+                            .font(.system(size: 13, weight: .medium).monospacedDigit())
                     }
                 }
                 .foregroundStyle(.tertiary)
@@ -29,7 +29,7 @@ struct IOSStoryRow: View {
                         ? "Comment by \(row.item.by ?? "Deleted user")"
                         : row.item.urlHost ?? "news.ycombinator.com"
                 )
-                .font(.system(size: 15, weight: .medium))
+                .font(.system(size: 14, weight: .medium))
                 .foregroundStyle(
                     row.item.type == .comment ? Color.secondary : Color.accentColor
                 )
@@ -40,7 +40,7 @@ struct IOSStoryRow: View {
 
                 if appState.isSaved(row.item) {
                     Image(systemName: "bookmark.fill")
-                        .font(.system(size: 13))
+                        .font(.system(size: 12))
                         .foregroundStyle(Color.accentColor)
                         .accessibilityLabel("Saved")
                 }
@@ -49,8 +49,8 @@ struct IOSStoryRow: View {
             ItemRowTitle(item: row.item)
                 .font(
                     row.item.type == .comment
-                        ? .system(size: 17)
-                        : .system(size: 19, weight: .semibold, design: .rounded)
+                        ? .system(size: 15)
+                        : .system(size: 17, weight: .semibold, design: .rounded)
                 )
                 .foregroundStyle(isRead ? .secondary : .primary)
                 .lineLimit(3)
@@ -72,7 +72,7 @@ struct IOSStoryRow: View {
 
                 Spacer(minLength: 6)
             }
-            .font(.system(size: 15))
+            .font(.system(size: 14))
             .foregroundStyle(.secondary)
 
             HStack(spacing: 14) {
@@ -83,7 +83,7 @@ struct IOSStoryRow: View {
                     "\(row.item.type == .comment ? row.item.kids?.count ?? 0 : row.item.descendants ?? 0)",
                     systemImage: "bubble.left")
             }
-            .font(.system(size: 15))
+            .font(.system(size: 14))
             .foregroundStyle(.secondary)
         }
         .padding(.vertical, 9)
@@ -108,7 +108,7 @@ struct IOSStoryRow: View {
     private func metadataValue(_ value: String, systemImage: String) -> some View {
         HStack(spacing: 3) {
             Image(systemName: systemImage)
-                .font(.system(size: 13, weight: .semibold))
+                .font(.system(size: 12, weight: .semibold))
                 .foregroundStyle(.tertiary)
 
             Text(value)
