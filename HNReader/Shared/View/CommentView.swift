@@ -57,6 +57,7 @@ struct CommentView: View {
     let depth: Int
     let parentAuthor: String?
     let collapseAll: Bool
+    let showsContextAction: Bool
 
     private let previewThreads: [Int: [Item]]?
     private let expandPreview: Bool
@@ -84,13 +85,15 @@ struct CommentView: View {
         parentAuthor: String? = nil,
         collapseAll: Bool = false,
         previewThreads: [Int: [Item]]? = nil,
-        expandPreview: Bool = false
+        expandPreview: Bool = false,
+        showsContextAction: Bool = false
     ) {
         self.item = item
         self.storyAuthor = storyAuthor
         self.depth = depth
         self.parentAuthor = parentAuthor
         self.collapseAll = collapseAll
+        self.showsContextAction = showsContextAction
         self.previewThreads = previewThreads
         self.expandPreview = expandPreview
 
@@ -327,6 +330,15 @@ struct CommentView: View {
                 }
                 .clickableCursor()
 
+                if showsContextAction {
+                    NavigationLink {
+                        HNCommentContextView(comment: item)
+                    } label: {
+                        Label("Context", systemImage: "arrow.turn.up.left")
+                    }
+                    .clickableCursor()
+                }
+
                 Spacer(minLength: 0)
             }
             .font(.system(size: 10, weight: .medium))
@@ -354,6 +366,18 @@ struct CommentView: View {
                 .font(.system(size: CommentThreadLayout.actionFontSize, weight: .semibold))
                 .foregroundStyle(.secondary)
                 .buttonStyle(.plain)
+            }
+            if showsContextAction {
+                NavigationLink {
+                    HNCommentContextView(comment: item)
+                } label: {
+                    Label("Context", systemImage: "arrow.turn.up.left")
+                        .frame(minHeight: CommentThreadLayout.touchTarget)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .font(.system(size: CommentThreadLayout.actionFontSize, weight: .semibold))
+                .foregroundStyle(Color.accentColor)
             }
         #endif
     }

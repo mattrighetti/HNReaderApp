@@ -4,11 +4,31 @@ struct HNAuthenticatedAccount: Equatable, Sendable {
     let username: String
 }
 
+enum HNUpvoteKind: String, CaseIterable, Identifiable, Sendable {
+    case submissions
+    case comments
+
+    var id: Self { self }
+
+    var title: String {
+        switch self {
+        case .submissions: "Stories"
+        case .comments: "Comments"
+        }
+    }
+}
+
+struct HNUpvotedPage: Equatable, Sendable {
+    let ids: [Int]
+    let hasMore: Bool
+}
+
 enum HNAuthenticationError: Error, Equatable, Sendable {
     case credentialsRequired
     case invalidCredentials
     case validationRequired
     case invalidResponse
+    case notAuthenticated
     case server(statusCode: Int)
 }
 
@@ -23,6 +43,8 @@ extension HNAuthenticationError: LocalizedError {
             return "Hacker News requires additional validation before signing in."
         case .invalidResponse:
             return "Hacker News returned an unexpected response."
+        case .notAuthenticated:
+            return "Your Hacker News session has expired. Sign in again to view your upvotes."
         case .server(let statusCode):
             return "Hacker News could not sign you in (HTTP \(statusCode))."
         }
@@ -129,6 +151,62 @@ actor HNAuthenticationClient {
         return HNAuthenticatedAccount(username: username)
     }
 
+    func upvotedItems(
+        username: String,
+        kind: HNUpvoteKind,
+        page: Int = 1
+    ) async throws -> HNUpvotedPage {
+        guard let account = currentAccount(), account.username == username else {
+            throw HNAuthenticationError.notAuthenticated
+        }
+
+        var components = URLComponents(
+            url: loginURL.deletingLastPathComponent().appendingPathComponent("upvoted"),
+            resolvingAgainstBaseURL: false
+        )
+        var queryItems = [URLQueryItem(name: "id", value: username)]
+        if kind == .comments {
+            queryItems.append(URLQueryItem(name: "comments", value: "t"))
+        }
+        if page > 1 {
+            queryItems.append(URLQueryItem(name: "p", value: String(page)))
+        }
+        components?.queryItems = queryItems
+
+        guard let url = components?.url else {
+            throw HNAuthenticationError.invalidResponse
+        }
+
+        var request = URLRequest(
+            url: url,
+            cachePolicy: .reloadIgnoringLocalCacheData,
+            timeoutInterval: 20
+        )
+        request.httpShouldHandleCookies = true
+        request.setValue("text/html", forHTTPHeaderField: "Accept")
+
+        let (data, response) = try await session.data(for: request)
+        guard let response = response as? HTTPURLResponse else {
+            throw HNAuthenticationError.invalidResponse
+        }
+        captureCookies(from: response)
+
+        guard (200 ..< 300).contains(response.statusCode) else {
+            throw HNAuthenticationError.server(statusCode: response.statusCode)
+        }
+        guard let html = String(data: data, encoding: .utf8) else {
+            throw HNAuthenticationError.invalidResponse
+        }
+        guard !isLoginPage(html, responseURL: response.url) else {
+            throw HNAuthenticationError.notAuthenticated
+        }
+
+        return HNUpvotedPage(
+            ids: itemIDs(in: html),
+            hasMore: containsMoreLink(in: html)
+        )
+    }
+
     /// Removes the local session. Hacker News credentials are never retained by this client.
     func logout() {
         replaceAuthenticationCookies(with: [])
@@ -171,6 +249,57 @@ actor HNAuthenticationClient {
         }
 
         return .invalidCredentials
+    }
+
+    private func isLoginPage(_ html: String, responseURL: URL?) -> Bool {
+        if responseURL?.lastPathComponent == "login" {
+            return true
+        }
+
+        return html.range(
+            of: #"<form[^>]+action=[\"']login[\"']"#,
+            options: [.regularExpression, .caseInsensitive]
+        ) != nil
+    }
+
+    private func itemIDs(in html: String) -> [Int] {
+        let rowPattern = #"<tr\b[^>]*\bclass\s*=\s*[\"'][^\"']*\bathing\b[^\"']*[\"'][^>]*>"#
+        let idPattern = #"\bid\s*=\s*[\"']([0-9]+)[\"']"#
+        guard
+            let rowExpression = try? NSRegularExpression(
+                pattern: rowPattern,
+                options: .caseInsensitive
+            ),
+            let idExpression = try? NSRegularExpression(
+                pattern: idPattern,
+                options: .caseInsensitive
+            )
+        else {
+            return []
+        }
+
+        let range = NSRange(html.startIndex..., in: html)
+        return rowExpression.matches(in: html, range: range).compactMap { rowMatch in
+            guard
+                let rowRange = Range(rowMatch.range, in: html),
+                let idMatch = idExpression.firstMatch(
+                    in: html,
+                    range: NSRange(rowRange, in: html)
+                ),
+                idMatch.numberOfRanges > 1,
+                let idRange = Range(idMatch.range(at: 1), in: html)
+            else {
+                return nil
+            }
+            return Int(html[idRange])
+        }
+    }
+
+    private func containsMoreLink(in html: String) -> Bool {
+        html.range(
+            of: #"<a\b[^>]*\bclass\s*=\s*[\"'][^\"']*\bmorelink\b"#,
+            options: [.regularExpression, .caseInsensitive]
+        ) != nil
     }
 
     private func formBody(username: String, password: String) -> Data? {

@@ -181,6 +181,89 @@ final class HNAuthenticationClientTests: XCTestCase {
         XCTAssertNil(restoredAccount)
     }
 
+    func testUpvotedCommentsUsesAuthenticatedEndpointAndParsesPage() async throws {
+        try installSession(username: "alice")
+        HNAuthenticationTestProtocol.handler = { request in
+            XCTAssertEqual(request.url?.path, "/upvoted")
+            let query = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)
+            XCTAssertEqual(query?.queryItems?.first { $0.name == "id" }?.value, "alice")
+            XCTAssertEqual(query?.queryItems?.first { $0.name == "comments" }?.value, "t")
+            XCTAssertEqual(query?.queryItems?.first { $0.name == "p" }?.value, "2")
+
+            return Self.response(
+                for: request,
+                body: """
+                    <table>
+                      <tr class='athing comtr' id='101'><td>First comment</td></tr>
+                      <tr id="ignored"><td>Not an item</td></tr>
+                      <tr id="202" class="athing comtr"><td>Second comment</td></tr>
+                    </table>
+                    <a href="upvoted?id=alice&amp;comments=t&amp;p=3" class="morelink">More</a>
+                    """
+            )
+        }
+
+        let page = try await makeClient().upvotedItems(
+            username: "alice",
+            kind: .comments,
+            page: 2
+        )
+
+        XCTAssertEqual(page, HNUpvotedPage(ids: [101, 202], hasMore: true))
+    }
+
+    func testUpvotedSubmissionsOmitsCommentKindAndDetectsLastPage() async throws {
+        try installSession(username: "alice")
+        HNAuthenticationTestProtocol.handler = { request in
+            let query = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)
+            XCTAssertNil(query?.queryItems?.first { $0.name == "comments" })
+            XCTAssertNil(query?.queryItems?.first { $0.name == "p" })
+            return Self.response(
+                for: request,
+                body: #"<tr class="athing submission" id="303"><td>Story</td></tr>"#
+            )
+        }
+
+        let page = try await makeClient().upvotedItems(
+            username: "alice",
+            kind: .submissions
+        )
+
+        XCTAssertEqual(page, HNUpvotedPage(ids: [303], hasMore: false))
+    }
+
+    func testUpvotesRequiresMatchingAuthenticatedAccount() async throws {
+        try installSession(username: "alice")
+        HNAuthenticationTestProtocol.handler = { request in
+            XCTFail("Unexpected request to \(request.url?.absoluteString ?? "unknown URL")")
+            return Self.response(for: request)
+        }
+
+        await XCTAssertThrowsAuthenticationError(.notAuthenticated) {
+            _ = try await self.makeClient().upvotedItems(
+                username: "bob",
+                kind: .submissions
+            )
+        }
+    }
+
+    func testLoginPageResponseReportsExpiredSession() async throws {
+        try installSession(username: "alice")
+        HNAuthenticationTestProtocol.handler = { request in
+            Self.response(
+                for: request,
+                body: #"<form method="post" action="login"><input name="acct"></form>"#
+            )
+        }
+
+        await XCTAssertThrowsAuthenticationError(.notAuthenticated) {
+            _ = try await self.makeClient().upvotedItems(
+                username: "alice",
+                kind: .submissions
+            )
+        }
+    }
+
     private func makeClient() -> HNAuthenticationClient {
         HNAuthenticationClient(
             session: session,
@@ -188,6 +271,20 @@ final class HNAuthenticationClientTests: XCTestCase {
             loginURL: loginURL,
             defaults: defaults
         )
+    }
+
+    private func installSession(username: String) throws {
+        let cookie = try XCTUnwrap(
+            HTTPCookie(properties: [
+                .domain: "auth.hnreader.test",
+                .path: "/",
+                .name: "user",
+                .value: "session-token",
+                .secure: "TRUE",
+            ])
+        )
+        cookieStorage.setCookie(cookie)
+        defaults.set(username, forKey: "hnAuthenticationUsername")
     }
 
     private func XCTAssertThrowsAuthenticationError(

@@ -166,7 +166,8 @@ struct HNAccountView: View {
             user: previewUser,
             loadsAutomatically: loadsAutomatically,
             title: "Profile",
-            showsMacDismissButton: false
+            showsMacDismissButton: false,
+            showsUpvotes: true
         )
     }
 
@@ -221,6 +222,287 @@ struct HNAccountView: View {
     }
 }
 
+struct HNUpvotedItemsView: View {
+    private struct Content {
+        var items: [Item] = []
+        var nextPage = 1
+        var hasMore = true
+        var errorMessage: String?
+    }
+
+    let username: String
+
+    @State private var selection = HNUpvoteKind.submissions
+    @State private var content: [HNUpvoteKind: Content]
+    @State private var isLoading = false
+    @State private var activeRequest = UUID()
+
+    private let authenticationClient: HNAuthenticationClient
+    private let service: NewsService
+    private let loadsAutomatically: Bool
+
+    init(
+        username: String,
+        authenticationClient: HNAuthenticationClient = .shared,
+        service: NewsService = .shared,
+        initialSubmissions: [Item] = [],
+        initialComments: [Item] = [],
+        loadsAutomatically: Bool = true
+    ) {
+        self.username = username
+        self.authenticationClient = authenticationClient
+        self.service = service
+        self.loadsAutomatically = loadsAutomatically
+        _content = State(initialValue: [
+            .submissions: Content(
+                items: initialSubmissions,
+                nextPage: initialSubmissions.isEmpty ? 1 : 2,
+                hasMore: loadsAutomatically
+            ),
+            .comments: Content(
+                items: initialComments,
+                nextPage: initialComments.isEmpty ? 1 : 2,
+                hasMore: loadsAutomatically
+            ),
+        ])
+    }
+
+    private var selectedContent: Content {
+        content[selection, default: Content()]
+    }
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 16) {
+                Picker("Upvote type", selection: $selection) {
+                    ForEach(HNUpvoteKind.allCases) { kind in
+                        Text(kind.title).tag(kind)
+                    }
+                }
+                .pickerStyle(.segmented)
+                .disabled(isLoading)
+
+                if selectedContent.items.isEmpty && isLoading {
+                    ProgressView("Loading upvotes…")
+                        .frame(maxWidth: .infinity, minHeight: 240)
+                } else if selectedContent.items.isEmpty,
+                          selectedContent.errorMessage == nil
+                {
+                    ContentUnavailableView(
+                        selection == .submissions ? "No Upvoted Stories" : "No Upvoted Comments",
+                        systemImage: "arrow.up.circle",
+                        description: Text("Your upvotes from Hacker News will appear here.")
+                    )
+                    .frame(maxWidth: .infinity, minHeight: 320)
+                } else if selection == .submissions {
+                    LazyVStack(spacing: 0) {
+                        ForEach(StoryRow.savedRows(for: selectedContent.items)) { row in
+                            NavigationLink {
+                                StoryDetail(item: row.item)
+                            } label: {
+                                ItemCell(item: row.item, rank: row.rank)
+                                    .frame(minHeight: StoryRowLayout.minimumHeight)
+                            }
+                            .buttonStyle(.plain)
+
+                            Divider()
+                        }
+                    }
+                } else {
+                    LazyVStack(alignment: .leading, spacing: 0) {
+                        ForEach(selectedContent.items) { comment in
+                            VStack(alignment: .leading, spacing: 0) {
+                                CommentView(item: comment, showsContextAction: true)
+
+                                Divider()
+                            }
+                        }
+                    }
+                }
+
+                footer
+            }
+            .frame(maxWidth: 680, alignment: .leading)
+            .padding(20)
+            .frame(maxWidth: .infinity)
+        }
+        .background(PlatformColors.textBackground)
+        .navigationTitle("Upvotes")
+        #if os(iOS)
+            .navigationBarTitleDisplayMode(.inline)
+        #endif
+        .refreshable {
+            if loadsAutomatically {
+                await load(reset: true)
+            }
+        }
+        .task(id: selection) {
+            guard loadsAutomatically, selectedContent.items.isEmpty else { return }
+            await load()
+        }
+    }
+
+    @ViewBuilder
+    private var footer: some View {
+        if let errorMessage = selectedContent.errorMessage {
+            VStack(alignment: .leading, spacing: 8) {
+                Text(errorMessage)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+
+                Button("Try Again") {
+                    Task { await load() }
+                }
+                .buttonStyle(.plain)
+                .font(.subheadline.weight(.medium))
+            }
+            .padding(.vertical, 12)
+        } else if isLoading && !selectedContent.items.isEmpty {
+            ProgressView("Loading more…")
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 12)
+        } else if selectedContent.hasMore && loadsAutomatically {
+            Button("Load More") {
+                Task { await load() }
+            }
+            .buttonStyle(.plain)
+            .font(.subheadline.weight(.medium))
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 12)
+        }
+    }
+
+    @MainActor
+    private func load(reset: Bool = false) async {
+        guard !isLoading, !Task.isCancelled else { return }
+        let kind = selection
+        var current = content[kind, default: Content()]
+        guard reset || current.hasMore else { return }
+
+        let request = UUID()
+        activeRequest = request
+        isLoading = true
+        current.errorMessage = nil
+        if reset {
+            current.nextPage = 1
+        }
+        content[kind] = current
+        defer { if activeRequest == request { isLoading = false } }
+
+        do {
+            let page = try await authenticationClient.upvotedItems(
+                username: username,
+                kind: kind,
+                page: current.nextPage
+            )
+            let items = try await service.items(ids: page.ids, forceRefresh: reset)
+            try Task.checkCancellation()
+            guard activeRequest == request, selection == kind else { return }
+
+            let previousItems = reset ? [] : current.items
+            let knownIDs = Set(previousItems.map(\.id))
+            current.items = previousItems + displayableItems(items, for: kind)
+                .filter { !knownIDs.contains($0.id) }
+            current.nextPage += 1
+            current.hasMore = page.hasMore
+            current.errorMessage = nil
+            content[kind] = current
+        } catch {
+            guard activeRequest == request, !Task.isCancelled else { return }
+            current.errorMessage = error.localizedDescription
+            content[kind] = current
+        }
+    }
+
+    private func displayableItems(_ items: [Item], for kind: HNUpvoteKind) -> [Item] {
+        items.filter { item in
+            guard item.deleted != true, item.dead != true else { return false }
+
+            switch kind {
+            case .submissions:
+                return item.type != .comment
+                    && !(item.title?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ?? true)
+            case .comments:
+                return item.type == .comment
+                    && !(item.text?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ?? true)
+            }
+        }
+    }
+}
+
+struct HNCommentContextView: View {
+    let comment: Item
+
+    @State private var story: Item?
+    @State private var isLoading = false
+    @State private var errorMessage: String?
+    @State private var retryRequest = 0
+
+    private let service: NewsService
+
+    init(comment: Item, service: NewsService = .shared) {
+        self.comment = comment
+        self.service = service
+    }
+
+    var body: some View {
+        Group {
+            if let story {
+                StoryDetail(item: story)
+            } else if isLoading || errorMessage == nil {
+                ProgressView("Loading context…")
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else if let errorMessage {
+                ContentUnavailableView {
+                    Label("Couldn’t load context", systemImage: "bubble.left.and.exclamationmark")
+                } description: {
+                    Text(errorMessage)
+                } actions: {
+                    Button("Try Again") {
+                        retryRequest += 1
+                    }
+
+                    Link("View on Hacker News", destination: comment.discussionURL)
+                }
+            }
+        }
+        .background(PlatformColors.textBackground)
+        .navigationTitle("Context")
+        #if os(iOS)
+            .navigationBarTitleDisplayMode(.inline)
+        #endif
+        .toolbar {
+            if let story {
+                Link(destination: story.articleURL ?? story.discussionURL) {
+                    Label(
+                        story.articleURL == nil ? "View on HN" : "Open Article",
+                        systemImage: "arrow.up.right"
+                    )
+                }
+                .clickableCursor()
+            }
+        }
+        .task(id: retryRequest) {
+            await loadContext()
+        }
+    }
+
+    @MainActor
+    private func loadContext() async {
+        guard story == nil, !isLoading, !Task.isCancelled else { return }
+        isLoading = true
+        errorMessage = nil
+        defer { isLoading = false }
+
+        do {
+            story = try await service.storyContext(for: comment)
+        } catch {
+            guard !Task.isCancelled else { return }
+            errorMessage = error.localizedDescription
+        }
+    }
+}
+
 #if DEBUG
     @MainActor
     private struct HNProfileMockCanvas: View {
@@ -270,5 +552,17 @@ struct HNAccountView: View {
 
     #Preview("Profile · Mock") {
         HNProfileMockCanvas()
+    }
+
+    #Preview("Upvotes · Mock") {
+        NavigationStack {
+            HNUpvotedItemsView(
+                username: "mattrighetti",
+                initialSubmissions: PreviewData.stories,
+                initialComments: PreviewData.comments,
+                loadsAutomatically: false
+            )
+        }
+        .environment(PreviewData.appState())
     }
 #endif

@@ -16,6 +16,7 @@ struct UserDetailView: View {
     private let previewThreads: [Int: [Item]]?
     private let title: String
     private let showsMacDismissButton: Bool
+    private let showsUpvotes: Bool
 
     init(
         username: String,
@@ -24,7 +25,8 @@ struct UserDetailView: View {
         previewThreads: [Int: [Item]]? = nil,
         loadsAutomatically: Bool = true,
         title: String? = nil,
-        showsMacDismissButton: Bool = true
+        showsMacDismissButton: Bool = true,
+        showsUpvotes: Bool = false
     ) {
         self.username = username
         _user = State(initialValue: user)
@@ -33,6 +35,7 @@ struct UserDetailView: View {
         self.loadsAutomatically = loadsAutomatically
         self.title = title ?? username
         self.showsMacDismissButton = showsMacDismissButton
+        self.showsUpvotes = showsUpvotes
     }
 
     private var profileURL: URL {
@@ -174,6 +177,20 @@ struct UserDetailView: View {
 
     private func profileOptions(_ user: User) -> some View {
         VStack(spacing: 0) {
+            if showsUpvotes {
+                NavigationLink {
+                    HNUpvotedItemsView(
+                        username: user.id,
+                        loadsAutomatically: loadsAutomatically
+                    )
+                } label: {
+                    profileOptionLabel("Upvotes", systemImage: "arrow.up.circle")
+                }
+
+                Divider()
+                    .padding(.leading, 44)
+            }
+
             Link(destination: userURL(path: "submitted")) {
                 profileOptionLabel("Submissions", systemImage: "doc.text", isExternal: true)
             }
