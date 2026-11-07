@@ -25,6 +25,7 @@ struct ItemCell: View {
     let item: Item
     let rank: Int
     var isSelected = false
+    var isCompact = false
 
     @Environment(AppState.self) private var appState
 
@@ -44,17 +45,22 @@ struct ItemCell: View {
         isSelected ? Color.white.opacity(0.8) : .secondary
     }
 
+    private var titleSize: CGFloat { isCompact ? 15 : 17 }
+    private var detailSize: CGFloat { isCompact ? 12 : 14 }
+    private var rowSpacing: CGFloat { isCompact ? 5 : 7 }
+    private var verticalPadding: CGFloat { isCompact ? 6 : 9 }
+
     var body: some View {
-        VStack(alignment: .leading, spacing: 7) {
-            HStack(spacing: 7) {
+        VStack(alignment: .leading, spacing: rowSpacing) {
+            HStack(spacing: isCompact ? 5 : 7) {
                 Group {
                     if item.type == .comment {
                         Image(systemName: "bubble.left")
-                            .font(.system(size: 12, weight: .medium))
+                            .font(.system(size: isCompact ? 11 : 12, weight: .medium))
                             .accessibilityHidden(true)
                     } else {
                         Text("\(rank).")
-                            .font(.system(size: 13, weight: .medium).monospacedDigit())
+                            .font(.system(size: isCompact ? 11 : 13, weight: .medium).monospacedDigit())
                     }
                 }
                 .foregroundStyle(isSelected ? Color.white.opacity(0.55) : Color.secondary)
@@ -64,7 +70,7 @@ struct ItemCell: View {
                         ? "Comment by \(item.by ?? "Deleted user")"
                         : item.urlHost ?? "news.ycombinator.com"
                 )
-                .font(.system(size: 14, weight: .medium))
+                .font(.system(size: isCompact ? 12 : 14, weight: .medium))
                 .foregroundStyle(
                     isSelected
                         ? Color.white.opacity(0.75)
@@ -76,7 +82,7 @@ struct ItemCell: View {
 
                 if appState.isSaved(item) {
                     Image(systemName: "bookmark.fill")
-                        .font(.system(size: 12))
+                        .font(.system(size: isCompact ? 10 : 12))
                         .foregroundStyle(isSelected ? Color.white : Color.accentColor)
                         .accessibilityLabel("Saved")
                 }
@@ -85,8 +91,8 @@ struct ItemCell: View {
             ItemRowTitle(item: item)
                 .font(
                     item.type == .comment
-                        ? .system(size: 15)
-                        : .system(size: 17, weight: .semibold, design: .rounded)
+                        ? .system(size: isCompact ? 13 : 15)
+                        : .system(size: titleSize, weight: .semibold, design: .rounded)
                 )
                 .lineSpacing(1)
                 .lineLimit(3)
@@ -112,7 +118,7 @@ struct ItemCell: View {
 
                 Spacer(minLength: 6)
             }
-            .font(.system(size: 14))
+            .font(.system(size: detailSize))
             .foregroundStyle(secondaryColor)
 
             HStack(spacing: 14) {
@@ -124,10 +130,10 @@ struct ItemCell: View {
                     systemImage: "bubble.left"
                 )
             }
-            .font(.system(size: 14))
+            .font(.system(size: detailSize))
             .foregroundStyle(secondaryColor)
         }
-        .padding(.vertical, 9)
+        .padding(.vertical, verticalPadding)
         .frame(maxWidth: .infinity, alignment: .leading)
         .contentShape(Rectangle())
         .clickableCursor()
@@ -156,7 +162,7 @@ struct ItemCell: View {
     private func metadataValue(_ value: String, systemImage: String) -> some View {
         HStack(spacing: 3) {
             Image(systemName: systemImage)
-                .font(.system(size: 12, weight: .semibold))
+                .font(.system(size: isCompact ? 10 : 12, weight: .semibold))
                 .foregroundStyle(isSelected ? Color.white.opacity(0.65) : Color.secondary.opacity(0.8))
 
             Text(value)

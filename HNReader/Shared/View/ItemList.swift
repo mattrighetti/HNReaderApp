@@ -66,7 +66,8 @@ struct ItemList: View {
                         ItemCell(
                             item: row.item,
                             rank: row.rank,
-                            isSelected: selectedID == row.id
+                            isSelected: selectedID == row.id,
+                            isCompact: true
                         )
                         .help(row.item.title ?? "Saved comment")
                         .frame(minHeight: StoryRowLayout.minimumHeight)

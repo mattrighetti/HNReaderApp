@@ -16,10 +16,6 @@ struct Sidebar: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Hacker News")
                         .font(.headline)
-
-                    Text("Stay curious.")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
                 }
 
                 Spacer()
@@ -56,10 +52,6 @@ struct Sidebar: View {
             .listStyle(.sidebar)
 
             HStack {
-                Text("Made for curious minds")
-                    .font(.caption2)
-                    .foregroundStyle(.tertiary)
-
                 Spacer()
 
                 #if os(macOS)
