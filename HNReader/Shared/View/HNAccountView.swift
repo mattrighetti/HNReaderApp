@@ -300,8 +300,12 @@ struct HNUpvotedItemsView: View {
                             NavigationLink {
                                 StoryDetail(item: row.item)
                             } label: {
-                                ItemCell(item: row.item, rank: row.rank)
-                                    .frame(minHeight: StoryRowLayout.minimumHeight)
+                                #if os(iOS)
+                                    IOSStoryRow(row: row)
+                                #else
+                                    ItemCell(item: row.item, rank: row.rank)
+                                        .frame(minHeight: StoryRowLayout.minimumHeight)
+                                #endif
                             }
                             .buttonStyle(.plain)
 

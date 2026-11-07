@@ -65,14 +65,6 @@ struct ItemCell: View {
 
             VStack(alignment: .leading, spacing: 3) {
                 HStack(spacing: 6) {
-                    Circle()
-                        .fill(Color.accentColor)
-                        .frame(width: 4, height: 4)
-                        .frame(width: 6, height: 14)
-                        .opacity(isRead ? 0 : 1)
-                        .accessibilityLabel("Unread")
-                        .accessibilityHidden(isRead)
-
                     Text(item.type == .comment ? "Comment by \(item.by ?? "Deleted user")" : item.urlHost ?? "news.ycombinator.com")
                         .font(.system(size: 9, weight: .medium, design: .monospaced))
                         .foregroundStyle(domainColor)

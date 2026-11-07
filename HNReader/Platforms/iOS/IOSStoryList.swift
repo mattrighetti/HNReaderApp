@@ -105,9 +105,12 @@ struct IOSStoryList: View {
                         .listRowSeparator(.hidden)
                     } else {
                         ForEach(visibleRows) { row in
-                            NavigationLink(value: row.item) {
+                            Button {
+                                navigationPath.append(row.item)
+                            } label: {
                                 IOSStoryRow(row: row)
                             }
+                            .buttonStyle(.plain)
                             .listRowInsets(
                                 EdgeInsets(top: 10, leading: 16, bottom: 10, trailing: 16)
                             )
@@ -131,8 +134,8 @@ struct IOSStoryList: View {
                     }
                 }
             }
-            .navigationTitle(showsSavedStories ? "Saved" : selection.rawValue)
-            .navigationBarTitleDisplayMode(.large)
+            .navigationTitle(showsSavedStories ? "Saved" : "")
+            .navigationBarTitleDisplayMode(showsSavedStories ? .large : .inline)
             .searchable(
                 text: $searchText,
                 prompt: showsSavedStories ? "Search saved items" : "Search stories"
@@ -153,8 +156,10 @@ struct IOSStoryList: View {
 
                             Toggle("Unread only", isOn: $unreadOnly)
                         } label: {
-                            Label(selection.rawValue, systemImage: selection.iconName)
-                                .labelStyle(.iconOnly)
+                            HStack(spacing: 8) {
+                                Image(systemName: selection.iconName)
+                                Text(selection.rawValue)
+                            }
                         }
                         .accessibilityLabel("Choose story feed and filters")
                     }

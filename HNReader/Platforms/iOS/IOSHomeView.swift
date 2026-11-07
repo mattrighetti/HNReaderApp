@@ -79,6 +79,26 @@ struct IOSHomeView: View {
 }
 
 #if DEBUG
+    /// Full iOS home experience with local story data and working navigation.
+    @MainActor
+    private struct IOSHomeMockCanvas: View {
+        @State private var appState = PreviewData.appState()
+
+        var body: some View {
+            IOSHomeView(
+                initialRows: PreviewData.rows,
+                loadsAutomatically: false,
+                previewComments: PreviewData.rootComments,
+                previewThreads: PreviewData.threads
+            )
+            .environment(appState)
+        }
+    }
+
+    #Preview("iOS · Home · Interactive Mock") {
+        IOSHomeMockCanvas()
+    }
+
     struct IOSStoryListCanvas: View {
         @State private var appState = PreviewData.appState()
         @State private var selectedFeed: AppState.SidebarSelection = .top

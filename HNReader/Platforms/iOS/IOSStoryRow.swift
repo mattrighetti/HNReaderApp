@@ -15,11 +15,11 @@ struct IOSStoryRow: View {
                 Group {
                     if row.item.type == .comment {
                         Image(systemName: "bubble.left")
-                            .font(.caption)
+                            .font(.system(size: 14, weight: .medium))
                             .accessibilityHidden(true)
                     } else {
-                        Text("\(row.rank)")
-                            .font(.caption2.monospacedDigit().weight(.medium))
+                        Text("\(row.rank).")
+                            .font(.system(size: 14, weight: .medium).monospacedDigit())
                     }
                 }
                 .foregroundStyle(.tertiary)
@@ -29,23 +29,18 @@ struct IOSStoryRow: View {
                         ? "Comment by \(row.item.by ?? "Deleted user")"
                         : row.item.urlHost ?? "news.ycombinator.com"
                 )
-                .font(.caption.weight(.medium))
-                .foregroundStyle(.secondary)
+                .font(.system(size: 15, weight: .medium))
+                .foregroundStyle(
+                    row.item.type == .comment ? Color.secondary : Color.accentColor
+                )
                 .lineLimit(1)
                 .truncationMode(.middle)
 
                 Spacer(minLength: 4)
 
-                if !isRead {
-                    Circle()
-                        .fill(Color.accentColor)
-                        .frame(width: 7, height: 7)
-                        .accessibilityLabel("Unread")
-                }
-
                 if appState.isSaved(row.item) {
                     Image(systemName: "bookmark.fill")
-                        .font(.caption2)
+                        .font(.system(size: 13))
                         .foregroundStyle(Color.accentColor)
                         .accessibilityLabel("Saved")
                 }
@@ -54,12 +49,31 @@ struct IOSStoryRow: View {
             ItemRowTitle(item: row.item)
                 .font(
                     row.item.type == .comment
-                        ? .system(size: 16)
-                        : .system(size: 17, weight: .semibold, design: .rounded)
+                        ? .system(size: 17)
+                        : .system(size: 19, weight: .semibold, design: .rounded)
                 )
                 .foregroundStyle(isRead ? .secondary : .primary)
                 .lineLimit(3)
                 .fixedSize(horizontal: false, vertical: true)
+
+            HStack(spacing: 7) {
+                if row.item.type != .comment, let author = row.item.by {
+                    Text(author)
+                        .lineLimit(1)
+                        .truncationMode(.middle)
+
+                    Text("·")
+                        .accessibilityHidden(true)
+                }
+
+                Text(row.item.timeStringRepresentation.map { "\($0) ago" } ?? "")
+                    .lineLimit(1)
+                    .fixedSize()
+
+                Spacer(minLength: 6)
+            }
+            .font(.system(size: 15))
+            .foregroundStyle(.secondary)
 
             HStack(spacing: 14) {
                 if row.item.type != .comment {
@@ -68,23 +82,11 @@ struct IOSStoryRow: View {
                 metadataValue(
                     "\(row.item.type == .comment ? row.item.kids?.count ?? 0 : row.item.descendants ?? 0)",
                     systemImage: "bubble.left")
-
-                if row.item.type != .comment, let author = row.item.by {
-                    Text(author)
-                        .lineLimit(1)
-                        .truncationMode(.middle)
-                }
-
-                Spacer(minLength: 6)
-
-                Text(row.item.timeStringRepresentation.map { "\($0) ago" } ?? "")
-                    .lineLimit(1)
-                    .fixedSize()
             }
-            .font(.caption)
+            .font(.system(size: 15))
             .foregroundStyle(.secondary)
         }
-        .padding(.vertical, 2)
+        .padding(.vertical, 9)
         .accessibilityIdentifier(
             row.item.type == .comment ? "savedComment.\(row.id)" : "story.\(row.id)"
         )
@@ -106,7 +108,7 @@ struct IOSStoryRow: View {
     private func metadataValue(_ value: String, systemImage: String) -> some View {
         HStack(spacing: 3) {
             Image(systemName: systemImage)
-                .font(.system(size: 10, weight: .semibold))
+                .font(.system(size: 13, weight: .semibold))
                 .foregroundStyle(.tertiary)
 
             Text(value)
