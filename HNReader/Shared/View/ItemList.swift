@@ -21,7 +21,6 @@ struct ItemList: View {
     let paginationError: String?
     let errorMessage: String?
     let isSaved: Bool
-    let isSearching: Bool
 
     @Binding var unreadOnly: Bool
 
@@ -118,7 +117,7 @@ struct ItemList: View {
 
     private var emptyState: some View {
         VStack(spacing: 12) {
-            Image(systemName: isSaved ? "bookmark" : "magnifyingglass")
+            Image(systemName: isSaved ? "bookmark" : "newspaper")
                 .font(.system(size: 28, weight: .regular))
                 .foregroundStyle(.tertiary)
                 .accessibilityHidden(true)
@@ -139,13 +138,6 @@ struct ItemList: View {
     }
 
     private var emptyStateContent: (title: String, description: String) {
-        if isSearching {
-            return (
-                isSaved ? "No matching saved items" : "No matching stories",
-                "Try a different search."
-            )
-        }
-
         if unreadOnly {
             if canLoadMore {
                 return (
@@ -170,7 +162,7 @@ struct ItemList: View {
     }
 
     private var canLoadMore: Bool {
-        hasMore && !isSaved && !isSearching
+        hasMore && !isSaved
     }
 
     private var emptyPaginationControls: some View {
@@ -249,7 +241,6 @@ struct ItemList: View {
             case loading
             case emptySaved
             case emptyUnreadPage
-            case noResults
             case error
             case loadingPage
             case pageError
@@ -267,7 +258,7 @@ struct ItemList: View {
 
         private var rows: [StoryRow] {
             switch state {
-            case .loading, .emptySaved, .emptyUnreadPage, .noResults, .error:
+            case .loading, .emptySaved, .emptyUnreadPage, .error:
                 return []
 
             case .loaded, .loadingPage, .pageError:
@@ -289,7 +280,6 @@ struct ItemList: View {
                 errorMessage: state == .error
                     ? "You appear to be offline. Check your connection and try again." : nil,
                 isSaved: state == .emptySaved,
-                isSearching: state == .noResults,
                 unreadOnly: $unreadOnly,
                 refresh: {},
                 loadMore: {}
@@ -319,10 +309,6 @@ struct ItemList: View {
     #Preview("Saved · Empty narrow", traits: .fixedLayout(width: 312, height: 640)) {
         ItemListPreview(state: .emptySaved)
             .preferredColorScheme(.dark)
-    }
-
-    #Preview("Story list · No search results", traits: .fixedLayout(width: 560, height: 640)) {
-        ItemListPreview(state: .noResults)
     }
 
     #Preview("Story list · Empty unread page", traits: .fixedLayout(width: 312, height: 640)) {
