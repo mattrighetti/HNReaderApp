@@ -14,7 +14,6 @@ import SwiftUI
         @State private var sidebarSelection: AppState.SidebarSelection?
 
         @State private var selectedID: Int?
-        @State private var searchText = ""
         @State private var unreadOnly = false
         @State private var columnVisibility: NavigationSplitViewVisibility = .all
 
@@ -60,17 +59,8 @@ import SwiftUI
                 ? StoryRow.savedRows(for: appState.savedItems)
                 : feed.rows
 
-            return rows.filter { row in
-                (!unreadOnly || !appState.readIDs.contains(row.id) || row.id == selectedID)
-                    && (searchText.isEmpty
-                        || [
-                            row.item.title, row.item.by, row.item.urlHost,
-                            row.item.type == .comment ? row.item.text : nil,
-                        ]
-                        .compactMap { $0 }
-                        .contains {
-                            $0.localizedCaseInsensitiveContains(searchText)
-                        })
+            return rows.filter {
+                !unreadOnly || !appState.readIDs.contains($0.id) || $0.id == selectedID
             }
         }
 
@@ -91,7 +81,6 @@ import SwiftUI
                     paginationError: selection == .saved ? nil : paginationError,
                     errorMessage: selection == .saved ? nil : errorMessage,
                     isSaved: selection == .saved,
-                    isSearching: !searchText.isEmpty,
                     unreadOnly: $unreadOnly,
                     refresh: refresh,
                     loadMore: {
@@ -109,34 +98,6 @@ import SwiftUI
                         SplitColumnWidth(minimum: 312, maximum: 720)
                         .allowsHitTesting(false)
                     }
-                #endif
-                .toolbar {
-                    #if os(macOS)
-                        ToolbarItem {
-                            HStack(spacing: 6) {
-                                Image(systemName: "magnifyingglass")
-                                    .foregroundStyle(.secondary)
-                                    .accessibilityHidden(true)
-
-                                TextField(
-                                    selection == .saved
-                                        ? "Search saved items" : "Search loaded stories",
-                                    text: $searchText
-                                )
-                                .textFieldStyle(.plain)
-                                .accessibilityLabel(
-                                    selection == .saved
-                                        ? "Search saved items" : "Search loaded stories")
-                            }
-                            .padding(.horizontal, 8)
-                            .frame(width: 260)
-                        }
-
-                        ToolbarSpacer(.fixed)
-                    #endif
-                }
-                #if os(iOS)
-                    .searchable(text: $searchText, prompt: "Search loaded stories")
                 #endif
             } detail: {
                 NavigationStack {
@@ -165,8 +126,6 @@ import SwiftUI
                 }
 
                 selectedID = nil
-                searchText = ""
-
                 if selection.category != nil {
                     await loadFeed()
                 } else {

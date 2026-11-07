@@ -25,19 +25,12 @@ struct ItemCell: View {
     let item: Item
     let rank: Int
     var isSelected = false
+    var isCompact = false
 
     @Environment(AppState.self) private var appState
 
     private var isRead: Bool {
         appState.readIDs.contains(item.id)
-    }
-
-    private var domainColor: Color {
-        if isSelected {
-            return Color.white.opacity(0.75)
-        }
-
-        return .secondary
     }
 
     private var titleColor: Color {
@@ -48,91 +41,106 @@ struct ItemCell: View {
         return isRead ? .secondary : .primary
     }
 
+    private var secondaryColor: Color {
+        isSelected ? Color.white.opacity(0.8) : .secondary
+    }
+
+    private var titleSize: CGFloat { isCompact ? 15 : 17 }
+    private var detailSize: CGFloat { isCompact ? 12 : 14 }
+    private var rowSpacing: CGFloat { isCompact ? 5 : 7 }
+    private var verticalPadding: CGFloat { isCompact ? 6 : 9 }
+
     var body: some View {
-        HStack(alignment: .top, spacing: 6) {
-            Group {
-                if item.type == .comment {
-                    Image(systemName: "bubble.left")
-                        .font(.system(size: 12))
-                        .accessibilityHidden(true)
-                } else {
-                    Text(String(format: "%02d", rank))
-                        .font(.system(size: 10, weight: .medium, design: .monospaced))
+        VStack(alignment: .leading, spacing: rowSpacing) {
+            HStack(spacing: isCompact ? 5 : 7) {
+                Group {
+                    if item.type == .comment {
+                        Image(systemName: "bubble.left")
+                            .font(.system(size: isCompact ? 11 : 12, weight: .medium))
+                            .accessibilityHidden(true)
+                    } else {
+                        Text("\(rank).")
+                            .font(.system(size: isCompact ? 11 : 13, weight: .medium).monospacedDigit())
+                    }
+                }
+                .foregroundStyle(isSelected ? Color.white.opacity(0.55) : Color.secondary)
+
+                Text(
+                    item.type == .comment
+                        ? "Comment by \(item.by ?? "Deleted user")"
+                        : item.urlHost ?? "news.ycombinator.com"
+                )
+                .font(.system(size: isCompact ? 12 : 14, weight: .medium))
+                .foregroundStyle(
+                    isSelected
+                        ? Color.white.opacity(0.75)
+                        : item.type == .comment ? Color.secondary : Color.accentColor
+                )
+                .lineLimit(1)
+                .truncationMode(.middle)
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+                if appState.isSaved(item) {
+                    Image(systemName: "bookmark.fill")
+                        .font(.system(size: isCompact ? 10 : 12))
+                        .foregroundStyle(isSelected ? Color.white : Color.accentColor)
+                        .accessibilityLabel("Saved")
                 }
             }
-            .foregroundStyle(isSelected ? Color.white.opacity(0.55) : Color.secondary)
-            .frame(width: 20, height: 14)
 
-            VStack(alignment: .leading, spacing: 3) {
-                HStack(spacing: 6) {
-                    Circle()
-                        .fill(Color.accentColor)
-                        .frame(width: 4, height: 4)
-                        .frame(width: 6, height: 14)
-                        .opacity(isRead ? 0 : 1)
-                        .accessibilityLabel("Unread")
-                        .accessibilityHidden(isRead)
+            ItemRowTitle(item: item)
+                .font(
+                    item.type == .comment
+                        ? .system(size: isCompact ? 13 : 15)
+                        : .system(size: titleSize, weight: .semibold, design: .rounded)
+                )
+                .lineSpacing(1)
+                .lineLimit(3)
+                .foregroundStyle(titleColor)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .fixedSize(horizontal: false, vertical: true)
 
-                    Text(item.type == .comment ? "Comment by \(item.by ?? "Deleted user")" : item.urlHost ?? "news.ycombinator.com")
-                        .font(.system(size: 9, weight: .medium, design: .monospaced))
-                        .foregroundStyle(domainColor)
+            HStack(spacing: 7) {
+                if item.type != .comment, let author = item.by {
+                    Text(author)
                         .lineLimit(1)
                         .truncationMode(.middle)
-                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .layoutPriority(1)
+                        .help("Posted by \(author)")
 
-                    if appState.isSaved(item) {
-                        Image(systemName: "bookmark.fill")
-                            .font(.system(size: 10))
-                            .foregroundStyle(isSelected ? Color.white : Color.accentColor)
-                            .frame(height: 14)
-                            .accessibilityLabel("Saved")
-                    }
+                    Text("·")
+                        .accessibilityHidden(true)
                 }
 
-                ItemRowTitle(item: item)
-                    .font(item.type == .comment
-                          ? .system(size: 14)
-                          : .system(size: 14, weight: .medium, design: .rounded))
-                    .lineSpacing(1)
-                    .lineLimit(2)
-                    .foregroundStyle(titleColor)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .padding(.leading, 12)
+                Text(item.timeStringRepresentation.map { "\($0) ago" } ?? "")
+                    .lineLimit(1)
+                    .fixedSize()
 
-                HStack(spacing: 12) {
-                    if item.type != .comment, let author = item.by {
-                        Text("by \(author)")
-                            .lineLimit(1)
-                            .truncationMode(.middle)
-                            .layoutPriority(1)
-                            .help("Posted by \(author)")
-                    }
-
-                    if item.type != .comment {
-                        Label("\(item.score ?? 0)", systemImage: "arrowtriangle.up")
-                            .fixedSize()
-                    }
-
-                    Label("\(item.type == .comment ? item.kids?.count ?? 0 : item.descendants ?? 0)", systemImage: "bubble.right")
-                        .fixedSize()
-
-                    Text(item.timeStringRepresentation.map { "\($0) ago" } ?? "")
-                        .fixedSize()
-
-                    Spacer(minLength: 0)
-                }
-                .font(.system(size: 10, weight: .medium, design: .rounded))
-                .foregroundStyle(isSelected ? Color.white.opacity(0.8) : Color.secondary)
-                .padding(.leading, 12)
+                Spacer(minLength: 6)
             }
+            .font(.system(size: detailSize))
+            .foregroundStyle(secondaryColor)
+
+            HStack(spacing: 14) {
+                if item.type != .comment {
+                    metadataValue("\(item.score ?? 0)", systemImage: "arrow.up")
+                }
+                metadataValue(
+                    "\(item.type == .comment ? item.kids?.count ?? 0 : item.descendants ?? 0)",
+                    systemImage: "bubble.left"
+                )
+            }
+            .font(.system(size: detailSize))
+            .foregroundStyle(secondaryColor)
         }
-        .padding(.vertical, 4)
+        .padding(.vertical, verticalPadding)
         .frame(maxWidth: .infinity, alignment: .leading)
         .contentShape(Rectangle())
         .clickableCursor()
         .accessibilityElement(children: .combine)
-        .accessibilityIdentifier(item.type == .comment ? "savedComment.\(item.id)" : "story.\(item.id)")
+        .accessibilityIdentifier(
+            item.type == .comment ? "savedComment.\(item.id)" : "story.\(item.id)"
+        )
         .contextMenu {
             Button(
                 appState.isSaved(item) ? "Remove from Saved" : "Save for Later",
@@ -149,6 +157,19 @@ struct ItemCell: View {
 
             ShareLink(item: item.articleURL ?? item.discussionURL)
         }
+    }
+
+    private func metadataValue(_ value: String, systemImage: String) -> some View {
+        HStack(spacing: 3) {
+            Image(systemName: systemImage)
+                .font(.system(size: isCompact ? 10 : 12, weight: .semibold))
+                .foregroundStyle(isSelected ? Color.white.opacity(0.65) : Color.secondary.opacity(0.8))
+
+            Text(value)
+                .fontWeight(.medium)
+                .monospacedDigit()
+        }
+        .fixedSize()
     }
 }
 

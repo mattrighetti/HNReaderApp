@@ -2,22 +2,66 @@ import SwiftUI
 
 struct SettingsView: View {
     var body: some View {
-        VStack(alignment: .leading, spacing: 20) {
-            appHeader
+        NavigationStack {
+            VStack(alignment: .leading, spacing: 20) {
+                appHeader
 
-            project
+                account
 
-            credits
+                project
 
-            Text(AppInfo.versionDescription)
-                .font(.system(size: 11))
-                .foregroundStyle(.secondary)
-                .textSelection(.enabled)
-                .frame(maxWidth: .infinity)
+                credits
+
+                Text(AppInfo.versionDescription)
+                    .font(.system(size: 11))
+                    .foregroundStyle(.secondary)
+                    .textSelection(.enabled)
+                    .frame(maxWidth: .infinity)
+            }
+            .padding(24)
         }
-        .padding(24)
         .frame(width: 440)
         .background(Color(nsColor: .windowBackgroundColor))
+    }
+
+    private var account: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Account")
+                .font(.system(size: 12, weight: .semibold))
+
+            NavigationLink {
+                HNAccountView()
+            } label: {
+                HStack(spacing: 12) {
+                    Image(systemName: "person.crop.circle")
+                        .font(.system(size: 18))
+                        .foregroundStyle(.secondary)
+
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Hacker News Account")
+                            .font(.system(size: 12, weight: .medium))
+
+                        Text("Sign in or view your profile")
+                            .font(.system(size: 10))
+                            .foregroundStyle(.secondary)
+                    }
+
+                    Spacer()
+
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 10, weight: .semibold))
+                        .foregroundStyle(.tertiary)
+                }
+                .padding(14)
+                .contentShape(Rectangle())
+                .background(
+                    Color(nsColor: .controlBackgroundColor),
+                    in: RoundedRectangle(cornerRadius: 10)
+                )
+            }
+            .clickableCursor()
+            .buttonStyle(.plain)
+        }
     }
 
     private var appHeader: some View {

@@ -23,6 +23,7 @@ If a shared file shows no previews, check whether its declarations are guarded b
 | [HomeView.swift](../../HNReader/Shared/View/HomeView.swift) | Both | Mac reader in light/dark, no selection, sidebar; iOS reader |
 | [IOSHomeView.swift](../../HNReader/Platforms/iOS/IOSHomeView.swift) | iOS | Saved stories and comments in light/dark; live article |
 | [StoryDetail.swift](../../HNReader/Shared/View/StoryDetail.swift) | Both | Discussion with local fixtures |
+| [HNAccountView.swift](../../HNReader/Shared/View/HNAccountView.swift) | Both | Signed-out form; target-aware mock profile |
 | [UserCommentsView.swift](../../HNReader/Shared/View/UserCommentsView.swift) | Both | User comments with local fixtures |
 | [IOSSettingsView.swift](../../HNReader/Platforms/iOS/IOSSettingsView.swift) | iOS | App icon picker |
 | [SettingsView.swift](../../HNReader/Platforms/macOS/SettingsView.swift) | Mac | System appearance, light/dark |

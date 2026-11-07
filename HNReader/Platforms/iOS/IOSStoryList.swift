@@ -16,9 +16,10 @@ struct IOSStoryList: View {
     @State private var paginationError: String?
     @State private var revision = UUID()
     private let repository: FeedRepository
-    @State private var searchText = ""
     @State private var unreadOnly = false
     @State private var scrollResetRequest = UUID()
+    @State private var navigationPath: [Item] = []
+    @State private var showsSettings = false
 
     @MainActor
     init(
@@ -62,20 +63,11 @@ struct IOSStoryList: View {
     }
 
     private var visibleRows: [StoryRow] {
-        rows.filter { row in
-            (!unreadOnly || !appState.readIDs.contains(row.id))
-                && (searchText.isEmpty
-                    || [
-                        row.item.title, row.item.by, row.item.urlHost,
-                        row.item.type == .comment ? row.item.text : nil,
-                    ]
-                    .compactMap { $0 }
-                    .contains { $0.localizedCaseInsensitiveContains(searchText) })
-        }
+        rows.filter { !unreadOnly || !appState.readIDs.contains($0.id) }
     }
 
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $navigationPath) {
             ScrollViewReader { proxy in
                 List {
                     if let errorMessage = errorMessage, !showsSavedStories {
@@ -103,9 +95,12 @@ struct IOSStoryList: View {
                         .listRowSeparator(.hidden)
                     } else {
                         ForEach(visibleRows) { row in
-                            NavigationLink(value: row.item) {
+                            Button {
+                                navigationPath.append(row.item)
+                            } label: {
                                 IOSStoryRow(row: row)
                             }
+                            .buttonStyle(.plain)
                             .listRowInsets(
                                 EdgeInsets(top: 10, leading: 16, bottom: 10, trailing: 16)
                             )
@@ -113,7 +108,7 @@ struct IOSStoryList: View {
                         }
                     }
 
-                    if !showsSavedStories && feed.hasMore && searchText.isEmpty {
+                    if !showsSavedStories && feed.hasMore {
                         paginationRow
                     }
                 }
@@ -129,12 +124,8 @@ struct IOSStoryList: View {
                     }
                 }
             }
-            .navigationTitle(showsSavedStories ? "Saved" : selection.rawValue)
-            .navigationBarTitleDisplayMode(.large)
-            .searchable(
-                text: $searchText,
-                prompt: showsSavedStories ? "Search saved items" : "Search stories"
-            )
+            .navigationTitle(showsSavedStories ? "Saved" : "")
+            .navigationBarTitleDisplayMode(showsSavedStories ? .large : .inline)
             .toolbar {
                 if !showsSavedStories {
                     ToolbarItem(placement: .topBarLeading) {
@@ -151,8 +142,10 @@ struct IOSStoryList: View {
 
                             Toggle("Unread only", isOn: $unreadOnly)
                         } label: {
-                            Label(selection.rawValue, systemImage: selection.iconName)
-                                .labelStyle(.iconOnly)
+                            HStack(spacing: 8) {
+                                Image(systemName: selection.iconName)
+                                Text(selection.rawValue)
+                            }
                         }
                         .accessibilityLabel("Choose story feed and filters")
                     }
@@ -184,6 +177,17 @@ struct IOSStoryList: View {
                         .disabled(isLoading)
                     }
                 }
+
+                if !showsSavedStories && navigationPath.isEmpty {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button {
+                            showsSettings = true
+                        } label: {
+                            Image(systemName: "gearshape")
+                        }
+                        .accessibilityLabel("Settings")
+                    }
+                }
             }
             .refreshable {
                 await refresh()
@@ -208,9 +212,11 @@ struct IOSStoryList: View {
                     appState.markRead(item)
                 }
             }
+            .sheet(isPresented: $showsSettings) {
+                IOSSettingsView()
+            }
             .task(id: selection) {
                 guard loadsAutomatically, !showsSavedStories else { return }
-                searchText = ""
                 unreadOnly = false
 
                 if selection.category != nil {
@@ -223,16 +229,12 @@ struct IOSStoryList: View {
     }
 
     private var emptyTitle: String {
-        if !searchText.isEmpty {
-            return showsSavedStories ? "No matching saved items" : "No matching stories"
-        }
         if unreadOnly { return showsSavedStories ? "No unread saved items" : "No unread stories" }
         if showsSavedStories { return "No saved items" }
         return "No stories yet"
     }
 
     private var emptyMessage: String {
-        if !searchText.isEmpty { return "Try a different search." }
         if unreadOnly {
             return showsSavedStories
                 ? "Turn off Unread only to see saved items you’ve read."

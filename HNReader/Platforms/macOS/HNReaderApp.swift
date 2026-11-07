@@ -20,6 +20,7 @@ struct HNReaderApp: App {
 
         Settings {
             SettingsView()
+                .environment(appState)
         }
     }
 }

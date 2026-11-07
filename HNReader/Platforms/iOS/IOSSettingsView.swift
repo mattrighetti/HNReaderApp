@@ -13,6 +13,7 @@ private enum AppIconChoice: String, CaseIterable, Identifiable {
 }
 
 struct IOSSettingsView: View {
+    @Environment(\.dismiss) private var dismiss
     @Environment(\.scenePhase) private var scenePhase
     @State private var selectedName = UIApplication.shared.alternateIconName
     @State private var pendingChoice: AppIconChoice?
@@ -68,6 +69,13 @@ struct IOSSettingsView: View {
                 }
             }
             .navigationTitle("Settings")
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Done") {
+                        dismiss()
+                    }
+                }
+            }
             .onAppear { selectedName = UIApplication.shared.alternateIconName }
             .onChange(of: scenePhase) { _, phase in
                 if phase == .active {

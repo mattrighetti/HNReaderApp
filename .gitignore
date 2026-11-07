@@ -1,5 +1,20 @@
 .idea
 GoogleService-Info.plist
 
+# Local Xcode state
+**/xcuserdata/
+
+# Profiling output
+*.profraw
+
 # Generated preview screenshots
 /resources/previews/*.png
+
+# Local App Store and branding production assets
+/resources/app-store/ios/README.md
+/resources/app-store/ios/assets/
+/resources/app-store/ios/final/
+/resources/app-store/ios/generate_screenshots.swift
+/resources/app-store/ios/raw/
+/resources/app-store/ios/redesign/
+/resources/branding/

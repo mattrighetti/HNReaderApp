@@ -58,6 +58,50 @@ final class FeedLoadingTests: XCTestCase {
         XCTAssertEqual(server.count("/v0/item/2.json"), 2)
     }
 
+    func testCommentContextWalksParentsToRootStory() async throws {
+        let server = FeedTestServer()
+        defer { server.close() }
+        server.respond(
+            "/v0/item/100.json",
+            json: #"{"id":100,"type":"comment","parent":42,"text":"Parent"}"#
+        )
+        server.respond(
+            "/v0/item/42.json",
+            json: #"{"id":42,"type":"story","title":"Root story","url":"https://example.com"}"#
+        )
+        let comment = try decode(
+            #"{"id":101,"type":"comment","parent":100,"text":"Upvoted"}"#
+        )
+
+        let story = try await NewsService(session: server.session).storyContext(for: comment)
+
+        XCTAssertEqual(story.id, 42)
+        XCTAssertEqual(story.title, "Root story")
+        XCTAssertEqual(server.count("/v0/item/100.json"), 1)
+        XCTAssertEqual(server.count("/v0/item/42.json"), 1)
+    }
+
+    func testCommentContextRejectsParentCycle() async throws {
+        let server = FeedTestServer()
+        defer { server.close() }
+        server.respond(
+            "/v0/item/100.json",
+            json: #"{"id":100,"type":"comment","parent":101,"text":"Parent"}"#
+        )
+        let comment = try decode(
+            #"{"id":101,"type":"comment","parent":100,"text":"Upvoted"}"#
+        )
+
+        do {
+            _ = try await NewsService(session: server.session).storyContext(for: comment)
+            XCTFail("Expected a cyclic parent chain to fail")
+        } catch {
+            XCTAssertEqual((error as? URLError)?.code, .resourceUnavailable)
+        }
+
+        XCTAssertEqual(server.totalRequests, 1)
+    }
+
     func testExpiredItemsAreFetchedAgain() async throws {
         let server = FeedTestServer()
         defer { server.close() }

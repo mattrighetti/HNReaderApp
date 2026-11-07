@@ -1,6 +1,28 @@
 import Foundation
 
 extension NewsService {
+    /// Resolve a comment's parent chain to the story, poll, or job that owns the discussion.
+    func storyContext(for comment: Item) async throws -> Item {
+        var current = comment
+        var visited = Set([comment.id])
+
+        while current.type == .comment {
+            try Task.checkCancellation()
+            guard let parentID = current.parent, visited.insert(parentID).inserted else {
+                throw URLError(.resourceUnavailable)
+            }
+            guard let parent = try await item(id: parentID) else {
+                throw URLError(.resourceUnavailable)
+            }
+            current = parent
+        }
+
+        guard current.deleted != true, current.dead != true else {
+            throw URLError(.resourceUnavailable)
+        }
+        return current
+    }
+
     /// Return one atomic page, skipping batches that contain no visible comments.
     func commentPage(ids: [Int], offset: Int, pageSize: Int = 20) async throws -> CommentPage {
         var cursor = offset

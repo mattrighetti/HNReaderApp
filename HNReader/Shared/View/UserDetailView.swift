@@ -14,19 +14,28 @@ struct UserDetailView: View {
     private let loadsAutomatically: Bool
     private let initialComments: [Item]
     private let previewThreads: [Int: [Item]]?
+    private let title: String
+    private let showsMacDismissButton: Bool
+    private let showsUpvotes: Bool
 
     init(
         username: String,
         user: User? = nil,
         initialComments: [Item] = [],
         previewThreads: [Int: [Item]]? = nil,
-        loadsAutomatically: Bool = true
+        loadsAutomatically: Bool = true,
+        title: String? = nil,
+        showsMacDismissButton: Bool = true,
+        showsUpvotes: Bool = false
     ) {
         self.username = username
         _user = State(initialValue: user)
         self.initialComments = initialComments
         self.previewThreads = previewThreads
         self.loadsAutomatically = loadsAutomatically
+        self.title = title ?? username
+        self.showsMacDismissButton = showsMacDismissButton
+        self.showsUpvotes = showsUpvotes
     }
 
     private var profileURL: URL {
@@ -61,21 +70,23 @@ struct UserDetailView: View {
             .frame(maxWidth: .infinity)
         }
         .background(PlatformColors.textBackground)
-        .navigationTitle(username)
+        .navigationTitle(title)
         #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
         #endif
         .toolbar {
             #if os(macOS)
-                ToolbarItem(placement: .navigation) {
-                    Button {
-                        dismiss()
-                    } label: {
-                        Image(systemName: "chevron.left")
+                if showsMacDismissButton {
+                    ToolbarItem(placement: .navigation) {
+                        Button {
+                            dismiss()
+                        } label: {
+                            Image(systemName: "chevron.left")
+                        }
+                        .buttonStyle(.plain)
+                        .help("Back to story")
+                        .accessibilityLabel("Back to story")
                     }
-                    .buttonStyle(.plain)
-                    .help("Back to story")
-                    .accessibilityLabel("Back to story")
                 }
             #else
                 Link(destination: profileURL) {
@@ -166,6 +177,20 @@ struct UserDetailView: View {
 
     private func profileOptions(_ user: User) -> some View {
         VStack(spacing: 0) {
+            if showsUpvotes {
+                NavigationLink {
+                    HNUpvotedItemsView(
+                        username: user.id,
+                        loadsAutomatically: loadsAutomatically
+                    )
+                } label: {
+                    profileOptionLabel("Upvotes", systemImage: "arrow.up.circle")
+                }
+
+                Divider()
+                    .padding(.leading, 44)
+            }
+
             Link(destination: userURL(path: "submitted")) {
                 profileOptionLabel("Submissions", systemImage: "doc.text", isExternal: true)
             }
