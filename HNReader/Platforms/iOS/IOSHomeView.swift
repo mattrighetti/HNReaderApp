@@ -103,6 +103,7 @@ struct IOSHomeView: View {
     }
 
     struct IOSStoryListCanvas: View {
+        var selectedItem: Item? = nil
         @State private var appState = PreviewData.appState()
         @State private var selectedFeed: AppState.SidebarSelection = .top
 
@@ -111,12 +112,35 @@ struct IOSHomeView: View {
                 selection: $selectedFeed,
                 showsSavedStories: false,
                 initialRows: PreviewData.rows,
+                initialSelectedItem: selectedItem,
                 loadsAutomatically: false,
                 previewComments: PreviewData.rootComments,
                 previewThreads: PreviewData.threads
             )
             .environment(appState)
         }
+    }
+
+    #Preview("iOS · Two Columns · No Selection", traits: .fixedLayout(width: 1000, height: 700)) {
+        IOSStoryListCanvas()
+            .environment(\.horizontalSizeClass, .regular)
+    }
+
+    #Preview("iOS · Two Columns · Discussion", traits: .fixedLayout(width: 1000, height: 700)) {
+        IOSStoryListCanvas(selectedItem: PreviewData.stories.first)
+            .environment(\.horizontalSizeClass, .regular)
+    }
+
+    #Preview("iOS · Two Columns · Saved Empty", traits: .fixedLayout(width: 1000, height: 700)) {
+        IOSStoryList(
+            selection: .constant(.saved),
+            showsSavedStories: true,
+            loadsAutomatically: false,
+            previewComments: nil,
+            previewThreads: nil
+        )
+        .environment(PreviewData.appState(includeSavedStories: false))
+        .environment(\.horizontalSizeClass, .regular)
     }
 
     /// The real Saved screen populated with local stories, comments, and replies.

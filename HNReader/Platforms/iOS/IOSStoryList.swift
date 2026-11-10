@@ -11,16 +11,14 @@ private struct IOSPlainBackground: View {
 private struct IOSStoryHeader: View {
     @Binding var selection: AppState.SidebarSelection
     let showsSavedStories: Bool
-    let isLoading: Bool
     @Binding var unreadOnly: Bool
     @Binding var showsSettings: Bool
-    let refresh: () async -> Void
 
     var body: some View {
         HStack(spacing: 14) {
             if showsSavedStories {
                 Text("Saved")
-                            .font(.system(size: 28, weight: .bold, design: .rounded))
+                    .font(.system(size: 28, weight: .bold, design: .rounded))
                     .frame(maxWidth: .infinity, alignment: .leading)
             } else {
                 Menu {
@@ -72,6 +70,7 @@ private struct IOSStoryHeader: View {
 
 struct IOSStoryList: View {
     @Environment(AppState.self) private var appState
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
     @Binding var selection: AppState.SidebarSelection
     private let showsSavedStories: Bool
@@ -87,7 +86,9 @@ struct IOSStoryList: View {
     @State private var revision = UUID()
     private let repository: FeedRepository
     @State private var unreadOnly = false
-    @State private var navigationPath: [Item] = []
+    @State private var selectedItem: Item?
+    @State private var columnVisibility: NavigationSplitViewVisibility = .all
+    @State private var preferredCompactColumn: NavigationSplitViewColumn = .sidebar
     @State private var showsSettings = false
 
     @MainActor
@@ -109,6 +110,7 @@ struct IOSStoryList: View {
         selection: Binding<AppState.SidebarSelection>,
         showsSavedStories: Bool,
         initialRows: [StoryRow] = [],
+        initialSelectedItem: Item? = nil,
         repository: FeedRepository = .shared,
         loadsAutomatically: Bool,
         previewComments: [Item]?,
@@ -120,6 +122,7 @@ struct IOSStoryList: View {
         self.previewComments = previewComments
         self.previewThreads = previewThreads
         _feed = State(initialValue: .preview(initialRows))
+        _selectedItem = State(initialValue: initialSelectedItem)
         self.repository = repository
     }
 
@@ -132,118 +135,168 @@ struct IOSStoryList: View {
     }
 
     private var visibleRows: [StoryRow] {
-        rows.filter { !unreadOnly || !appState.readIDs.contains($0.id) }
+        rows.filter {
+            !unreadOnly || !appState.readIDs.contains($0.id) || $0.id == selectedItem?.id
+        }
     }
 
     var body: some View {
-        NavigationStack(path: $navigationPath) {
-            ZStack {
-                IOSPlainBackground()
+        NavigationSplitView(
+            columnVisibility: $columnVisibility,
+            preferredCompactColumn: $preferredCompactColumn
+        ) {
+            storyList
+                .navigationTitle(showsSavedStories ? "Saved" : selection.rawValue)
+                .toolbar(.hidden, for: .navigationBar)
+                .navigationSplitViewColumnWidth(min: 300, ideal: 350, max: 420)
+                .overlay(alignment: .trailing) {
+                    if horizontalSizeClass == .regular {
+                        Rectangle()
+                            .fill(Color(.separator))
+                            .frame(width: 0.5)
+                    }
+                }
+        } detail: {
+            NavigationStack {
+                if let selectedItem {
+                    detail(for: selectedItem)
+                } else {
+                    ContentUnavailableView(
+                        "Select a story",
+                        systemImage: "newspaper",
+                        description: Text("Choose a story from the list to read the discussion.")
+                    )
+                }
+            }
+            .id(selectedItem?.id)
+        }
+        .navigationSplitViewStyle(.balanced)
+        .sheet(isPresented: $showsSettings) {
+            IOSSettingsView()
+        }
+        .onChange(of: selection) { _, _ in
+            selectedItem = nil
+            preferredCompactColumn = .sidebar
+        }
+        .task(id: selection) {
+            guard loadsAutomatically, !showsSavedStories else { return }
+            unreadOnly = false
 
-                ScrollViewReader { _ in
-                    ScrollView {
-                        LazyVStack(spacing: 0) {
-                            IOSStoryHeader(
-                                selection: $selection,
-                                showsSavedStories: showsSavedStories,
-                                isLoading: isLoading,
-                                unreadOnly: $unreadOnly,
-                                showsSettings: $showsSettings,
-                                refresh: refresh
-                            )
+            if selection.category != nil {
+                await loadFeed()
+            }
+        }
+    }
 
-                    if let errorMessage = errorMessage, !showsSavedStories {
-                        ContentUnavailableView {
-                            Label("Couldn’t load stories", systemImage: "wifi.exclamationmark")
-                        } description: {
-                            Text(errorMessage)
-                        } actions: {
-                            Button("Try Again") {
-                                Task { await refresh() }
-                            }
+    private var storyList: some View {
+        ScrollView {
+            LazyVStack(spacing: 0) {
+                IOSStoryHeader(
+                    selection: $selection,
+                    showsSavedStories: showsSavedStories,
+                    unreadOnly: $unreadOnly,
+                    showsSettings: $showsSettings
+                )
+
+                if let errorMessage, !showsSavedStories {
+                    ContentUnavailableView {
+                        Label("Couldn’t load stories", systemImage: "wifi.exclamationmark")
+                    } description: {
+                        Text(errorMessage)
+                    } actions: {
+                        Button("Try Again") {
+                            Task { await refresh() }
                         }
+                    }
+                    .padding(.horizontal, 24)
+                }
+
+                if isLoading && visibleRows.isEmpty && !showsSavedStories {
+                    ProgressView("Loading stories…")
+                        .frame(maxWidth: .infinity)
                         .padding(.horizontal, 24)
+                } else {
+                    ForEach(visibleRows) { row in
+                        storyRow(row)
                     }
-                    if isLoading && visibleRows.isEmpty && !showsSavedStories {
-                        ProgressView("Loading stories…")
-                            .frame(maxWidth: .infinity)
-                            .padding(.horizontal, 24)
-                    } else if visibleRows.isEmpty && errorMessage == nil {
-                        ContentUnavailableView(
-                            emptyTitle,
-                            systemImage: showsSavedStories ? "bookmark" : "newspaper",
-                            description: Text(emptyMessage)
-                        )
-                        .padding(.horizontal, 24)
-                    } else {
-                        ForEach(visibleRows) { row in
-                            VStack(spacing: 0) {
-                                Button {
-                                    navigationPath.append(row.item)
-                                } label: {
-                                    IOSStoryRow(row: row)
-                                        .frame(maxWidth: .infinity, alignment: .leading)
-                                        .padding(.horizontal, 24)
-                                        .padding(.vertical, 8)
-                                        .contentShape(Rectangle())
-                                }
-                                .buttonStyle(.plain)
-                                .id(row.id)
+                }
 
-                                if row.id != visibleRows.last?.id {
-                                    Divider()
-                                        .padding(.horizontal, 24)
-                                        .opacity(0.45)
-                                }
-                            }
-                        }
-                    }
+                if !showsSavedStories && feed.hasMore {
+                    paginationRow
+                }
+            }
+            .padding(.bottom, 128)
+        }
+        .background(IOSPlainBackground())
+        .overlay {
+            if visibleRows.isEmpty && errorMessage == nil && (showsSavedStories || !isLoading) {
+                ContentUnavailableView(
+                    emptyTitle,
+                    systemImage: showsSavedStories ? "bookmark" : "newspaper",
+                    description: Text(emptyMessage)
+                )
+                .padding(.horizontal, 24)
+                .allowsHitTesting(false)
+            }
+        }
+        .refreshable {
+            await refresh()
+        }
+    }
 
-                    if !showsSavedStories && feed.hasMore {
-                        paginationRow
-                    }
-                        }
-                        .padding(.bottom, 128)
-                    }
-                    .offset(y: -20)
-                }
-            }
-            .toolbar(.hidden, for: .navigationBar)
-            .refreshable {
-                await refresh()
-            }
-            .navigationDestination(for: Item.self) { item in
-                Group {
-                    if item.type == .comment {
-                        SavedCommentDetail(item: item, previewThreads: previewThreads)
-                    } else {
-                        StoryDetail(
-                            item: item,
-                            initialComments: previewComments,
-                            previewThreads: previewThreads,
-                            loadsAutomatically: loadsAutomatically
-                        )
-                    }
-                }
-                .environment(appState)
-                .navigationTitle(item.type == .comment ? "Saved Comment" : "Story")
-                .navigationBarTitleDisplayMode(.inline)
-                .task {
-                    appState.markRead(item)
-                }
-            }
-            .sheet(isPresented: $showsSettings) {
-                IOSSettingsView()
-            }
-            .task(id: selection) {
-                guard loadsAutomatically, !showsSavedStories else { return }
-                unreadOnly = false
+    private func storyRow(_ row: StoryRow) -> some View {
+        let isSelected = horizontalSizeClass == .regular && selectedItem?.id == row.id
 
-                if selection.category != nil {
-                    await loadFeed()
-                    guard !Task.isCancelled else { return }
+        return VStack(spacing: 0) {
+            Button {
+                selectedItem = row.item
+                preferredCompactColumn = .detail
+            } label: {
+                IOSStoryRow(row: row)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, 24)
+                    .padding(.vertical, horizontalSizeClass == .regular ? 12 : 8)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .background {
+                if isSelected {
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(Color.accentColor.opacity(0.12))
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 2)
                 }
             }
+            .accessibilityAddTraits(isSelected ? .isSelected : [])
+            .accessibilityIdentifier("story.\(row.id)")
+            .id(row.id)
+
+            if row.id != visibleRows.last?.id {
+                Divider()
+                    .padding(.horizontal, 24)
+                    .opacity(0.45)
+            }
+        }
+    }
+
+    private func detail(for item: Item) -> some View {
+        Group {
+            if item.type == .comment {
+                SavedCommentDetail(item: item, previewThreads: previewThreads)
+            } else {
+                StoryDetail(
+                    item: item,
+                    initialComments: previewComments,
+                    previewThreads: previewThreads,
+                    loadsAutomatically: loadsAutomatically
+                )
+            }
+        }
+        .navigationTitle(item.type == .comment ? "Saved Comment" : "Story")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar(.visible, for: .navigationBar)
+        .task {
+            appState.markRead(item)
         }
     }
 
