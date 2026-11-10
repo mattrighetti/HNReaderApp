@@ -8,66 +8,6 @@ private struct IOSPlainBackground: View {
     }
 }
 
-private struct IOSStoryHeader: View {
-    @Binding var selection: AppState.SidebarSelection
-    let showsSavedStories: Bool
-    @Binding var unreadOnly: Bool
-    @Binding var showsSettings: Bool
-
-    var body: some View {
-        HStack(spacing: 14) {
-            if showsSavedStories {
-                Text("Saved")
-                    .font(.system(size: 28, weight: .bold, design: .rounded))
-                    .frame(maxWidth: .infinity, alignment: .leading)
-            } else {
-                Menu {
-                    Picker("Feed", selection: $selection) {
-                        ForEach(AppState.SidebarSelection.allCases.filter { $0 != .saved }) { feed in
-                            Label(feed.rawValue, systemImage: feed.iconName).tag(feed)
-                        }
-                    }
-                    Divider()
-                    Toggle("Unread only", isOn: $unreadOnly)
-                } label: {
-                    HStack(spacing: 8) {
-                        Image(systemName: selection.iconName)
-                            .font(.system(size: 18, weight: .medium))
-                            .foregroundStyle(Color(hue: 0.06, saturation: 0.88, brightness: 0.78))
-                        Text(selection.rawValue)
-                            .font(.system(size: 17, weight: .semibold, design: .rounded))
-                            .foregroundStyle(.primary)
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.8)
-                        Image(systemName: "chevron.down")
-                            .font(.system(size: 10, weight: .bold))
-                            .foregroundStyle(.secondary)
-                    }
-                    .padding(.horizontal, 8)
-                    .frame(height: 44, alignment: .leading)
-                }
-                .accessibilityLabel("Choose story feed and filters")
-                .tint(.primary)
-                .frame(maxWidth: .infinity, alignment: .leading)
-            }
-
-            Button {
-                showsSettings = true
-            } label: {
-                Image(systemName: "gearshape")
-                    .font(.system(size: 20, weight: .medium))
-                    .foregroundStyle(.primary)
-                    .frame(width: 44, height: 44)
-            }
-            .accessibilityLabel("Settings")
-            .tint(.primary)
-        }
-        .padding(.horizontal, 20)
-        .padding(.top, 12)
-        .padding(.bottom, 4)
-    }
-}
-
 struct IOSStoryList: View {
     @Environment(AppState.self) private var appState
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
@@ -145,9 +85,18 @@ struct IOSStoryList: View {
             columnVisibility: $columnVisibility,
             preferredCompactColumn: $preferredCompactColumn
         ) {
-            storyList
-                .navigationTitle(showsSavedStories ? "Saved" : selection.rawValue)
-                .toolbar(.hidden, for: .navigationBar)
+            sidebar
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar(.visible, for: .navigationBar)
+                .toolbar {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button("Settings", systemImage: "gearshape") {
+                            showsSettings = true
+                        }
+                        .labelStyle(.iconOnly)
+                        .tint(.primary)
+                    }
+                }
                 .navigationSplitViewColumnWidth(min: 300, ideal: 350, max: 420)
                 .overlay(alignment: .trailing) {
                     if horizontalSizeClass == .regular {
@@ -188,16 +137,67 @@ struct IOSStoryList: View {
         }
     }
 
+    @ViewBuilder
+    private var sidebar: some View {
+        if showsSavedStories {
+            storyList
+                .toolbar {
+                    ToolbarItem(placement: .topBarLeading) {
+                        Text("Saved")
+                            .font(.headline)
+                            .fixedSize(horizontal: true, vertical: false)
+                            .accessibilityAddTraits(.isHeader)
+                    }
+                    .sharedBackgroundVisibility(.hidden)
+                }
+        } else {
+            storyList
+                .toolbar {
+                    ToolbarItem(placement: .topBarLeading) {
+                        storyPicker
+                    }
+                    .sharedBackgroundVisibility(.hidden)
+                }
+        }
+    }
+
+    private var storyPicker: some View {
+        Menu {
+            Picker("Feed", selection: $selection) {
+                ForEach(AppState.SidebarSelection.allCases.filter { $0 != .saved }) { feed in
+                    Label(feed.rawValue, systemImage: feed.iconName).tag(feed)
+                }
+            }
+
+            Divider()
+
+            Toggle("Unread only", isOn: $unreadOnly)
+        } label: {
+            HStack(spacing: 8) {
+                Image(systemName: selection.iconName)
+                    .font(.system(size: 18, weight: .medium))
+                    .foregroundStyle(Color(hue: 0.06, saturation: 0.88, brightness: 0.78))
+
+                Text(selection.rawValue)
+                    .font(.system(size: 17, weight: .semibold, design: .rounded))
+                    .foregroundStyle(.primary)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
+
+                Image(systemName: "chevron.down")
+                    .font(.system(size: 10, weight: .bold))
+                    .foregroundStyle(.secondary)
+            }
+            .frame(minHeight: 44)
+            .fixedSize(horizontal: true, vertical: false)
+        }
+        .accessibilityLabel("Choose story feed and filters")
+        .tint(.primary)
+    }
+
     private var storyList: some View {
         ScrollView {
             LazyVStack(spacing: 0) {
-                IOSStoryHeader(
-                    selection: $selection,
-                    showsSavedStories: showsSavedStories,
-                    unreadOnly: $unreadOnly,
-                    showsSettings: $showsSettings
-                )
-
                 if let errorMessage, !showsSavedStories {
                     ContentUnavailableView {
                         Label("Couldn’t load stories", systemImage: "wifi.exclamationmark")

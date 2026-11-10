@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// The iOS feed uses the shared row so saved, upvoted, and macOS lists stay aligned.
+/// A compact iOS row for stories and comments.
 struct IOSStoryRow: View {
     let row: StoryRow
     @Environment(AppState.self) private var appState
@@ -9,36 +9,53 @@ struct IOSStoryRow: View {
 
     var body: some View {
         let item = row.item
+        let isComment = item.type == .comment
+        let timestamp = item.timeStringRepresentation ?? ""
+        let replyCount = isComment ? item.kids?.count : item.descendants
+
         HStack(alignment: .firstTextBaseline) {
-            Text("\(row.rank)")
-                .font(.system(size: 12, weight: .medium, design: .rounded))
-                .foregroundStyle(.secondary.opacity(0.82))
+            Group {
+                if isComment {
+                    Image(systemName: "bubble.left")
+                        .accessibilityHidden(true)
+                } else {
+                    Text("\(row.rank)")
+                }
+            }
+            .font(.system(size: 12, weight: .medium, design: .rounded))
+            .foregroundStyle(.secondary.opacity(0.82))
 
             VStack(alignment: .leading) {
-                Text(item.urlHost ?? "news.ycombinator.com")
-                    .font(.system(size: 12, weight: .medium, design: .rounded))
-                    .foregroundStyle(.secondary)
-                    .lineLimit(1)
-                    .padding(.bottom, 1)
+                Text(
+                    isComment
+                        ? "Comment by \(item.by ?? "Deleted user")"
+                        : item.urlHost ?? "news.ycombinator.com"
+                )
+                .font(.system(size: 12, weight: .medium, design: .rounded))
+                .foregroundStyle(.secondary)
+                .lineLimit(1)
+                .padding(.bottom, 1)
 
-                Text(item.title ?? "Untitled story")
-                    .font(.system(size: 15, weight: .bold, design: .rounded))
+                ItemRowTitle(item: item)
+                    .font(.system(size: 15, weight: isComment ? .regular : .bold, design: .rounded))
                     .foregroundStyle(appState.readIDs.contains(item.id) ? .secondary : .primary)
                     .lineLimit(3)
 
                 HStack(spacing: 9) {
-                    Label("\(item.score ?? 0)", systemImage: "arrow.up")
-                        .foregroundStyle(orange)
-                        .font(.system(size: 12, weight: .bold, design: .rounded))
+                    if !isComment {
+                        Label("\(item.score ?? 0)", systemImage: "arrow.up")
+                            .foregroundStyle(orange)
+                            .font(.system(size: 12, weight: .bold, design: .rounded))
+                    }
 
                     HStack(spacing: 3) {
                         Image(systemName: "bubble.left")
-                        Text("\(item.descendants ?? 0)")
+                        Text("\(replyCount ?? 0)")
                     }
                     .font(.system(size: 12, weight: .bold, design: .rounded))
                     .padding(.vertical, 1)
 
-                    Text("\(item.by ?? "unknown") · \(item.timeStringRepresentation ?? "")")
+                    Text(isComment ? timestamp : "\(item.by ?? "unknown") · \(timestamp)")
                         .foregroundStyle(.secondary)
                         .font(.system(size: 12, weight: .bold, design: .rounded))
                         .lineLimit(1)
@@ -59,7 +76,9 @@ struct IOSStoryRow: View {
             Button(appState.isSaved(item) ? "Remove from Saved" : "Save for Later", systemImage: "bookmark") {
                 appState.toggleSaved(item)
             }
-            Link("Open Article", destination: item.articleURL ?? item.discussionURL)
+            if !isComment {
+                Link("Open Article", destination: item.articleURL ?? item.discussionURL)
+            }
             Link("Open Discussion", destination: item.discussionURL)
             ShareLink(item: item.articleURL ?? item.discussionURL)
         }
