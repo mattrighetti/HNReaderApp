@@ -155,8 +155,3 @@ private struct AppIconSettingsView: View {
         }
     }
 }
-
-#Preview("App icons") {
-    IOSSettingsView()
-        .environment(PreviewData.appState())
-}
