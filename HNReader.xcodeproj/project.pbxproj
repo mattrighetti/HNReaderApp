@@ -18,6 +18,20 @@
 		5F109D602AF704F700AE6AF3 /* IBMPlexSerif-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5F109D5C2AF704F700AE6AF3 /* IBMPlexSerif-Bold.ttf */; };
 		5F109D612AF704F700AE6AF3 /* IBMPlexSerif-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5F109D5D2AF704F700AE6AF3 /* IBMPlexSerif-Regular.ttf */; };
 		5F109D622AF704F700AE6AF3 /* IBMPlexSerif-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5F109D5E2AF704F700AE6AF3 /* IBMPlexSerif-SemiBold.ttf */; };
+		D10000000000000000000001 /* Charis-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000001 /* Charis-Regular.ttf */; };
+		D10000000000000000000002 /* Charis-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000002 /* Charis-Italic.ttf */; };
+		D10000000000000000000003 /* Charis-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000003 /* Charis-Bold.ttf */; };
+		D10000000000000000000004 /* Charis-BoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000004 /* Charis-BoldItalic.ttf */; };
+		D10000000000000000000005 /* Charis-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000001 /* Charis-Regular.ttf */; };
+		D10000000000000000000006 /* Charis-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000002 /* Charis-Italic.ttf */; };
+		D10000000000000000000007 /* Charis-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000003 /* Charis-Bold.ttf */; };
+		D10000000000000000000008 /* Charis-BoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000004 /* Charis-BoldItalic.ttf */; };
+		D10000000000000000000009 /* SourceSerif4.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000005 /* SourceSerif4.ttf */; };
+		D1000000000000000000000A /* Literata.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000006 /* Literata.ttf */; };
+		D1000000000000000000000B /* NotoSerif.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000007 /* NotoSerif.ttf */; };
+		D1000000000000000000000C /* SourceSerif4.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000005 /* SourceSerif4.ttf */; };
+		D1000000000000000000000D /* Literata.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000006 /* Literata.ttf */; };
+		D1000000000000000000000E /* NotoSerif.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000007 /* NotoSerif.ttf */; };
 		5FCE20A72AF7B25A00BF4097 /* InfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FCE20A62AF7B25A00BF4097 /* InfoView.swift */; };
 		5FCE20A92AF7B47B00BF4097 /* BgButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FCE20A82AF7B47B00BF4097 /* BgButton.swift */; };
 		5FCE20AB2AF7B8EE00BF4097 /* +View.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FCE20AA2AF7B8EE00BF4097 /* +View.swift */; };
@@ -41,6 +55,8 @@
 		AE1000000000000000000001 /* IOSSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE1000000000000000000002 /* IOSSettingsView.swift */; };
 		AF1000000000000000000002 /* StoryDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF1000000000000000000001 /* StoryDetail.swift */; };
 		AF1000000000000000000003 /* StoryDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF1000000000000000000001 /* StoryDetail.swift */; };
+		E10000000000000000000001 /* ArticleFontSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000001 /* ArticleFontSettingsView.swift */; };
+		E10000000000000000000002 /* ArticleFontSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000001 /* ArticleFontSettingsView.swift */; };
 		AF2000000000000000000002 /* SavedCommentDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF2000000000000000000001 /* SavedCommentDetail.swift */; };
 		AF2000000000000000000003 /* SavedCommentDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF2000000000000000000001 /* SavedCommentDetail.swift */; };
 		AF3000000000000000000002 /* UserCommentsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF3000000000000000000001 /* UserCommentsView.swift */; };
@@ -78,15 +94,15 @@
 		B20000000000000000000035 /* IBMPlexSerif-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5F109D5B2AF704F700AE6AF3 /* IBMPlexSerif-Light.ttf */; };
 		B20000000000000000000036 /* PlatformColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000000F /* PlatformColors.swift */; };
 		B20000000000000000000037 /* IOSHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000010 /* IOSHomeView.swift */; };
-		BFA100000000000000000002 /* IOSStoryList.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFA100000000000000000001 /* IOSStoryList.swift */; };
-		BFA200000000000000000002 /* IOSStoryRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFA200000000000000000001 /* IOSStoryRow.swift */; };
-		BFA300000000000000000002 /* MacReaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFA300000000000000000001 /* MacReaderView.swift */; };
-		BFA400000000000000000002 /* Sidebar.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFA400000000000000000001 /* Sidebar.swift */; };
 		BAA100000000000000000001 /* HNAuthenticationClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAA100000000000000000004 /* HNAuthenticationClient.swift */; };
 		BAA100000000000000000002 /* HNAuthenticationClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAA100000000000000000004 /* HNAuthenticationClient.swift */; };
 		BAA100000000000000000003 /* HNAuthenticationClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAA100000000000000000005 /* HNAuthenticationClientTests.swift */; };
 		BAA200000000000000000001 /* HNAccountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAA200000000000000000003 /* HNAccountView.swift */; };
 		BAA200000000000000000002 /* HNAccountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAA200000000000000000003 /* HNAccountView.swift */; };
+		BFA100000000000000000002 /* IOSStoryList.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFA100000000000000000001 /* IOSStoryList.swift */; };
+		BFA200000000000000000002 /* IOSStoryRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFA200000000000000000001 /* IOSStoryRow.swift */; };
+		BFA300000000000000000002 /* MacReaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFA300000000000000000001 /* MacReaderView.swift */; };
+		BFA400000000000000000002 /* Sidebar.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFA400000000000000000001 /* Sidebar.swift */; };
 		C93F99B6267554F00046F870 /* ItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C93F99B5267554F00046F870 /* ItemCell.swift */; };
 		C93F99B8267557FC0046F870 /* ItemList.swift in Sources */ = {isa = PBXBuildFile; fileRef = C93F99B7267557FC0046F870 /* ItemList.swift */; };
 		C93F99BA267580CE0046F870 /* HTMLText.swift in Sources */ = {isa = PBXBuildFile; fileRef = C93F99B9267580CE0046F870 /* HTMLText.swift */; };
@@ -122,6 +138,13 @@
 		5F109D5C2AF704F700AE6AF3 /* IBMPlexSerif-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "IBMPlexSerif-Bold.ttf"; sourceTree = "<group>"; };
 		5F109D5D2AF704F700AE6AF3 /* IBMPlexSerif-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "IBMPlexSerif-Regular.ttf"; sourceTree = "<group>"; };
 		5F109D5E2AF704F700AE6AF3 /* IBMPlexSerif-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "IBMPlexSerif-SemiBold.ttf"; sourceTree = "<group>"; };
+		D20000000000000000000001 /* Charis-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Charis-Regular.ttf"; sourceTree = "<group>"; };
+		D20000000000000000000002 /* Charis-Italic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Charis-Italic.ttf"; sourceTree = "<group>"; };
+		D20000000000000000000003 /* Charis-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Charis-Bold.ttf"; sourceTree = "<group>"; };
+		D20000000000000000000004 /* Charis-BoldItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Charis-BoldItalic.ttf"; sourceTree = "<group>"; };
+		D20000000000000000000005 /* SourceSerif4.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SourceSerif4.ttf"; sourceTree = "<group>"; };
+		D20000000000000000000006 /* Literata.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Literata.ttf"; sourceTree = "<group>"; };
+		D20000000000000000000007 /* NotoSerif.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "NotoSerif.ttf"; sourceTree = "<group>"; };
 		5FCE20A62AF7B25A00BF4097 /* InfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoView.swift; sourceTree = "<group>"; };
 		5FCE20A82AF7B47B00BF4097 /* BgButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BgButton.swift; sourceTree = "<group>"; };
 		5FCE20AA2AF7B8EE00BF4097 /* +View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "+View.swift"; sourceTree = "<group>"; };
@@ -142,6 +165,7 @@
 		AD1000000000000000000003 /* UserDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDetailView.swift; sourceTree = "<group>"; };
 		AE1000000000000000000002 /* IOSSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSSettingsView.swift; sourceTree = "<group>"; };
 		AF1000000000000000000001 /* StoryDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryDetail.swift; sourceTree = "<group>"; };
+		E20000000000000000000001 /* ArticleFontSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArticleFontSettingsView.swift; sourceTree = "<group>"; };
 		AF2000000000000000000001 /* SavedCommentDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedCommentDetail.swift; sourceTree = "<group>"; };
 		AF3000000000000000000001 /* UserCommentsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserCommentsView.swift; sourceTree = "<group>"; };
 		AF4000000000000000000001 /* CommentTextRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentTextRenderer.swift; sourceTree = "<group>"; };
@@ -150,6 +174,9 @@
 		B1000000000000000000000A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B1000000000000000000000F /* PlatformColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlatformColors.swift; sourceTree = "<group>"; };
 		B10000000000000000000010 /* IOSHomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSHomeView.swift; sourceTree = "<group>"; };
+		BAA100000000000000000004 /* HNAuthenticationClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HNAuthenticationClient.swift; sourceTree = "<group>"; };
+		BAA100000000000000000005 /* HNAuthenticationClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HNAuthenticationClientTests.swift; sourceTree = "<group>"; };
+		BAA200000000000000000003 /* HNAccountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HNAccountView.swift; sourceTree = "<group>"; };
 		BFA100000000000000000001 /* IOSStoryList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSStoryList.swift; sourceTree = "<group>"; };
 		BFA200000000000000000001 /* IOSStoryRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSStoryRow.swift; sourceTree = "<group>"; };
 		BFA300000000000000000001 /* MacReaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacReaderView.swift; sourceTree = "<group>"; };
@@ -170,9 +197,6 @@
 		C9E9BCFC2674C80E001B4E19 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
 		C9E9BD002674D007001B4E19 /* HackerNews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HackerNews.swift; sourceTree = "<group>"; };
 		C9E9BD022674D095001B4E19 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
-		BAA100000000000000000004 /* HNAuthenticationClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HNAuthenticationClient.swift; sourceTree = "<group>"; };
-		BAA100000000000000000005 /* HNAuthenticationClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HNAuthenticationClientTests.swift; sourceTree = "<group>"; };
-		BAA200000000000000000003 /* HNAccountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HNAccountView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -240,6 +264,13 @@
 		5F96E4AB2AF70C2C00593AD6 /* fonts */ = {
 			isa = PBXGroup;
 			children = (
+				D20000000000000000000003 /* Charis-Bold.ttf */,
+				D20000000000000000000004 /* Charis-BoldItalic.ttf */,
+				D20000000000000000000002 /* Charis-Italic.ttf */,
+				D20000000000000000000001 /* Charis-Regular.ttf */,
+				D20000000000000000000005 /* SourceSerif4.ttf */,
+				D20000000000000000000006 /* Literata.ttf */,
+				D20000000000000000000007 /* NotoSerif.ttf */,
 				5F109D5C2AF704F700AE6AF3 /* IBMPlexSerif-Bold.ttf */,
 				5F109D5B2AF704F700AE6AF3 /* IBMPlexSerif-Light.ttf */,
 				5F109D5D2AF704F700AE6AF3 /* IBMPlexSerif-Regular.ttf */,
@@ -354,6 +385,7 @@
 		C9D093A726741BE1002CC786 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				E20000000000000000000001 /* ArticleFontSettingsView.swift */,
 				BAA200000000000000000003 /* HNAccountView.swift */,
 				AB3000000000000000000002 /* CommentNavigator.swift */,
 				AB2000000000000000000002 /* CommentView.swift */,
@@ -506,6 +538,13 @@
 				B20000000000000000000033 /* IBMPlexSerif-Bold.ttf in Resources */,
 				B20000000000000000000034 /* IBMPlexSerif-SemiBold.ttf in Resources */,
 				B20000000000000000000035 /* IBMPlexSerif-Light.ttf in Resources */,
+				D10000000000000000000005 /* Charis-Regular.ttf in Resources */,
+				D10000000000000000000006 /* Charis-Italic.ttf in Resources */,
+				D10000000000000000000007 /* Charis-Bold.ttf in Resources */,
+				D10000000000000000000008 /* Charis-BoldItalic.ttf in Resources */,
+				D1000000000000000000000C /* SourceSerif4.ttf in Resources */,
+				D1000000000000000000000D /* Literata.ttf in Resources */,
+				D1000000000000000000000E /* NotoSerif.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -519,6 +558,13 @@
 				5F109D622AF704F700AE6AF3 /* IBMPlexSerif-SemiBold.ttf in Resources */,
 				C9D0937B26741BBF002CC786 /* Assets.xcassets in Resources */,
 				5F109D5F2AF704F700AE6AF3 /* IBMPlexSerif-Light.ttf in Resources */,
+				D10000000000000000000001 /* Charis-Regular.ttf in Resources */,
+				D10000000000000000000002 /* Charis-Italic.ttf in Resources */,
+				D10000000000000000000003 /* Charis-Bold.ttf in Resources */,
+				D10000000000000000000004 /* Charis-BoldItalic.ttf in Resources */,
+				D10000000000000000000009 /* SourceSerif4.ttf in Resources */,
+				D1000000000000000000000A /* Literata.ttf in Resources */,
+				D1000000000000000000000B /* NotoSerif.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -552,6 +598,7 @@
 				B2000000000000000000000E /* BgButton.swift in Sources */,
 				B2000000000000000000000F /* ClickableCursor.swift in Sources */,
 				AF1000000000000000000003 /* StoryDetail.swift in Sources */,
+				E10000000000000000000002 /* ArticleFontSettingsView.swift in Sources */,
 				AF2000000000000000000003 /* SavedCommentDetail.swift in Sources */,
 				AF3000000000000000000003 /* UserCommentsView.swift in Sources */,
 				AF4000000000000000000003 /* CommentTextRenderer.swift in Sources */,
@@ -602,6 +649,7 @@
 				C9E9BCFD2674C80E001B4E19 /* AppState.swift in Sources */,
 				C9E9BD032674D095001B4E19 /* User.swift in Sources */,
 				AF1000000000000000000002 /* StoryDetail.swift in Sources */,
+				E10000000000000000000001 /* ArticleFontSettingsView.swift in Sources */,
 				AF2000000000000000000002 /* SavedCommentDetail.swift in Sources */,
 				AF3000000000000000000002 /* UserCommentsView.swift in Sources */,
 				AF4000000000000000000002 /* CommentTextRenderer.swift in Sources */,
@@ -657,7 +705,7 @@
 				INFOPLIST_FILE = HNReader/Platforms/iOS/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.news";
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
-				MARKETING_VERSION = 2.1.0;
+				MARKETING_VERSION = 2.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.mattrighetti.HNReader.ios;
 				PRODUCT_NAME = HNReader;
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -681,7 +729,7 @@
 				INFOPLIST_FILE = HNReader/Platforms/iOS/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.news";
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
-				MARKETING_VERSION = 2.1.0;
+				MARKETING_VERSION = 2.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.mattrighetti.HNReader.ios;
 				PRODUCT_NAME = HNReader;
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -840,7 +888,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 26.6;
-				MARKETING_VERSION = 2.1.0;
+				MARKETING_VERSION = 2.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.mattrighetti.HNReader;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -871,7 +919,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 26.6;
-				MARKETING_VERSION = 2.1.0;
+				MARKETING_VERSION = 2.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.mattrighetti.HNReader;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

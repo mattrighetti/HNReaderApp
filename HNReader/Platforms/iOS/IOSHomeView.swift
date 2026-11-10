@@ -54,9 +54,12 @@ struct IOSHomeView: View {
             .tag(Tab.stories)
 
             IOSStoryList(
-                selection: .constant(.saved), showsSavedStories: true,
-                repository: repository, loadsAutomatically: loadsAutomatically,
-                previewComments: previewComments, previewThreads: previewThreads
+                selection: .constant(.saved),
+                showsSavedStories: true,
+                repository: repository,
+                loadsAutomatically: loadsAutomatically,
+                previewComments: previewComments,
+                previewThreads: previewThreads
             )
             .tabItem {
                 Label("Saved", systemImage: "bookmark")
@@ -71,7 +74,7 @@ struct IOSHomeView: View {
                 )
             }
             .tabItem {
-                Label("Profile", systemImage: "person.crop.circle")
+                Label("Profile", systemImage: "person")
             }
             .tag(Tab.profile)
         }

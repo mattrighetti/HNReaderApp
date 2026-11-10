@@ -1,5 +1,75 @@
 import SwiftUI
 
+private struct IOSPlainBackground: View {
+    var body: some View {
+        Color(.systemBackground)
+            .ignoresSafeArea()
+        .allowsHitTesting(false)
+    }
+}
+
+private struct IOSStoryHeader: View {
+    @Binding var selection: AppState.SidebarSelection
+    let showsSavedStories: Bool
+    let isLoading: Bool
+    @Binding var unreadOnly: Bool
+    @Binding var showsSettings: Bool
+    let refresh: () async -> Void
+
+    var body: some View {
+        HStack(spacing: 14) {
+            if showsSavedStories {
+                Text("Saved")
+                            .font(.system(size: 28, weight: .bold, design: .rounded))
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            } else {
+                Menu {
+                    Picker("Feed", selection: $selection) {
+                        ForEach(AppState.SidebarSelection.allCases.filter { $0 != .saved }) { feed in
+                            Label(feed.rawValue, systemImage: feed.iconName).tag(feed)
+                        }
+                    }
+                    Divider()
+                    Toggle("Unread only", isOn: $unreadOnly)
+                } label: {
+                    HStack(spacing: 8) {
+                        Image(systemName: selection.iconName)
+                            .font(.system(size: 18, weight: .medium))
+                            .foregroundStyle(Color(hue: 0.06, saturation: 0.88, brightness: 0.78))
+                        Text(selection.rawValue)
+                            .font(.system(size: 17, weight: .semibold, design: .rounded))
+                            .foregroundStyle(.primary)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.8)
+                        Image(systemName: "chevron.down")
+                            .font(.system(size: 10, weight: .bold))
+                            .foregroundStyle(.secondary)
+                    }
+                    .padding(.horizontal, 8)
+                    .frame(height: 44, alignment: .leading)
+                }
+                .accessibilityLabel("Choose story feed and filters")
+                .tint(.primary)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+
+            Button {
+                showsSettings = true
+            } label: {
+                Image(systemName: "gearshape")
+                    .font(.system(size: 20, weight: .medium))
+                    .foregroundStyle(.primary)
+                    .frame(width: 44, height: 44)
+            }
+            .accessibilityLabel("Settings")
+            .tint(.primary)
+        }
+        .padding(.horizontal, 20)
+        .padding(.top, 12)
+        .padding(.bottom, 4)
+    }
+}
+
 struct IOSStoryList: View {
     @Environment(AppState.self) private var appState
 
@@ -17,7 +87,6 @@ struct IOSStoryList: View {
     @State private var revision = UUID()
     private let repository: FeedRepository
     @State private var unreadOnly = false
-    @State private var scrollResetRequest = UUID()
     @State private var navigationPath: [Item] = []
     @State private var showsSettings = false
 
@@ -68,8 +137,21 @@ struct IOSStoryList: View {
 
     var body: some View {
         NavigationStack(path: $navigationPath) {
-            ScrollViewReader { proxy in
-                List {
+            ZStack {
+                IOSPlainBackground()
+
+                ScrollViewReader { _ in
+                    ScrollView {
+                        LazyVStack(spacing: 0) {
+                            IOSStoryHeader(
+                                selection: $selection,
+                                showsSavedStories: showsSavedStories,
+                                isLoading: isLoading,
+                                unreadOnly: $unreadOnly,
+                                showsSettings: $showsSettings,
+                                refresh: refresh
+                            )
+
                     if let errorMessage = errorMessage, !showsSavedStories {
                         ContentUnavailableView {
                             Label("Couldn’t load stories", systemImage: "wifi.exclamationmark")
@@ -80,115 +162,53 @@ struct IOSStoryList: View {
                                 Task { await refresh() }
                             }
                         }
-                        .listRowSeparator(.hidden)
+                        .padding(.horizontal, 24)
                     }
                     if isLoading && visibleRows.isEmpty && !showsSavedStories {
                         ProgressView("Loading stories…")
                             .frame(maxWidth: .infinity)
-                            .listRowSeparator(.hidden)
+                            .padding(.horizontal, 24)
                     } else if visibleRows.isEmpty && errorMessage == nil {
                         ContentUnavailableView(
                             emptyTitle,
                             systemImage: showsSavedStories ? "bookmark" : "newspaper",
                             description: Text(emptyMessage)
                         )
-                        .listRowSeparator(.hidden)
+                        .padding(.horizontal, 24)
                     } else {
                         ForEach(visibleRows) { row in
-                            Button {
-                                navigationPath.append(row.item)
-                            } label: {
-                                IOSStoryRow(row: row)
+                            VStack(spacing: 0) {
+                                Button {
+                                    navigationPath.append(row.item)
+                                } label: {
+                                    IOSStoryRow(row: row)
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                        .padding(.horizontal, 24)
+                                        .padding(.vertical, 8)
+                                        .contentShape(Rectangle())
+                                }
+                                .buttonStyle(.plain)
+                                .id(row.id)
+
+                                if row.id != visibleRows.last?.id {
+                                    Divider()
+                                        .padding(.horizontal, 24)
+                                        .opacity(0.45)
+                                }
                             }
-                            .buttonStyle(.plain)
-                            .listRowInsets(
-                                EdgeInsets(top: 10, leading: 16, bottom: 10, trailing: 16)
-                            )
-                            .id(row.id)
                         }
                     }
 
                     if !showsSavedStories && feed.hasMore {
                         paginationRow
                     }
-                }
-                .listStyle(.plain)
-                // Keep feed changes and page inserts out of the menu's animation.
-                .transaction { transaction in
-                    transaction.animation = nil
-                    transaction.disablesAnimations = true
-                }
-                .onChange(of: scrollResetRequest) {
-                    if let firstID = visibleRows.first?.id {
-                        proxy.scrollTo(firstID, anchor: .top)
+                        }
+                        .padding(.bottom, 128)
                     }
+                    .offset(y: -20)
                 }
             }
-            .navigationTitle(showsSavedStories ? "Saved" : "")
-            .navigationBarTitleDisplayMode(showsSavedStories ? .large : .inline)
-            .toolbar {
-                if !showsSavedStories {
-                    ToolbarItem(placement: .topBarLeading) {
-                        Menu {
-                            Picker("Feed", selection: $selection) {
-                                ForEach(AppState.SidebarSelection.allCases.filter { $0 != .saved })
-                                { feed in
-                                    Label(feed.rawValue, systemImage: feed.iconName)
-                                        .tag(feed)
-                                }
-                            }
-
-                            Divider()
-
-                            Toggle("Unread only", isOn: $unreadOnly)
-                        } label: {
-                            HStack(spacing: 8) {
-                                Image(systemName: selection.iconName)
-                                Text(selection.rawValue)
-                            }
-                        }
-                        .accessibilityLabel("Choose story feed and filters")
-                    }
-                } else {
-                    ToolbarItem(placement: .topBarTrailing) {
-                        Toggle(isOn: $unreadOnly) {
-                            Label("Unread only", systemImage: "circle.lefthalf.filled")
-                        }
-                        .labelsHidden()
-                    }
-                }
-
-                if !showsSavedStories {
-                    ToolbarItem(placement: .topBarTrailing) {
-                        Button {
-                            Task { await refresh() }
-                        } label: {
-                            Group {
-                                if isLoading {
-                                    ProgressView()
-                                        .controlSize(.small)
-                                } else {
-                                    Image(systemName: "arrow.clockwise")
-                                }
-                            }
-                            .frame(width: 20, height: 20)
-                        }
-                        .accessibilityLabel(isLoading ? "Refreshing stories" : "Refresh stories")
-                        .disabled(isLoading)
-                    }
-                }
-
-                if !showsSavedStories && navigationPath.isEmpty {
-                    ToolbarItem(placement: .topBarTrailing) {
-                        Button {
-                            showsSettings = true
-                        } label: {
-                            Image(systemName: "gearshape")
-                        }
-                        .accessibilityLabel("Settings")
-                    }
-                }
-            }
+            .toolbar(.hidden, for: .navigationBar)
             .refreshable {
                 await refresh()
             }
@@ -222,7 +242,6 @@ struct IOSStoryList: View {
                 if selection.category != nil {
                     await loadFeed()
                     guard !Task.isCancelled else { return }
-                    scrollResetRequest = UUID()
                 }
             }
         }

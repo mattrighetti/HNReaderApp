@@ -28,6 +28,13 @@
 		<string>IBMPlexSerif-SemiBold.ttf</string>
 		<string>IBMPlexSerif-Regular.ttf</string>
 		<string>IBMPlexSerif-Light.ttf</string>
+		<string>Charis-Regular.ttf</string>
+		<string>Charis-Italic.ttf</string>
+		<string>Charis-Bold.ttf</string>
+		<string>Charis-BoldItalic.ttf</string>
+		<string>SourceSerif4.ttf</string>
+		<string>Literata.ttf</string>
+		<string>NotoSerif.ttf</string>
 	</array>
 </dict>
 </plist>
