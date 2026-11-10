@@ -10,12 +10,14 @@ struct HTMLText: View {
     let text: String
     var fontSize: CGFloat = 14
     var lineSpacing: CGFloat = 5
+    var fontName: String?
 
     @State private var attributed = AttributedString("")
 
     private struct RenderRequest: Equatable {
         let text: String
         let fontSize: CGFloat
+        let fontName: String?
     }
 
     var body: some View {
@@ -25,31 +27,43 @@ struct HTMLText: View {
             .lineSpacing(lineSpacing)
             .textSelection(.enabled)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .task(id: RenderRequest(text: text, fontSize: fontSize)) {
+            .task(id: RenderRequest(text: text, fontSize: fontSize, fontName: fontName)) {
                 guard !Task.isCancelled else { return }
 
-                let rendered = await Self.render(text, fontSize: fontSize)
+                let rendered = await Self.render(text, fontSize: fontSize, fontName: fontName)
                 guard !Task.isCancelled else { return }
                 attributed = rendered
             }
     }
 
-    @MainActor static func render(_ html: String, fontSize: CGFloat = 14) async -> AttributedString {
-        AttributedString(await renderNative(html, fontSize: fontSize))
+    @MainActor static func render(
+        _ html: String,
+        fontSize: CGFloat = 14,
+        fontName: String? = nil
+    ) async -> AttributedString {
+        AttributedString(await renderNative(html, fontSize: fontSize, fontName: fontName))
     }
 
-    @MainActor static func renderNative(_ html: String, fontSize: CGFloat = 14) async -> NSAttributedString {
+    @MainActor static func renderNative(
+        _ html: String,
+        fontSize: CGFloat = 14,
+        fontName: String? = nil
+    ) async -> NSAttributedString {
         // HTML import can spin the run loop. Queue it outside SwiftUI's current
         // update transaction, while keeping the importer on the main thread.
         // Task.yield() alone does not guarantee that the update has unwound.
         await withCheckedContinuation { continuation in
             DispatchQueue.main.async {
-                continuation.resume(returning: importHTML(html, fontSize: fontSize))
+                continuation.resume(returning: importHTML(html, fontSize: fontSize, fontName: fontName))
             }
         }
     }
 
-    @MainActor private static func importHTML(_ html: String, fontSize: CGFloat) -> NSAttributedString {
+    @MainActor private static func importHTML(
+        _ html: String,
+        fontSize: CGFloat,
+        fontName: String?
+    ) -> NSAttributedString {
         guard
             let data = html.data(using: .utf8),
             let value = try? NSMutableAttributedString(
@@ -85,7 +99,8 @@ struct HTMLText: View {
                 : fontSize
             let base = traits.contains(.fixedPitchFontMask)
                 ? NSFont.monospacedSystemFont(ofSize: targetSize, weight: .regular)
-                : NSFont.systemFont(ofSize: targetSize)
+                : (fontName.flatMap { NSFont(name: $0, size: targetSize) }
+                    ?? NSFont.systemFont(ofSize: targetSize))
 
             value.addAttribute(
                 .font,
@@ -104,7 +119,8 @@ struct HTMLText: View {
                 : fontSize
             let base = traits.contains(.traitMonoSpace)
                 ? UIFont.monospacedSystemFont(ofSize: targetSize, weight: .regular)
-                : UIFont.systemFont(ofSize: targetSize)
+                : (fontName.flatMap { UIFont(name: $0, size: targetSize) }
+                    ?? UIFont.systemFont(ofSize: targetSize))
             let styledDescriptor = base.fontDescriptor.withSymbolicTraits(traits) ?? base.fontDescriptor
             value.addAttribute(
                 .font,

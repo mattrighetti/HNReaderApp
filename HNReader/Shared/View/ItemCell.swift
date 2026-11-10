@@ -135,6 +135,7 @@ struct ItemCell: View {
         }
         .padding(.vertical, verticalPadding)
         .frame(maxWidth: .infinity, alignment: .leading)
+        .fixedSize(horizontal: false, vertical: true)
         .contentShape(Rectangle())
         .clickableCursor()
         .accessibilityElement(children: .combine)

@@ -68,14 +68,10 @@ struct StoryDetail: View {
         ScrollViewReader { proxy in
             ScrollView {
                 VStack(alignment: .leading, spacing: 24) {
-                    StoryHeader(item: item)
+                    StoryHeader(item: item, articleFont: appState.articleFont)
 
                     if let text = item.text, !text.isEmpty {
-                        #if os(macOS)
-                            HTMLText(text: text)
-                        #else
-                            HTMLText(text: text, fontSize: 17, lineSpacing: 6)
-                        #endif
+                        ArticleBody(text: text, articleFont: appState.articleFont)
                     }
 
                     DiscussionHeader(item: item, threadsCollapsed: $threadsCollapsed)
@@ -112,6 +108,9 @@ struct StoryDetail: View {
                             #endif
                         }
                     }
+                    #if os(iOS)
+                        .padding(.horizontal, -8)
+                    #endif
 
                     if let errorMessage = errorMessage {
                         Text(errorMessage)
@@ -257,8 +256,33 @@ struct StoryDetail: View {
     }
 }
 
+struct ArticleTitle: View {
+    let title: String
+    let articleFont: ArticleFont
+
+    var body: some View {
+        Text(title)
+            .font(.custom(articleFont.fontName, size: 30).weight(.semibold))
+            .textSelection(.enabled)
+    }
+}
+
+struct ArticleBody: View {
+    let text: String
+    let articleFont: ArticleFont
+
+    var body: some View {
+        #if os(macOS)
+            HTMLText(text: text, fontName: articleFont.fontName)
+        #else
+            HTMLText(text: text, fontSize: 17, lineSpacing: 6, fontName: articleFont.fontName)
+        #endif
+    }
+}
+
 private struct StoryHeader: View {
     let item: Item
+    let articleFont: ArticleFont
     @Environment(AppState.self) private var appState
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -267,9 +291,7 @@ private struct StoryHeader: View {
                 .tracking(1.5)
                 .foregroundStyle(Color.accentColor)
 
-            Text(item.title ?? "Untitled story")
-                .font(.system(size: 30, weight: .semibold, design: .serif))
-                .textSelection(.enabled)
+            ArticleTitle(title: item.title ?? "Untitled story", articleFont: articleFont)
 
             #if os(macOS)
                 HStack(spacing: 8) {

@@ -1,11 +1,55 @@
 import Foundation
 import Observation
 
+enum ArticleFont: String, CaseIterable, Hashable, Identifiable {
+    case charis = "charis"
+    case ibmPlexSerif = "ibm-plex-serif"
+    case sourceSerif = "source-serif-4"
+    case literata = "literata"
+    case notoSerif = "noto-serif"
+
+    var id: String { rawValue }
+
+    var name: String {
+        switch self {
+        case .charis:
+            return "Charis SIL"
+        case .ibmPlexSerif:
+            return "IBM Plex Serif"
+        case .sourceSerif:
+            return "Source Serif 4"
+        case .literata:
+            return "Literata"
+        case .notoSerif:
+            return "Noto Serif"
+        }
+    }
+
+    /// PostScript font name used by the native HTML renderer.
+    var fontName: String {
+        switch self {
+        case .charis:
+            return "Charis-Regular"
+        case .ibmPlexSerif:
+            return "IBMPlexSerif-Regular"
+        case .sourceSerif:
+            return "SourceSerif4Roman-Regular"
+        case .literata:
+            return "Literata-Regular"
+        case .notoSerif:
+            return "NotoSerif-Regular"
+        }
+    }
+}
+
 @MainActor
 @Observable
 final class AppState {
     private(set) var savedItems: [Item]
     private(set) var readIDs: Set<Int>
+    var articleFont: ArticleFont {
+        didSet { defaults.set(articleFont.rawValue, forKey: "articleFont") }
+    }
 
     private let defaults: UserDefaults
 
@@ -16,6 +60,9 @@ final class AppState {
             defaults.data(forKey: "savedStories")
             .flatMap { try? JSONDecoder().decode([Item].self, from: $0) } ?? []
         readIDs = Set(defaults.array(forKey: "readStories") as? [Int] ?? [])
+        articleFont = ArticleFont(
+            rawValue: defaults.string(forKey: "articleFont") ?? "charis"
+        ) ?? .charis
     }
 
     func isSaved(_ item: Item) -> Bool {

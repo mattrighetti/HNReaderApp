@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Hacker News for iOS</string>
+	<string>HNReader</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -30,6 +30,13 @@
 		<string>IBMPlexSerif-SemiBold.ttf</string>
 		<string>IBMPlexSerif-Regular.ttf</string>
 		<string>IBMPlexSerif-Light.ttf</string>
+		<string>Charis-Regular.ttf</string>
+		<string>Charis-Italic.ttf</string>
+		<string>Charis-Bold.ttf</string>
+		<string>Charis-BoldItalic.ttf</string>
+		<string>SourceSerif4.ttf</string>
+		<string>Literata.ttf</string>
+		<string>NotoSerif.ttf</string>
 	</array>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>

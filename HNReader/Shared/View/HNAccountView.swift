@@ -96,15 +96,23 @@ struct HNAccountView: View {
 
     private var signInForm: some View {
         ScrollView {
-            VStack(spacing: 24) {
-                Image(systemName: "person.crop.circle")
-                    .font(.system(size: 54, weight: .light))
-                    .foregroundStyle(.secondary)
-                    .accessibilityHidden(true)
+            VStack(spacing: 26) {
+                VStack(spacing: 12) {
+                    Image(systemName: "person.crop.circle.fill")
+                        .font(.system(size: 34, weight: .medium))
+                        .foregroundStyle(.orange)
+                        .frame(width: 72, height: 72)
+                        .background(Color.orange.opacity(0.12), in: Circle())
+                        .accessibilityHidden(true)
 
-                VStack(spacing: 8) {
-                    Text("Sign in to Hacker News")
-                        .font(.title2.weight(.semibold))
+                    VStack(spacing: 6) {
+                        Text("Welcome back")
+                            .font(.system(size: 25, weight: .bold, design: .rounded))
+
+                        Text("Sign in to your Hacker News account")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
                 }
 
                 VStack(spacing: 14) {
@@ -117,14 +125,35 @@ struct HNAccountView: View {
                         .focused($focusedField, equals: .username)
                         .submitLabel(.next)
                         .onSubmit { focusedField = .password }
+                        .textFieldStyle(.plain)
+                        .padding(.horizontal, 14)
+                        .frame(height: 50)
+                        .background(
+                            PlatformColors.controlBackground,
+                            in: RoundedRectangle(cornerRadius: 14, style: .continuous)
+                        )
+                        .overlay {
+                            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                                .strokeBorder(PlatformColors.separator.opacity(0.6), lineWidth: 1)
+                        }
 
                     SecureField("Password", text: $password)
                         .textContentType(.password)
                         .focused($focusedField, equals: .password)
                         .submitLabel(.go)
                         .onSubmit(submit)
+                        .textFieldStyle(.plain)
+                        .padding(.horizontal, 14)
+                        .frame(height: 50)
+                        .background(
+                            PlatformColors.controlBackground,
+                            in: RoundedRectangle(cornerRadius: 14, style: .continuous)
+                        )
+                        .overlay {
+                            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                                .strokeBorder(PlatformColors.separator.opacity(0.6), lineWidth: 1)
+                        }
                 }
-                .textFieldStyle(.roundedBorder)
 
                 if let errorMessage {
                     Label(errorMessage, systemImage: "exclamationmark.triangle.fill")
@@ -138,18 +167,23 @@ struct HNAccountView: View {
                         if isSigningIn {
                             ProgressView()
                                 .controlSize(.small)
+                                .tint(.white)
                         }
 
                         Text(isSigningIn ? "Signing In…" : "Sign In")
+                            .font(.headline.weight(.semibold))
                     }
                     .frame(maxWidth: .infinity)
+                    .frame(height: 50)
+                    .foregroundStyle(.white)
+                    .background(Color.orange, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
                 }
-                .buttonStyle(.borderedProminent)
-                .controlSize(.large)
+                .buttonStyle(.plain)
                 .disabled(!canSubmit)
+                .opacity(canSubmit ? 1 : 0.5)
 
                 Text("Your password is sent directly to Hacker News over HTTPS and is not stored by HNReader.")
-                    .font(.caption)
+                    .font(.caption2)
                     .foregroundStyle(.tertiary)
                     .multilineTextAlignment(.center)
             }
@@ -165,7 +199,6 @@ struct HNAccountView: View {
             username: account.username,
             user: previewUser,
             loadsAutomatically: loadsAutomatically,
-            title: "Profile",
             showsMacDismissButton: false,
             showsUpvotes: true
         )
@@ -271,6 +304,10 @@ struct HNUpvotedItemsView: View {
         content[selection, default: Content()]
     }
 
+    private var selectedStoryRows: [StoryRow] {
+        StoryRow.savedRows(for: selectedContent.items)
+    }
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
@@ -281,6 +318,7 @@ struct HNUpvotedItemsView: View {
                 }
                 .pickerStyle(.segmented)
                 .disabled(isLoading)
+                .padding(.horizontal, 20)
 
                 if selectedContent.items.isEmpty && isLoading {
                     ProgressView("Loading upvotes…")
@@ -296,20 +334,31 @@ struct HNUpvotedItemsView: View {
                     .frame(maxWidth: .infinity, minHeight: 320)
                 } else if selection == .submissions {
                     LazyVStack(spacing: 0) {
-                        ForEach(StoryRow.savedRows(for: selectedContent.items)) { row in
-                            NavigationLink {
-                                StoryDetail(item: row.item)
-                            } label: {
-                                #if os(iOS)
-                                    IOSStoryRow(row: row)
-                                #else
-                                    ItemCell(item: row.item, rank: row.rank)
-                                        .frame(minHeight: StoryRowLayout.minimumHeight)
-                                #endif
-                            }
-                            .buttonStyle(.plain)
+                        ForEach(selectedStoryRows) { row in
+                            VStack(spacing: 0) {
+                                NavigationLink {
+                                    StoryDetail(item: row.item)
+                                } label: {
+                                    #if os(iOS)
+                                        IOSStoryRow(row: row)
+                                            .frame(maxWidth: .infinity, alignment: .leading)
+                                            .padding(.horizontal, 24)
+                                            .padding(.vertical, 8)
+                                            .contentShape(Rectangle())
+                                    #else
+                                        ItemCell(item: row.item, rank: row.rank)
+                                            .frame(minHeight: StoryRowLayout.minimumHeight)
+                                            .contentShape(Rectangle())
+                                    #endif
+                                }
+                                .buttonStyle(.plain)
 
-                            Divider()
+                                if row.id != selectedStoryRows.last?.id {
+                                    Divider()
+                                        .padding(.horizontal, 24)
+                                        .opacity(0.45)
+                                }
+                            }
                         }
                     }
                 } else {
@@ -322,12 +371,13 @@ struct HNUpvotedItemsView: View {
                             }
                         }
                     }
+                    .padding(.horizontal, 20)
                 }
 
                 footer
             }
             .frame(maxWidth: 680, alignment: .leading)
-            .padding(20)
+            .padding(.vertical, 20)
             .frame(maxWidth: .infinity)
         }
         .background(PlatformColors.textBackground)
@@ -475,17 +525,6 @@ struct HNCommentContextView: View {
         #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
         #endif
-        .toolbar {
-            if let story {
-                Link(destination: story.articleURL ?? story.discussionURL) {
-                    Label(
-                        story.articleURL == nil ? "View on HN" : "Open Article",
-                        systemImage: "arrow.up.right"
-                    )
-                }
-                .clickableCursor()
-            }
-        }
         .task(id: retryRequest) {
             await loadContext()
         }

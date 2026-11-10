@@ -1,12 +1,16 @@
 import SwiftUI
 
 struct SettingsView: View {
+    @Environment(AppState.self) private var appState
+
     var body: some View {
         NavigationStack {
             VStack(alignment: .leading, spacing: 20) {
                 appHeader
 
                 account
+
+                articleFontLink
 
                 project
 
@@ -22,6 +26,41 @@ struct SettingsView: View {
         }
         .frame(width: 440)
         .background(Color(nsColor: .windowBackgroundColor))
+    }
+
+    private var articleFontLink: some View {
+        NavigationLink {
+            ArticleFontSettingsView()
+        } label: {
+            HStack(spacing: 12) {
+                Image(systemName: "textformat")
+                    .font(.system(size: 18))
+                    .foregroundStyle(.secondary)
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Article font")
+                        .font(.system(size: 12, weight: .medium))
+
+                    Text(appState.articleFont.name)
+                        .font(.system(size: 10))
+                        .foregroundStyle(.secondary)
+                }
+
+                Spacer()
+
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 10, weight: .semibold))
+                    .foregroundStyle(.tertiary)
+            }
+            .padding(14)
+            .contentShape(Rectangle())
+            .background(
+                Color(nsColor: .controlBackgroundColor),
+                in: RoundedRectangle(cornerRadius: 10)
+            )
+        }
+        .clickableCursor()
+        .buttonStyle(.plain)
     }
 
     private var account: some View {
@@ -173,15 +212,18 @@ struct SettingsView: View {
 #if DEBUG
 #Preview("Settings · System") {
     SettingsView()
+        .environment(PreviewData.appState())
 }
 
 #Preview("Settings · Light") {
     SettingsView()
+        .environment(PreviewData.appState())
         .preferredColorScheme(.light)
 }
 
 #Preview("Settings · Dark") {
     SettingsView()
+        .environment(PreviewData.appState())
         .preferredColorScheme(.dark)
 }
 #endif
