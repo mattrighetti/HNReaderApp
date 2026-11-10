@@ -6,6 +6,25 @@ struct HNAccountView: View {
         case password
     }
 
+    private struct SignInButtonStyle: ButtonStyle {
+        @Environment(\.isEnabled) private var isEnabled
+
+        let isSigningIn: Bool
+
+        func makeBody(configuration: Configuration) -> some View {
+            let showsAccent = isEnabled || isSigningIn
+
+            return configuration.label
+                .foregroundStyle(showsAccent ? Color.black : Color.primary)
+                .background(
+                    Color.orange.opacity(showsAccent ? 1 : 0.16),
+                    in: RoundedRectangle(cornerRadius: 14, style: .continuous)
+                )
+                .opacity(configuration.isPressed ? 0.85 : 1)
+        }
+    }
+
+    @Environment(\.colorScheme) private var colorScheme
     @State private var account: HNAuthenticatedAccount?
     @State private var username = ""
     @State private var password = ""
@@ -95,28 +114,78 @@ struct HNAccountView: View {
     }
 
     private var signInForm: some View {
-        ScrollView {
-            VStack(spacing: 26) {
-                VStack(spacing: 12) {
-                    Image(systemName: "person.crop.circle.fill")
-                        .font(.system(size: 34, weight: .medium))
-                        .foregroundStyle(.orange)
-                        .frame(width: 72, height: 72)
-                        .background(Color.orange.opacity(0.12), in: Circle())
-                        .accessibilityHidden(true)
-
-                    VStack(spacing: 6) {
-                        Text("Welcome back")
-                            .font(.system(size: 25, weight: .bold, design: .rounded))
-
-                        Text("Sign in to your Hacker News account")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                    }
+        GeometryReader { geometry in
+            ScrollView {
+                VStack(alignment: .leading, spacing: 28) {
+                    signInHeader
+                    credentialsCard
                 }
+                .frame(maxWidth: 420)
+                .padding(.horizontal, 24)
+                .padding(.vertical, 36)
+                .frame(maxWidth: .infinity)
+                .frame(minHeight: geometry.size.height)
+            }
+            .scrollDismissesKeyboard(.interactively)
+            .scrollIndicators(.hidden)
+        }
+        .background {
+            ZStack {
+                PlatformColors.textBackground
 
-                VStack(spacing: 14) {
-                    TextField("Username", text: $username)
+                LinearGradient(
+                    colors: [Color.orange.opacity(0.09), .clear],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+            }
+            .ignoresSafeArea()
+        }
+    }
+
+    private var signInHeader: some View {
+        VStack(alignment: .leading, spacing: 24) {
+            HStack(spacing: 12) {
+                Image("IconPreviewOrange")
+                    .resizable()
+                    .frame(width: 44, height: 44)
+                    .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                    .accessibilityHidden(true)
+
+                Text("HNReader")
+                    .font(.system(.headline, design: .rounded, weight: .bold))
+
+                Spacer(minLength: 8)
+
+                Text("ACCOUNT")
+                    .font(.system(.caption2, design: .monospaced, weight: .medium))
+                    .tracking(1.5)
+                    .foregroundStyle(.secondary)
+            }
+
+            VStack(alignment: .leading, spacing: 10) {
+                Text("Welcome back.")
+                    .font(.system(.largeTitle, design: .rounded, weight: .bold))
+                    .accessibilityAddTraits(.isHeader)
+
+                Text("Your profile, conversations, and upvotes.\nRight where you left them.")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .lineSpacing(3)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+    }
+
+    private var credentialsCard: some View {
+        VStack(alignment: .leading, spacing: 22) {
+            VStack(spacing: 18) {
+                accountField("Username", systemImage: "person", field: .username) {
+                    TextField(
+                        "Username",
+                        text: $username,
+                        prompt: Text("Your username").foregroundStyle(Color.secondary)
+                    )
                         .textContentType(.username)
                         .autocorrectionDisabled()
                         #if os(iOS)
@@ -125,73 +194,128 @@ struct HNAccountView: View {
                         .focused($focusedField, equals: .username)
                         .submitLabel(.next)
                         .onSubmit { focusedField = .password }
-                        .textFieldStyle(.plain)
-                        .padding(.horizontal, 14)
-                        .frame(height: 50)
-                        .background(
-                            PlatformColors.controlBackground,
-                            in: RoundedRectangle(cornerRadius: 14, style: .continuous)
-                        )
-                        .overlay {
-                            RoundedRectangle(cornerRadius: 14, style: .continuous)
-                                .strokeBorder(PlatformColors.separator.opacity(0.6), lineWidth: 1)
-                        }
+                        .accessibilityLabel("Username")
+                }
 
-                    SecureField("Password", text: $password)
+                accountField("Password", systemImage: "lock", field: .password) {
+                    SecureField(
+                        "Password",
+                        text: $password,
+                        prompt: Text("Your password").foregroundStyle(Color.secondary)
+                    )
                         .textContentType(.password)
                         .focused($focusedField, equals: .password)
                         .submitLabel(.go)
                         .onSubmit(submit)
-                        .textFieldStyle(.plain)
-                        .padding(.horizontal, 14)
-                        .frame(height: 50)
-                        .background(
-                            PlatformColors.controlBackground,
-                            in: RoundedRectangle(cornerRadius: 14, style: .continuous)
-                        )
-                        .overlay {
-                            RoundedRectangle(cornerRadius: 14, style: .continuous)
-                                .strokeBorder(PlatformColors.separator.opacity(0.6), lineWidth: 1)
-                        }
+                        .accessibilityLabel("Password")
                 }
-
-                if let errorMessage {
-                    Label(errorMessage, systemImage: "exclamationmark.triangle.fill")
-                        .font(.callout)
-                        .foregroundStyle(.red)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                }
-
-                Button(action: submit) {
-                    HStack(spacing: 8) {
-                        if isSigningIn {
-                            ProgressView()
-                                .controlSize(.small)
-                                .tint(.white)
-                        }
-
-                        Text(isSigningIn ? "Signing In…" : "Sign In")
-                            .font(.headline.weight(.semibold))
-                    }
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 50)
-                    .foregroundStyle(.white)
-                    .background(Color.orange, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-                }
-                .buttonStyle(.plain)
-                .disabled(!canSubmit)
-                .opacity(canSubmit ? 1 : 0.5)
-
-                Text("Your password is sent directly to Hacker News over HTTPS and is not stored by HNReader.")
-                    .font(.caption2)
-                    .foregroundStyle(.tertiary)
-                    .multilineTextAlignment(.center)
             }
-            .frame(maxWidth: 420)
-            .padding(24)
-            .frame(maxWidth: .infinity)
+
+            if let errorMessage {
+                Label(errorMessage, systemImage: "exclamationmark.triangle.fill")
+                    .font(.callout)
+                    .foregroundStyle(.red)
+                    .padding(12)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(Color.red.opacity(0.08), in: RoundedRectangle(cornerRadius: 12))
+            }
+
+            Button(action: submit) {
+                HStack(spacing: 10) {
+                    if isSigningIn {
+                        ProgressView()
+                            .controlSize(.small)
+                            .tint(.black)
+                            .colorMultiply(.black)
+                    }
+
+                    Text(isSigningIn ? "Signing In…" : "Sign In")
+                        .font(.headline.weight(.semibold))
+
+                    if !isSigningIn {
+                        Image(systemName: "arrow.right")
+                            .font(.subheadline.weight(.semibold))
+                            .accessibilityHidden(true)
+                    }
+                }
+                .padding(.horizontal, 16)
+                .padding(.vertical, 16)
+                .frame(maxWidth: .infinity, minHeight: 52)
+                .contentShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+            }
+            .buttonStyle(SignInButtonStyle(isSigningIn: isSigningIn))
+            .disabled(!canSubmit)
+
+            Divider()
+
+            HStack(alignment: .top, spacing: 10) {
+                Image(systemName: "lock.shield")
+                    .font(.body)
+                    .foregroundStyle(.secondary)
+                    .accessibilityHidden(true)
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Your password stays private")
+                        .font(.caption.weight(.semibold))
+
+                    Text("Sent directly to Hacker News over HTTPS. Never stored by HNReader.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
         }
-        .scrollDismissesKeyboard(.interactively)
+        .padding(22)
+        .background(
+            colorScheme == .dark ? PlatformColors.controlBackground : PlatformColors.textBackground,
+            in: RoundedRectangle(cornerRadius: 24, style: .continuous)
+        )
+        .overlay {
+            RoundedRectangle(cornerRadius: 24, style: .continuous)
+                .strokeBorder(Color.primary.opacity(0.06), lineWidth: 1)
+        }
+        .shadow(color: .black.opacity(colorScheme == .dark ? 0.16 : 0.05), radius: 24, y: 10)
+    }
+
+    private func accountField<Content: View>(
+        _ title: String,
+        systemImage: String,
+        field: Field,
+        @ViewBuilder content: () -> Content
+    ) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(title)
+                .font(.subheadline.weight(.medium))
+                .accessibilityHidden(true)
+
+            HStack(spacing: 10) {
+                Image(systemName: systemImage)
+                    .font(.body)
+                    .foregroundStyle(focusedField == field ? Color.orange : Color.secondary)
+                    .frame(width: 18)
+                    .accessibilityHidden(true)
+
+                content()
+                    .font(.body)
+                    .textFieldStyle(.plain)
+            }
+            .padding(.horizontal, 14)
+            .padding(.vertical, 14)
+            .frame(minHeight: 52)
+            .background(
+                colorScheme == .dark
+                    ? PlatformColors.textBackground.opacity(0.6)
+                    : PlatformColors.controlBackground.opacity(0.65),
+                in: RoundedRectangle(cornerRadius: 12, style: .continuous)
+            )
+            .overlay {
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .strokeBorder(
+                        focusedField == field ? Color.orange : PlatformColors.separator.opacity(0.4),
+                        lineWidth: focusedField == field ? 1.5 : 1
+                    )
+            }
+        }
     }
 
     private func authenticatedContent(_ account: HNAuthenticatedAccount) -> some View {
@@ -586,11 +710,20 @@ struct HNCommentContextView: View {
         }
     }
 
-    #Preview("Account · Signed Out") {
+    #Preview("Account · Signed Out · Light") {
         NavigationStack {
             HNAccountView(loadsAutomatically: false)
         }
         .environment(PreviewData.appState())
+        .preferredColorScheme(.light)
+    }
+
+    #Preview("Account · Signed Out · Dark") {
+        NavigationStack {
+            HNAccountView(loadsAutomatically: false)
+        }
+        .environment(PreviewData.appState())
+        .preferredColorScheme(.dark)
     }
 
     #Preview("Profile · Mock") {
