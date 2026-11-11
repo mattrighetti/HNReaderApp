@@ -14,7 +14,6 @@ struct UserDetailView: View {
     private let loadsAutomatically: Bool
     private let initialComments: [Item]
     private let previewThreads: [Int: [Item]]?
-    private let title: String
     private let showsMacDismissButton: Bool
     private let showsUpvotes: Bool
 
@@ -24,7 +23,6 @@ struct UserDetailView: View {
         initialComments: [Item] = [],
         previewThreads: [Int: [Item]]? = nil,
         loadsAutomatically: Bool = true,
-        title: String? = nil,
         showsMacDismissButton: Bool = true,
         showsUpvotes: Bool = false
     ) {
@@ -33,7 +31,6 @@ struct UserDetailView: View {
         self.initialComments = initialComments
         self.previewThreads = previewThreads
         self.loadsAutomatically = loadsAutomatically
-        self.title = title ?? username
         self.showsMacDismissButton = showsMacDismissButton
         self.showsUpvotes = showsUpvotes
     }
@@ -73,7 +70,7 @@ struct UserDetailView: View {
             .scrollIndicators(.hidden)
         }
         .background { profileBackground.ignoresSafeArea() }
-        .navigationTitle(title)
+        .navigationTitle("Profile")
         #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
         #endif

@@ -65,7 +65,7 @@ struct HNAccountView: View {
             }
         }
         .background(PlatformColors.textBackground)
-        .navigationTitle(account?.username ?? "Hacker News Account")
+        .navigationTitle(account == nil ? "Hacker News Account" : "Profile")
         #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
         #endif
