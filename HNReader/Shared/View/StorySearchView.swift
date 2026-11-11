@@ -67,6 +67,7 @@ struct StorySearchView: View {
         }
         .navigationTitle("Search")
         #if os(iOS)
+            .navigationBarTitleDisplayMode(.inline)
             .searchable(
                 text: $query, placement: .navigationBarDrawer(displayMode: .always),
                 prompt: "Search Hacker News"
