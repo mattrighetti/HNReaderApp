@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 struct IOSHomeView: View {
     enum Tab: Hashable {
@@ -54,7 +55,7 @@ struct IOSHomeView: View {
                 storyLink: $storyLink
             )
             .tabItem {
-                Label("Stories", systemImage: "newspaper")
+                tabLabel("Stories", systemImage: "newspaper.fill")
             }
             .tag(Tab.stories)
 
@@ -62,7 +63,7 @@ struct IOSHomeView: View {
                 StorySearchView()
             }
             .tabItem {
-                Label("Search", systemImage: "magnifyingglass")
+                tabLabel("Search", systemImage: "magnifyingglass")
             }
             .tag(Tab.search)
 
@@ -75,7 +76,7 @@ struct IOSHomeView: View {
                 previewThreads: previewThreads
             )
             .tabItem {
-                Label("Saved", systemImage: "bookmark")
+                tabLabel("Saved", systemImage: "bookmark.fill")
             }
             .tag(Tab.saved)
 
@@ -87,7 +88,7 @@ struct IOSHomeView: View {
                 )
             }
             .tabItem {
-                Label("Profile", systemImage: "person")
+                tabLabel("Profile", systemImage: "person.fill")
             }
             .tag(Tab.profile)
         }
@@ -96,6 +97,26 @@ struct IOSHomeView: View {
             selectedTab = .stories
             storyLink = link
             appState.incomingStoryLink = nil
+        }
+    }
+
+    private func tabLabel(_ title: LocalizedStringKey, systemImage: String) -> some View {
+        let configuration = UIImage.SymbolConfiguration(pointSize: 16, weight: .medium)
+        let icon: Image
+        if let symbol = UIImage(systemName: systemImage, withConfiguration: configuration) {
+            // Render the symbol at its configured size before the tab bar applies its tint.
+            let image = UIGraphicsImageRenderer(size: symbol.size).image { _ in
+                symbol.draw(at: .zero)
+            }
+            icon = Image(uiImage: image.withRenderingMode(.alwaysTemplate))
+        } else {
+            icon = Image(systemName: systemImage)
+        }
+
+        return Label {
+            Text(title)
+        } icon: {
+            icon
         }
     }
 }
