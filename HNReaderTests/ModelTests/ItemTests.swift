@@ -36,6 +36,40 @@ extension ItemTests {
         try JSONDecoder().decode(Item.self, from: Data(json.utf8))
     }
 
+    func testDiscussionIDFromHackerNewsLinks() throws {
+        let item = try decode(#"{"id":8863,"type":"story"}"#)
+        XCTAssertEqual(Item.discussionID(from: item.discussionURL), 8863)
+
+        let links = [
+            "https://news.ycombinator.com/item?ref=shared&id=8863#8952",
+            "http://NEWS.YCOMBINATOR.COM:80/item?id=8863",
+        ]
+        for link in links {
+            let url = try XCTUnwrap(URL(string: link))
+            XCTAssertEqual(Item.discussionID(from: url), 8863, link)
+        }
+    }
+
+    func testDiscussionIDRejectsUnsupportedLinks() throws {
+        let links = [
+            "https://news.ycombinator.com.example.com/item?id=8863",
+            "https://news.ycombinator.com@example.com/item?id=8863",
+            "https://news.ycombinator.com:8443/item?id=8863",
+            "https://news.ycombinator.com/user?id=8863",
+            "https://news.ycombinator.com/item",
+            "https://news.ycombinator.com/item?id=0",
+            "https://news.ycombinator.com/item?id=-1",
+            "https://news.ycombinator.com/item?id=+8863",
+            "https://news.ycombinator.com/item?id=8863&id=8952",
+            "https://news.ycombinator.com/item?id=99999999999999999999999",
+            "hnreader://news.ycombinator.com/item?id=8863",
+        ]
+        for link in links {
+            let url = try XCTUnwrap(URL(string: link))
+            XCTAssertNil(Item.discussionID(from: url), link)
+        }
+    }
+
     func testMissingMetadataAndInvalidLinksAreSafe() throws {
         let item = try decode(#"{"id":1,"url":"not a web address"}"#)
 

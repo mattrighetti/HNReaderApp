@@ -67,6 +67,15 @@ final class AppState {
         didSet { defaults.set(articleFont.rawValue, forKey: "articleFont") }
     }
 
+    #if os(iOS)
+        struct StoryLink: Equatable {
+            let id = UUID()
+            let itemID: Int
+        }
+
+        var incomingStoryLink: StoryLink?
+    #endif
+
     private let defaults: UserDefaults
 
     init(defaults: UserDefaults = .standard) {

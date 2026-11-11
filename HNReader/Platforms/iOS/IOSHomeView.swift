@@ -7,8 +7,11 @@ struct IOSHomeView: View {
         case profile
     }
 
+    @Environment(AppState.self) private var appState
+
     @State private var selectedTab: Tab
     @State private var selectedFeed: AppState.SidebarSelection = .top
+    @State private var storyLink: AppState.StoryLink?
     private let initialRows: [StoryRow]
     private let repository: FeedRepository
     private let loadsAutomatically: Bool
@@ -46,7 +49,8 @@ struct IOSHomeView: View {
                 repository: repository,
                 loadsAutomatically: loadsAutomatically,
                 previewComments: previewComments,
-                previewThreads: previewThreads
+                previewThreads: previewThreads,
+                storyLink: $storyLink
             )
             .tabItem {
                 Label("Stories", systemImage: "newspaper")
@@ -77,6 +81,12 @@ struct IOSHomeView: View {
                 Label("Profile", systemImage: "person")
             }
             .tag(Tab.profile)
+        }
+        .onChange(of: appState.incomingStoryLink, initial: true) { _, link in
+            guard let link else { return }
+            selectedTab = .stories
+            storyLink = link
+            appState.incomingStoryLink = nil
         }
     }
 }

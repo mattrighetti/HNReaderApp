@@ -42,8 +42,34 @@ public struct Item: Codable, Identifiable, Hashable, Sendable {
     public let parts: Int?
     public let descendants: Int?
 
+    private static let discussionHost = "news.ycombinator.com"
+
     public var discussionURL: URL {
-        URL(string: "https://news.ycombinator.com/item?id=\(id)")!
+        URL(string: "https://\(Self.discussionHost)/item?id=\(id)")!
+    }
+
+    static func discussionID(from url: URL) -> Int? {
+        guard
+            let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
+            let scheme = components.scheme?.lowercased(),
+            scheme == "https" || scheme == "http",
+            components.host?.lowercased() == discussionHost,
+            components.path == "/item",
+            components.user == nil, components.password == nil,
+            components.port == nil || components.port == (scheme == "https" ? 443 : 80)
+        else {
+            return nil
+        }
+
+        let ids = components.queryItems?.filter { $0.name == "id" } ?? []
+        guard
+            ids.count == 1, let value = ids.first?.value,
+            value.allSatisfy(\.isNumber), let id = Int(value), id > 0
+        else {
+            return nil
+        }
+
+        return id
     }
 
     public var articleURL: URL? {

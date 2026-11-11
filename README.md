@@ -29,6 +29,12 @@ The iOS app targets iOS 18 or later and supports iPhone and iPad. Run the
 - Save stories and comments for later, including an offline snapshot of saved comments.
 - Choose an orange, plum, midnight, or forest app icon in Settings.
 
+To open Hacker News links from the iOS share sheet, create a shortcut with
+HNReader’s **Open in HNReader** action. Turn on **Show in Share Sheet** in the
+shortcut’s details, set it to receive **URLs**, and pass **Shortcut Input** to
+the action’s **Hacker News URL** field. Choose that shortcut when sharing a
+Hacker News story or comment link to open its discussion in HNReader.
+
 Both apps are version 2.1.0. Views own their presentation and loading state;
 shared services return complete pages, while `HNClient/FeedRepository.swift`
 retains the feed cache. Saved items and read status live in the shared `AppState` store.

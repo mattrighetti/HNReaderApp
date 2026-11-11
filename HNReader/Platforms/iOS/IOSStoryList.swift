@@ -13,6 +13,7 @@ struct IOSStoryList: View {
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
     @Binding var selection: AppState.SidebarSelection
+    @Binding private var storyLink: AppState.StoryLink?
     private let showsSavedStories: Bool
     private let loadsAutomatically: Bool
     private let previewComments: [Item]?
@@ -30,6 +31,7 @@ struct IOSStoryList: View {
     @State private var columnVisibility: NavigationSplitViewVisibility = .all
     @State private var preferredCompactColumn: NavigationSplitViewColumn = .sidebar
     @State private var showsSettings = false
+    @State private var showsLinkError = false
 
     @MainActor
     init(
@@ -37,6 +39,7 @@ struct IOSStoryList: View {
         showsSavedStories: Bool
     ) {
         _selection = selection
+        _storyLink = .constant(nil)
         self.showsSavedStories = showsSavedStories
         loadsAutomatically = true
         previewComments = nil
@@ -54,9 +57,11 @@ struct IOSStoryList: View {
         repository: FeedRepository = .shared,
         loadsAutomatically: Bool,
         previewComments: [Item]?,
-        previewThreads: [Int: [Item]]?
+        previewThreads: [Int: [Item]]?,
+        storyLink: Binding<AppState.StoryLink?> = .constant(nil)
     ) {
         _selection = selection
+        _storyLink = storyLink
         self.showsSavedStories = showsSavedStories
         self.loadsAutomatically = loadsAutomatically
         self.previewComments = previewComments
@@ -123,6 +128,19 @@ struct IOSStoryList: View {
         .sheet(isPresented: $showsSettings) {
             IOSSettingsView()
         }
+        .overlay {
+            if storyLink != nil {
+                ProgressView("Opening story…")
+                    .padding()
+                    .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16))
+                    .allowsHitTesting(false)
+            }
+        }
+        .alert("Couldn’t open Hacker News link", isPresented: $showsLinkError) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text("The story couldn’t be loaded. Check the link and try again.")
+        }
         .onChange(of: selection) { _, _ in
             selectedItem = nil
             preferredCompactColumn = .sidebar
@@ -134,6 +152,10 @@ struct IOSStoryList: View {
             if selection.category != nil {
                 await loadFeed()
             }
+        }
+        .task(id: storyLink) { [storyLink] in
+            guard let storyLink else { return }
+            await openStory(from: storyLink)
         }
     }
 
@@ -249,8 +271,7 @@ struct IOSStoryList: View {
 
         return VStack(spacing: 0) {
             Button {
-                selectedItem = row.item
-                preferredCompactColumn = .detail
+                selectItem(row.item)
             } label: {
                 IOSStoryRow(row: row)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -276,6 +297,36 @@ struct IOSStoryList: View {
                     .padding(.horizontal, 24)
                     .opacity(0.45)
             }
+        }
+    }
+
+    private func selectItem(_ item: Item) {
+        storyLink = nil
+        selectedItem = item
+        preferredCompactColumn = .detail
+    }
+
+    private func openStory(from link: AppState.StoryLink) async {
+        guard !Task.isCancelled, storyLink == link else { return }
+        showsSettings = false
+        showsLinkError = false
+        let service = NewsService.shared
+
+        do {
+            guard let item = try await service.item(id: link.itemID) else {
+                throw URLError(.resourceUnavailable)
+            }
+            let story = try await service.storyContext(for: item)
+            guard story.type == .story || story.type == .poll || story.type == .job else {
+                throw URLError(.resourceUnavailable)
+            }
+            guard !Task.isCancelled, storyLink == link else { return }
+
+            selectItem(story)
+        } catch {
+            guard !Task.isCancelled, storyLink == link else { return }
+            storyLink = nil
+            showsLinkError = true
         }
     }
 
