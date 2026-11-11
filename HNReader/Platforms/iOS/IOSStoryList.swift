@@ -217,9 +217,22 @@ struct IOSStoryList: View {
         .tint(.primary)
     }
 
+    @ViewBuilder
     private var storyList: some View {
-        ScrollView {
-            LazyVStack(spacing: 0) {
+        if showsSavedStories {
+            storyListContent
+        } else {
+            storyListContent
+                .refreshable {
+                    await refresh()
+                }
+        }
+    }
+
+    private var storyListContent: some View {
+        // List supplies the native refresh control and keeps it available for empty feeds.
+        List {
+            Group {
                 if let errorMessage, !showsSavedStories {
                     ContentUnavailableView {
                         Label("Couldn’t load stories", systemImage: "wifi.exclamationmark")
@@ -247,8 +260,17 @@ struct IOSStoryList: View {
                     paginationRow
                 }
             }
-            .padding(.bottom, 128)
+            .listRowInsets(EdgeInsets())
+            .listRowSeparator(.hidden)
+            .listRowBackground(Color.clear)
         }
+        .listStyle(.plain)
+        .listRowSpacing(0)
+        .environment(\.defaultMinListRowHeight, 0)
+        .contentMargins(.top, 0, for: .scrollContent)
+        .contentMargins(.bottom, 128, for: .scrollContent)
+        .scrollBounceBehavior(.always, axes: .vertical)
+        .scrollContentBackground(.hidden)
         .background(IOSPlainBackground())
         .overlay {
             if visibleRows.isEmpty && errorMessage == nil && (showsSavedStories || !isLoading) {
@@ -260,9 +282,6 @@ struct IOSStoryList: View {
                 .padding(.horizontal, 24)
                 .allowsHitTesting(false)
             }
-        }
-        .refreshable {
-            await refresh()
         }
     }
 

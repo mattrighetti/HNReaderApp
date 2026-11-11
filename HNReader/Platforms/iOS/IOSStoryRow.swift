@@ -43,9 +43,12 @@ struct IOSStoryRow: View {
 
                 HStack(spacing: 9) {
                     if !isComment {
-                        Label("\(item.score ?? 0)", systemImage: "arrow.up")
-                            .foregroundStyle(orange)
-                            .font(.system(size: 12, weight: .bold, design: .rounded))
+                        HStack(spacing: 3) {
+                            Image(systemName: "arrow.up")
+                            Text("\(item.score ?? 0)")
+                        }
+                        .foregroundStyle(orange)
+                        .font(.system(size: 12, weight: .bold, design: .rounded))
                     }
 
                     HStack(spacing: 3) {
