@@ -40,6 +40,22 @@ enum ArticleFont: String, CaseIterable, Hashable, Identifiable {
             return "NotoSerif-Regular"
         }
     }
+
+    /// Explicit heading faces avoid requesting weights that a bundled font does not support.
+    var titleFontName: String {
+        switch self {
+        case .charis:
+            return "Charis-Bold"
+        case .ibmPlexSerif:
+            return "IBMPlexSerif-SemiBold"
+        case .sourceSerif:
+            return "SourceSerif4Roman-SemiBold"
+        case .literata:
+            return "Literata-Regular_SemiBold"
+        case .notoSerif:
+            return "NotoSerif-SemiBold"
+        }
+    }
 }
 
 @MainActor

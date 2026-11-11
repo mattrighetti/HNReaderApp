@@ -78,7 +78,7 @@ struct StoryDetail: View {
 
                     if comments.isEmpty && !isLoading && errorMessage == nil {
                         Text(
-                            "No comments yet. Be the first to join the conversation on Hacker News."
+                            "No comments yet."
                         )
                         .foregroundStyle(.secondary)
                         .padding(.vertical)
@@ -262,7 +262,7 @@ struct ArticleTitle: View {
 
     var body: some View {
         Text(title)
-            .font(.custom(articleFont.fontName, size: 30).weight(.semibold))
+            .font(.custom(articleFont.titleFontName, size: 30))
             .textSelection(.enabled)
     }
 }
