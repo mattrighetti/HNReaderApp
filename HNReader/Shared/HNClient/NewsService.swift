@@ -26,7 +26,25 @@ struct NewsService: Sendable {
             timeoutInterval: 20
         )
 
-        let (data, response) = try await session.data(for: request)
+        let tracesItem = url.path.hasPrefix("/v0/item/")
+        let networkRequest = UUID()
+        if tracesItem {
+            DiscussionDiagnostics.log("http.start network=\(networkRequest) path=\(url.path) forceRefresh=\(forceRefresh)")
+        }
+        let data: Data
+        let response: URLResponse
+        do {
+            (data, response) = try await session.data(for: request)
+        } catch {
+            if tracesItem {
+                let failure = error as NSError
+                DiscussionDiagnostics.log("http.error network=\(networkRequest) path=\(url.path) domain=\(failure.domain) code=\(failure.code) cancelled=\(Task.isCancelled)")
+            }
+            throw error
+        }
+        if tracesItem {
+            DiscussionDiagnostics.log("http.response network=\(networkRequest) path=\(url.path) status=\((response as? HTTPURLResponse)?.statusCode ?? -1) bytes=\(data.count) cancelled=\(Task.isCancelled)")
+        }
 
         guard
             let response = response as? HTTPURLResponse,
@@ -77,9 +95,11 @@ struct NewsService: Sendable {
         try Task.checkCancellation()
 
         if !forceRefresh, let item = cache.item(id: id) {
+            DiscussionDiagnostics.log("item.cacheHit \(DiscussionDiagnostics.summary(item))")
             return item
         }
 
+        DiscussionDiagnostics.log("item.fetch id=\(id) forceRefresh=\(forceRefresh)")
         let request = cache.beginRequest(id: id)
 
         defer {
@@ -93,6 +113,7 @@ struct NewsService: Sendable {
         try Task.checkCancellation()
 
         cache.finishRequest(id: id, request: request, item: item)
+        DiscussionDiagnostics.log("item.result requestedID=\(id) \(DiscussionDiagnostics.summary(item))")
 
         return item
     }

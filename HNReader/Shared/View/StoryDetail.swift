@@ -1,5 +1,88 @@
 import SwiftUI
 
+#if DEBUG && os(iOS)
+    import UIKit
+
+    /// Observe UIKit independently of SwiftUI's appearance callbacks without changing navigation.
+    private struct DiscussionLifecycleProbe: UIViewControllerRepresentable {
+        let storyID: Int
+        let instanceID: UUID
+
+        func makeUIViewController(context: Context) -> Controller {
+            Controller(storyID: storyID, instanceID: instanceID)
+        }
+
+        func updateUIViewController(_ controller: Controller, context: Context) {}
+
+        static func dismantleUIViewController(_ controller: Controller, coordinator: ()) {
+            controller.record("dismantle")
+        }
+
+        final class AttachmentView: UIView {
+            var windowChanged: (() -> Void)?
+
+            override func didMoveToWindow() {
+                super.didMoveToWindow()
+                windowChanged?()
+            }
+        }
+
+        final class Controller: UIViewController {
+            let storyID: Int
+            let instanceID: UUID
+
+            init(storyID: Int, instanceID: UUID) {
+                self.storyID = storyID
+                self.instanceID = instanceID
+                super.init(nibName: nil, bundle: nil)
+            }
+
+            required init?(coder: NSCoder) { fatalError("init(coder:) is unsupported") }
+
+            override func loadView() {
+                let attachment = AttachmentView()
+                attachment.isUserInteractionEnabled = false
+                attachment.windowChanged = { [weak self] in self?.record("windowChanged") }
+                view = attachment
+            }
+
+            override func viewWillAppear(_ animated: Bool) {
+                super.viewWillAppear(animated)
+                record("willAppear")
+            }
+
+            override func viewDidAppear(_ animated: Bool) {
+                super.viewDidAppear(animated)
+                record("didAppear")
+            }
+
+            override func viewWillDisappear(_ animated: Bool) {
+                super.viewWillDisappear(animated)
+                record("willDisappear")
+            }
+
+            override func viewDidDisappear(_ animated: Bool) {
+                super.viewDidDisappear(animated)
+                record("didDisappear")
+                DispatchQueue.main.async { [weak self] in self?.record("afterDisappear") }
+            }
+
+            func record(_ event: String) {
+                var ancestors: [String] = []
+                var controller = parent
+                while let current = controller {
+                    ancestors.append("\(String(describing: type(of: current)))@\(ObjectIdentifier(current))")
+                    controller = current.parent
+                }
+                let window = viewIfLoaded?.window
+                let frame = viewIfLoaded.map { $0.convert($0.bounds, to: window) } ?? .zero
+                let intersectsWindow = window.map { $0.bounds.intersects(frame) } ?? false
+                DiscussionDiagnostics.log("uikit.\(event) instance=\(instanceID) story=\(storyID) probe=\(ObjectIdentifier(self)) attached=\(window != nil) intersectsWindow=\(intersectsWindow) frame=\(frame) hidden=\(viewIfLoaded?.isHidden ?? true) movingFromParent=\(isMovingFromParent) beingDismissed=\(isBeingDismissed) transition=\(transitionCoordinator != nil) ancestors=\(ancestors)")
+            }
+        }
+    }
+#endif
+
 #if DEBUG
     #Preview("Discussion") {
         if let item = PreviewData.stories.first {
@@ -24,6 +107,7 @@ struct StoryDetail: View {
     @State private var completedRequest = -1
     @State private var activeRequest = UUID()
     @State private var advanceAfterLoading = false
+    @State private var diagnosticInstance = UUID()
     private let service = NewsService.shared
 
     private var hasMoreComments: Bool { loadedCount < (item.kids?.count ?? 0) }
@@ -50,7 +134,8 @@ struct StoryDetail: View {
         self.loadsAutomatically = loadsAutomatically
         _item = State(initialValue: item)
         _comments = State(initialValue: (initialComments ?? []).filter(\.isVisibleComment))
-        _isLoading = State(initialValue: isLoading)
+        _isLoading = State(
+            initialValue: isLoading || (loadsAutomatically && initialComments == nil))
         _errorMessage = State(initialValue: errorMessage)
         _loadedCount = State(initialValue: initialComments == nil ? 0 : item.kids?.count ?? 0)
         _hasLoadedMetadata = State(initialValue: initialComments != nil)
@@ -76,12 +161,18 @@ struct StoryDetail: View {
 
                     DiscussionHeader(item: item, threadsCollapsed: $threadsCollapsed)
 
-                    if comments.isEmpty && !isLoading && errorMessage == nil {
+                    if comments.isEmpty && !isLoading && errorMessage == nil
+                        && (hasLoadedMetadata || !loadsAutomatically) && !hasMoreComments
+                    {
                         Text(
-                            "No comments yet."
+                            (item.descendants ?? 0) > 0
+                                ? "No visible comments." : "No comments yet."
                         )
                         .foregroundStyle(.secondary)
                         .padding(.vertical)
+                        .onAppear {
+                            DiscussionDiagnostics.log("view.empty \(diagnosticState)")
+                        }
                     }
 
                     LazyVStack(alignment: .leading, spacing: 0) {
@@ -93,6 +184,9 @@ struct StoryDetail: View {
                                 previewThreads: previewThreads
                             )
                             .id(comment.id)
+                            .onAppear {
+                                DiscussionDiagnostics.log("view.commentAppear story=\(item.id) comment=\(comment.id) collapsed=\(threadsCollapsed)")
+                            }
                             #if os(macOS)
                                 .background {
                                     GeometryReader { geometry in
@@ -183,6 +277,12 @@ struct StoryDetail: View {
             #endif
         }
         .background(PlatformColors.textBackground)
+        #if DEBUG && os(iOS)
+            .background {
+                DiscussionLifecycleProbe(storyID: item.id, instanceID: diagnosticInstance)
+                    .allowsHitTesting(false)
+            }
+        #endif
         .toolbar {
             #if os(iOS)
                 if let articleURL = item.articleURL {
@@ -207,11 +307,24 @@ struct StoryDetail: View {
             ShareLink(item: item.articleURL ?? item.discussionURL)
                 .clickableCursor()
         }
+        .onAppear {
+            DiscussionDiagnostics.log("view.appear \(diagnosticState)")
+        }
+        .onDisappear {
+            DiscussionDiagnostics.log("view.disappear \(diagnosticState)")
+        }
         .task(id: loadRequest) {
+            DiscussionDiagnostics.log("view.task \(diagnosticState)")
             if loadsAutomatically && completedRequest != loadRequest {
                 await loadComments()
+            } else {
+                DiscussionDiagnostics.log("view.taskSkipped \(diagnosticState)")
             }
         }
+    }
+
+    private var diagnosticState: String {
+        "instance=\(diagnosticInstance) \(DiscussionDiagnostics.summary(item)) visible=\(comments.count) loadedCount=\(loadedCount) hasMetadata=\(hasLoadedMetadata) loading=\(isLoading) hasMore=\(hasMoreComments) automatic=\(loadsAutomatically) attempt=\(loadRequest) completed=\(completedRequest) active=\(activeRequest) error=\(errorMessage != nil)"
     }
 
     @MainActor
@@ -222,11 +335,17 @@ struct StoryDetail: View {
         isLoading = true
         errorMessage = nil
         let previousCount = comments.count
-        defer { if activeRequest == request { isLoading = false } }
+        DiscussionDiagnostics.log("view.loadStart request=\(request) \(diagnosticState)")
+        defer {
+            if activeRequest == request { isLoading = false }
+            DiscussionDiagnostics.log("view.loadEnd request=\(request) cancelled=\(Task.isCancelled) \(diagnosticState)")
+        }
         do {
             let result = try await service.discussionPage(
-                item: item, offset: loadedCount, fetchMetadata: !hasLoadedMetadata)
+                item: item, offset: loadedCount, fetchMetadata: !hasLoadedMetadata,
+                requestID: request)
             guard activeRequest == request, loadRequest == attempt, !Task.isCancelled else {
+                DiscussionDiagnostics.log("view.resultDiscarded request=\(request) cancelled=\(Task.isCancelled) \(diagnosticState)")
                 return
             }
             item = result.item
@@ -234,11 +353,14 @@ struct StoryDetail: View {
             loadedCount = result.page.nextOffset
             hasLoadedMetadata = true
             completedRequest = attempt
+            DiscussionDiagnostics.log("view.resultApplied request=\(request) added=\(result.page.comments.map(\.id)) \(diagnosticState)")
             if advanceAfterLoading && comments.count > previousCount {
                 pendingCommentID = comments[previousCount].id
             }
             advanceAfterLoading = false
         } catch {
+            let failure = error as NSError
+            DiscussionDiagnostics.log("view.loadError request=\(request) domain=\(failure.domain) code=\(failure.code) cancelled=\(Task.isCancelled) \(diagnosticState)")
             guard activeRequest == request, !Task.isCancelled else { return }
             errorMessage = error.localizedDescription
             advanceAfterLoading = false

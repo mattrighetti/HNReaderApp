@@ -226,6 +226,33 @@ final class FeedLoadingTests: XCTestCase {
         XCTAssertNil(service.cachedItem(id: 42))
     }
 
+    func testDiscussionOpeningRefreshesCachedStoryCommentIDs() async throws {
+        let server = FeedTestServer()
+        defer { server.close() }
+        let path = "/v0/item/42.json"
+        server.respond(path, json: #"{"id":42,"type":"story","descendants":0}"#)
+        let service = NewsService(session: server.session)
+        let cached = try await service.item(id: 42)
+        let snapshot = try XCTUnwrap(cached)
+        server.respond(
+            path, json: #"{"id":42,"type":"story","kids":[101],"descendants":1}"#)
+
+        let result = try await service.discussionPage(
+            item: snapshot, offset: 0, fetchMetadata: true)
+
+        XCTAssertEqual(result.item.descendants, 1)
+        XCTAssertEqual(result.page.comments.map(\.id), [101])
+        XCTAssertEqual(server.count(path), 2)
+
+        server.respond(
+            path, json: #"{"id":42,"type":"story","kids":[102,101],"descendants":2}"#)
+        let reopened = try await service.discussionPage(
+            item: snapshot, offset: 0, fetchMetadata: true)
+        XCTAssertEqual(reopened.page.comments.map(\.id), [102, 101])
+        XCTAssertEqual(server.count(path), 3)
+        XCTAssertEqual(server.count("/v0/item/101.json"), 1)
+    }
+
     func testSavedStoryFetchesCurrentMetadataBeforeLoadingComments() async throws {
         let server = FeedTestServer()
         defer { server.close() }
@@ -240,7 +267,7 @@ final class FeedLoadingTests: XCTestCase {
         XCTAssertEqual(result.page.comments.map(\.id), [101, 102])
         XCTAssertEqual(saved.title, "Saved snapshot")
         _ = try await service.discussionPage(item: saved, offset: 0, fetchMetadata: true)
-        XCTAssertEqual(server.count("/v0/item/42.json"), 1)
+        XCTAssertEqual(server.count("/v0/item/42.json"), 2)
         XCTAssertEqual(server.count("/v0/item/101.json"), 1)
     }
 
