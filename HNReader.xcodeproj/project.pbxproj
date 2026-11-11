@@ -83,6 +83,8 @@
 		BAA100000000000000000003 /* HNAuthenticationClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAA100000000000000000005 /* HNAuthenticationClientTests.swift */; };
 		BAA200000000000000000001 /* HNAccountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAA200000000000000000003 /* HNAccountView.swift */; };
 		BAA200000000000000000002 /* HNAccountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAA200000000000000000003 /* HNAccountView.swift */; };
+		BAA300000000000000000001 /* StorySearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAA300000000000000000003 /* StorySearchView.swift */; };
+		BAA300000000000000000002 /* StorySearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAA300000000000000000003 /* StorySearchView.swift */; };
 		BFA100000000000000000002 /* IOSStoryList.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFA100000000000000000001 /* IOSStoryList.swift */; };
 		BFA200000000000000000002 /* IOSStoryRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFA200000000000000000001 /* IOSStoryRow.swift */; };
 		BFA300000000000000000002 /* MacReaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFA300000000000000000001 /* MacReaderView.swift */; };
@@ -175,6 +177,7 @@
 		BFA400000000000000000001 /* Sidebar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sidebar.swift; sourceTree = "<group>"; };
 		C93F99B5267554F00046F870 /* ItemCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemCell.swift; sourceTree = "<group>"; };
 		C93F99B7267557FC0046F870 /* ItemList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemList.swift; sourceTree = "<group>"; };
+		BAA300000000000000000003 /* StorySearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorySearchView.swift; sourceTree = "<group>"; };
 		C93F99B9267580CE0046F870 /* HTMLText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTMLText.swift; sourceTree = "<group>"; };
 		C9D0937326741BBE002CC786 /* HNReader.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HNReader.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C9D0937626741BBE002CC786 /* HNReaderApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HNReaderApp.swift; sourceTree = "<group>"; };
@@ -392,6 +395,7 @@
 				C9D0937826741BBE002CC786 /* HomeView.swift */,
 				C93F99B5267554F00046F870 /* ItemCell.swift */,
 				C93F99B7267557FC0046F870 /* ItemList.swift */,
+				BAA300000000000000000003 /* StorySearchView.swift */,
 				AF1000000000000000000001 /* StoryDetail.swift */,
 				AF2000000000000000000001 /* SavedCommentDetail.swift */,
 				AF3000000000000000000001 /* UserCommentsView.swift */,
@@ -609,6 +613,7 @@
 				B20000000000000000000013 /* InfoView.swift in Sources */,
 				B20000000000000000000014 /* ItemCell.swift in Sources */,
 				B20000000000000000000015 /* ItemList.swift in Sources */,
+				BAA300000000000000000002 /* StorySearchView.swift in Sources */,
 				B20000000000000000000016 /* AppState.swift in Sources */,
 				B20000000000000000000017 /* FeedRepository.swift in Sources */,
 				B20000000000000000000018 /* ReaderPages.swift in Sources */,
@@ -646,6 +651,7 @@
 				5FCE20A72AF7B25A00BF4097 /* InfoView.swift in Sources */,
 				5F109D592AF6F50D00AE6AF3 /* ConditionalRedactedModifier.swift in Sources */,
 				C93F99B8267557FC0046F870 /* ItemList.swift in Sources */,
+				BAA300000000000000000001 /* StorySearchView.swift in Sources */,
 				C9E9BCFD2674C80E001B4E19 /* AppState.swift in Sources */,
 				C9E9BD032674D095001B4E19 /* User.swift in Sources */,
 				AF1000000000000000000002 /* StoryDetail.swift in Sources */,

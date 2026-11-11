@@ -3,6 +3,7 @@ import SwiftUI
 struct IOSHomeView: View {
     enum Tab: Hashable {
         case stories
+        case search
         case saved
         case profile
     }
@@ -56,6 +57,14 @@ struct IOSHomeView: View {
                 Label("Stories", systemImage: "newspaper")
             }
             .tag(Tab.stories)
+
+            NavigationStack {
+                StorySearchView()
+            }
+            .tabItem {
+                Label("Search", systemImage: "magnifyingglass")
+            }
+            .tag(Tab.search)
 
             IOSStoryList(
                 selection: .constant(.saved),

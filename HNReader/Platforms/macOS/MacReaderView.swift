@@ -14,6 +14,7 @@ import SwiftUI
         @State private var sidebarSelection: AppState.SidebarSelection?
 
         @State private var selectedID: Int?
+        @State private var selectedSearchItem: Item?
         @State private var unreadOnly = false
         @State private var columnVisibility: NavigationSplitViewVisibility = .all
 
@@ -50,7 +51,10 @@ import SwiftUI
         }
 
         private var selectedItem: Item? {
-            (source + appState.savedItems).first { $0.id == selectedID }
+            if selection == .search {
+                return selectedSearchItem
+            }
+            return (source + appState.savedItems).first { $0.id == selectedID }
         }
 
         private var visibleRows: [StoryRow] {
@@ -69,36 +73,38 @@ import SwiftUI
                 Sidebar(selection: $sidebarSelection)
                     .navigationSplitViewColumnWidth(min: 180, ideal: 205, max: 260)
             } content: {
-                ItemList(
-                    rows: visibleRows,
-                    revision: revision,
-                    nextOffset: feed.nextOffset,
-                    selectedID: $selectedID,
-                    title: selection.rawValue,
-                    isLoading: selection != .saved && isLoading,
-                    isLoadingMore: selection != .saved && isLoadingMore,
-                    hasMore: selection != .saved && feed.hasMore,
-                    paginationError: selection == .saved ? nil : paginationError,
-                    errorMessage: selection == .saved ? nil : errorMessage,
-                    isSaved: selection == .saved,
-                    unreadOnly: $unreadOnly,
-                    refresh: refresh,
-                    loadMore: {
-                        if loadsAutomatically {
-                            await loadMore()
-                        }
+                Group {
+                    if selection == .search {
+                        StorySearchView(selectedItem: $selectedSearchItem)
+                    } else {
+                        ItemList(
+                            rows: visibleRows,
+                            revision: revision,
+                            nextOffset: feed.nextOffset,
+                            selectedID: $selectedID,
+                            title: selection.rawValue,
+                            isLoading: selection != .saved && isLoading,
+                            isLoadingMore: selection != .saved && isLoadingMore,
+                            hasMore: selection != .saved && feed.hasMore,
+                            paginationError: selection == .saved ? nil : paginationError,
+                            errorMessage: selection == .saved ? nil : errorMessage,
+                            isSaved: selection == .saved,
+                            unreadOnly: $unreadOnly,
+                            refresh: refresh,
+                            loadMore: {
+                                if loadsAutomatically {
+                                    await loadMore()
+                                }
+                            }
+                        )
                     }
-                )
-                #if os(macOS)
-                    .frame(minWidth: 312)
-                #endif
+                }
+                .frame(minWidth: 312)
                 .navigationSplitViewColumnWidth(min: 312, ideal: 312, max: 720)
-                #if os(macOS)
-                    .background {
-                        SplitColumnWidth(minimum: 312, maximum: 720)
+                .background {
+                    SplitColumnWidth(minimum: 312, maximum: 720)
                         .allowsHitTesting(false)
-                    }
-                #endif
+                }
             } detail: {
                 NavigationStack {
                     if let item = selectedItem {
@@ -120,6 +126,11 @@ import SwiftUI
                 .id(selectedItem?.id)
             }
             .navigationSplitViewStyle(.balanced)
+            .onChange(of: selection) { _, selection in
+                if selection != .search {
+                    selectedSearchItem = nil
+                }
+            }
             .task(id: selection) {
                 guard loadsAutomatically else {
                     return

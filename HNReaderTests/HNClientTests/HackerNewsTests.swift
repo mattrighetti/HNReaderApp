@@ -25,4 +25,22 @@ class HackerNewsTests: XCTestCase {
         XCTAssertEqual("https://hacker-news.firebaseio.com/v0/askstories.json", HackerNews.API.Stories.ask.urlString)
         XCTAssertEqual("https://hacker-news.firebaseio.com/v0/showstories.json", HackerNews.API.Stories.show.urlString)
     }
+
+    func testSearchURLPreservesQueryAndSelectsTheSortEndpoint() throws {
+        let query = "C++ & café"
+        let relevanceURL = try XCTUnwrap(HackerNews.API.Search.relevance.urlString(query: query, page: 2))
+        let newestURL = try XCTUnwrap(HackerNews.API.Search.newest.urlString(query: query, page: 0))
+        let components = try XCTUnwrap(URLComponents(string: relevanceURL))
+
+        XCTAssertEqual(components.scheme, "https")
+        XCTAssertEqual(components.host, "hn.algolia.com")
+        XCTAssertEqual(components.path, "/api/v1/search")
+        XCTAssertEqual(components.queryItems, [
+            URLQueryItem(name: "query", value: query),
+            URLQueryItem(name: "tags", value: "story"),
+            URLQueryItem(name: "page", value: "2")
+        ])
+        XCTAssertTrue(relevanceURL.contains("C%2B%2B"))
+        XCTAssertEqual(URLComponents(string: newestURL)?.path, "/api/v1/search_by_date")
+    }
 }

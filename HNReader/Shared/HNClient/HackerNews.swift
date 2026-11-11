@@ -13,6 +13,27 @@ struct HackerNews {
 
     /// HackerNews REST API methods
     enum API {
+        enum Search: String, Sendable {
+            case relevance = "search"
+            case newest = "search_by_date"
+
+            func urlString(query: String, page: Int) -> String? {
+                var components = URLComponents()
+                components.scheme = "https"
+                components.host = "hn.algolia.com"
+                components.path = "/api/v1/\(rawValue)"
+                components.queryItems = [
+                    URLQueryItem(name: "query", value: query),
+                    URLQueryItem(name: "tags", value: "story"),
+                    URLQueryItem(name: "page", value: String(page))
+                ]
+                // Form-style query decoding treats a literal plus as a space.
+                components.percentEncodedQuery = components.percentEncodedQuery?
+                    .replacingOccurrences(of: "+", with: "%2B")
+                return components.string
+            }
+        }
+
         /// HackerNews User REST API methods
         enum User {
             case id(String)

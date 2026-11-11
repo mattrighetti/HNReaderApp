@@ -4,6 +4,58 @@ import XCTest
 @testable import HNReader
 
 final class FeedLoadingTests: XCTestCase {
+    func testStorySearchMapsHitsAndPaginatesWithoutFetchingFirebaseItems() async throws {
+        let server = FeedTestServer()
+        defer { server.close() }
+        server.respond("/api/v1/search", json: """
+            {
+                "page": 1,
+                "nbPages": 3,
+                "hits": [
+                    {
+                        "objectID": "42",
+                        "title": "An article",
+                        "url": "https://example.com",
+                        "author": "alice",
+                        "created_at_i": 1234,
+                        "points": 9,
+                        "num_comments": 2
+                    },
+                    {
+                        "objectID": "43",
+                        "title": "Ask HN: A question",
+                        "url": null,
+                        "story_text": "A text post"
+                    },
+                    { "objectID": "invalid" }
+                ]
+            }
+            """)
+        server.respond("/api/v1/search_by_date", json: #"{"page":0,"nbPages":1,"hits":[]}"#)
+        let service = NewsService(session: server.session)
+
+        let page = try await service.searchStories(query: "question", sort: .relevance, page: 1)
+        let items = page.items
+        let article = try XCTUnwrap(items.first)
+        let textPost = try XCTUnwrap(items.last)
+        XCTAssertEqual(items.map(\.id), [42, 43])
+        XCTAssertEqual(article.type, .story)
+        XCTAssertEqual(article.title, "An article")
+        XCTAssertEqual(article.articleURL?.host, "example.com")
+        XCTAssertEqual(article.by, "alice")
+        XCTAssertEqual(article.time, 1234)
+        XCTAssertEqual(article.score, 9)
+        XCTAssertEqual(article.descendants, 2)
+        XCTAssertNil(textPost.articleURL)
+        XCTAssertEqual(textPost.text, "A text post")
+        XCTAssertEqual(page.nextPage, 2)
+        XCTAssertEqual(server.totalRequests, 1)
+
+        let lastPage = try await service.searchStories(query: "question", sort: .newest, page: 0)
+        XCTAssertTrue(lastPage.items.isEmpty)
+        XCTAssertNil(lastPage.nextPage)
+    }
+
     func testPoolIsBoundedAndRefillsBeforeSlowRequestFinishes() async throws {
         let server = FeedTestServer()
         defer { server.close() }

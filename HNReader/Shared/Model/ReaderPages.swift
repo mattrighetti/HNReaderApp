@@ -62,3 +62,43 @@ struct UserCommentPage: Sendable {
     let submitted: [Int]
     let page: CommentPage
 }
+
+struct StorySearchPage: Decodable, Sendable {
+    private let hits: [Hit]
+    private let page: Int
+    private let nbPages: Int
+
+    var items: [Item] { hits.compactMap(\.item) }
+
+    var nextPage: Int? {
+        guard page >= 0, nbPages > 0, page < nbPages - 1 else { return nil }
+        return page + 1
+    }
+
+    private struct Hit: Decodable, Sendable {
+        let objectID: String
+        let title: String?
+        let url: String?
+        let author: String?
+        let points: Int?
+        let createdAt: Int?
+        let storyText: String?
+        let commentCount: Int?
+
+        private enum CodingKeys: String, CodingKey {
+            case objectID, title, url, author, points
+            case createdAt = "created_at_i"
+            case storyText = "story_text"
+            case commentCount = "num_comments"
+        }
+
+        var item: Item? {
+            guard let id = Int(objectID), id > 0 else { return nil }
+            return Item(
+                id: id, deleted: nil, type: .story, by: author, time: createdAt,
+                text: storyText, dead: nil, parent: nil, poll: nil, kids: nil,
+                url: url, score: points, title: title, parts: nil, descendants: commentCount
+            )
+        }
+    }
+}

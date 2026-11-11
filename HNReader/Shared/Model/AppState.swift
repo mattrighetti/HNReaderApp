@@ -121,6 +121,7 @@ final class AppState {
         case ask = "Ask HN"
         case show = "Show HN"
         case job = "Jobs"
+        case search = "Search"
         case saved = "Saved"
 
         var id: String {
@@ -141,7 +142,7 @@ final class AppState {
                 return .show
             case .job:
                 return .job
-            case .saved:
+            case .search, .saved:
                 return nil
             }
         }
@@ -160,6 +161,8 @@ final class AppState {
                 return "Made by the community"
             case .job:
                 return "Find your next chapter"
+            case .search:
+                return "Find stories by keyword"
             case .saved:
                 return "Good reads, kept for later"
             }
@@ -179,6 +182,8 @@ final class AppState {
                 return "sparkles"
             case .job:
                 return "briefcase"
+            case .search:
+                return "magnifyingglass"
             case .saved:
                 return "bookmark"
             }

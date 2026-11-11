@@ -186,7 +186,7 @@ struct IOSStoryList: View {
     private var storyPicker: some View {
         Menu {
             Picker("Feed", selection: $selection) {
-                ForEach(AppState.SidebarSelection.allCases.filter { $0 != .saved }) { feed in
+                ForEach(AppState.SidebarSelection.allCases.filter { $0.category != nil }) { feed in
                     Label(feed.rawValue, systemImage: feed.iconName).tag(feed)
                 }
             }

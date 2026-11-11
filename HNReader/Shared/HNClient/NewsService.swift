@@ -45,6 +45,18 @@ struct NewsService: Sendable {
         try await fetch(url: category.urlString, forceRefresh: forceRefresh)
     }
 
+    func searchStories(query: String, sort: HackerNews.API.Search, page: Int) async throws
+        -> StorySearchPage
+    {
+        try Task.checkCancellation()
+        guard let url = sort.urlString(query: query, page: page) else {
+            throw URLError(.badURL)
+        }
+        let result: StorySearchPage = try await fetch(url: url)
+        try Task.checkCancellation()
+        return result
+    }
+
     func user(id: String, forceRefresh: Bool = false) async throws -> User? {
         try Task.checkCancellation()
 
