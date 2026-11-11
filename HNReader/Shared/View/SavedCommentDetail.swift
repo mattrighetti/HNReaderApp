@@ -21,7 +21,6 @@ struct SavedCommentDetail: View {
             .frame(maxWidth: .infinity)
         }
         .background(PlatformColors.textBackground)
-        .navigationTitle("Saved Comment")
         .toolbar {
             Button(
                 appState.isSaved(item) ? "Remove Comment from Saved" : "Save Comment",

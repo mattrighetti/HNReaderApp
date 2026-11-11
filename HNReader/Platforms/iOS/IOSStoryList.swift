@@ -292,7 +292,6 @@ struct IOSStoryList: View {
                 )
             }
         }
-        .navigationTitle(item.type == .comment ? "Saved Comment" : "Story")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar(.visible, for: .navigationBar)
         .task {

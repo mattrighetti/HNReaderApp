@@ -187,7 +187,6 @@ struct IOSHomeView: View {
                 Group {
                     if let item {
                         StoryDetail(item: item)
-                            .navigationTitle("Story")
                             .navigationBarTitleDisplayMode(.inline)
                     } else if let errorMessage {
                         ContentUnavailableView {
