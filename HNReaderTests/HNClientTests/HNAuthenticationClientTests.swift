@@ -1,3 +1,4 @@
+import Darwin
 import XCTest
 
 @testable import HNReader
@@ -80,6 +81,38 @@ final class HNAuthenticationClientTests: XCTestCase {
         await XCTAssertThrowsAuthenticationError(.credentialsRequired) {
             _ = try await client.login(username: "alice", password: "")
         }
+    }
+
+    func testCookieStorageUsesDefaultQoSForUserInitiatedAuthentication() async throws {
+        let recordingStorage = RecordingCookieStorage(backingStorage: cookieStorage)
+        let client = HNAuthenticationClient(
+            session: session,
+            cookieStorage: recordingStorage,
+            loginURL: loginURL,
+            defaults: defaults
+        )
+        HNAuthenticationTestProtocol.handler = { request in
+            Self.response(
+                for: request,
+                headers: ["Set-Cookie": "user=new-session; Path=/; Secure; HttpOnly"]
+            )
+        }
+
+        let account = try await Task.detached(priority: .userInitiated) {
+            try await client.login(username: "alice", password: "password")
+        }.value
+        XCTAssertEqual(account, HNAuthenticatedAccount(username: "alice"))
+
+        await Task.detached(priority: .userInitiated) {
+            await client.logout()
+        }.value
+        let restoredAccount = await client.currentAccount()
+        XCTAssertNil(restoredAccount)
+
+        let accesses = recordingStorage.accesses
+        XCTAssertEqual(Set(accesses.map(\.operation)), ["read", "write", "delete"])
+        XCTAssertTrue(accesses.allSatisfy { $0.qos == QOS_CLASS_DEFAULT })
+        XCTAssertTrue(accesses.allSatisfy { !$0.isMainThread })
     }
 
     func testBadLoginIsReportedAsInvalidCredentials() async {
@@ -355,6 +388,51 @@ final class HNAuthenticationClientTests: XCTestCase {
             headerFields: headers
         )!
         return (response, Data(body.utf8))
+    }
+}
+
+private final class RecordingCookieStorage: HTTPCookieStorage, @unchecked Sendable {
+    struct Access {
+        let operation: String
+        let qos: qos_class_t
+        let isMainThread: Bool
+    }
+
+    private let backingStorage: HTTPCookieStorage
+    private let lock = NSLock()
+    private var recordedAccesses: [Access] = []
+
+    init(backingStorage: HTTPCookieStorage) {
+        self.backingStorage = backingStorage
+        super.init()
+    }
+
+    var accesses: [Access] {
+        lock.withLock { recordedAccesses }
+    }
+
+    override var cookies: [HTTPCookie]? {
+        record("read")
+        return backingStorage.cookies
+    }
+
+    override func setCookie(_ cookie: HTTPCookie) {
+        record("write")
+        backingStorage.setCookie(cookie)
+    }
+
+    override func deleteCookie(_ cookie: HTTPCookie) {
+        record("delete")
+        backingStorage.deleteCookie(cookie)
+    }
+
+    private func record(_ operation: String) {
+        let access = Access(
+            operation: operation,
+            qos: qos_class_self(),
+            isMainThread: Thread.isMainThread
+        )
+        lock.withLock { recordedAccesses.append(access) }
     }
 }
 

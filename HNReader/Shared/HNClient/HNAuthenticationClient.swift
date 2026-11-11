@@ -63,6 +63,10 @@ actor HNAuthenticationClient {
 
     private let session: URLSession
     private let cookieStorage: HTTPCookieStorage
+    private let cookieStorageQueue = DispatchQueue(
+        label: "com.mattrighetti.HNReader.authenticationCookies",
+        qos: .default
+    )
     private let loginURL: URL
     private let defaults: UserDefaults
 
@@ -86,8 +90,7 @@ actor HNAuthenticationClient {
 
         // A stale cookie must not make a failed request look successful. Preserve it so a typo
         // while switching accounts does not destroy the caller's existing session.
-        let previousCookies = authenticationCookies
-        replaceAuthenticationCookies(with: [])
+        let previousCookies = await replaceAuthenticationCookies(with: [])
 
         do {
             var request = URLRequest(
@@ -113,30 +116,31 @@ actor HNAuthenticationClient {
                 throw HNAuthenticationError.invalidResponse
             }
 
-            captureCookies(from: response)
+            await captureCookies(from: response)
 
             guard (200 ..< 400).contains(response.statusCode) else {
                 throw HNAuthenticationError.server(statusCode: response.statusCode)
             }
 
-            guard !authenticationCookies.isEmpty else {
+            guard await hasActiveSession() else {
                 throw classifyFailedLogin(data)
             }
 
             defaults.set(username, forKey: Self.usernameDefaultsKey)
             return HNAuthenticatedAccount(username: username)
         } catch {
-            replaceAuthenticationCookies(with: previousCookies)
+            await replaceAuthenticationCookies(with: previousCookies)
             throw error
         }
     }
 
-    func hasActiveSession() -> Bool {
-        !authenticationCookies.isEmpty
+    func hasActiveSession() async -> Bool {
+        let cookies = await authenticationCookies()
+        return !cookies.isEmpty
     }
 
-    func currentAccount() -> HNAuthenticatedAccount? {
-        guard !authenticationCookies.isEmpty else {
+    func currentAccount() async -> HNAuthenticatedAccount? {
+        guard await hasActiveSession() else {
             defaults.removeObject(forKey: Self.usernameDefaultsKey)
             return nil
         }
@@ -156,7 +160,7 @@ actor HNAuthenticationClient {
         kind: HNUpvoteKind,
         page: Int = 1
     ) async throws -> HNUpvotedPage {
-        guard let account = currentAccount(), account.username == username else {
+        guard let account = await currentAccount(), account.username == username else {
             throw HNAuthenticationError.notAuthenticated
         }
 
@@ -189,7 +193,7 @@ actor HNAuthenticationClient {
         guard let response = response as? HTTPURLResponse else {
             throw HNAuthenticationError.invalidResponse
         }
-        captureCookies(from: response)
+        await captureCookies(from: response)
 
         guard (200 ..< 300).contains(response.statusCode) else {
             throw HNAuthenticationError.server(statusCode: response.statusCode)
@@ -208,25 +212,41 @@ actor HNAuthenticationClient {
     }
 
     /// Removes the local session. Hacker News credentials are never retained by this client.
-    func logout() {
-        replaceAuthenticationCookies(with: [])
+    func logout() async {
+        await replaceAuthenticationCookies(with: [])
         defaults.removeObject(forKey: Self.usernameDefaultsKey)
     }
 
-    private var authenticationCookies: [HTTPCookie] {
+    private func authenticationCookies() async -> [HTTPCookie] {
+        let host = loginURL.host
+        return await withCookieStorage { storage in
+            Self.authenticationCookies(in: storage, for: host)
+        }
+    }
+
+    private static func authenticationCookies(
+        in cookieStorage: HTTPCookieStorage,
+        for host: String?
+    ) -> [HTTPCookie] {
         cookieStorage.cookies?.filter { cookie in
             cookie.name == Self.sessionCookieName
                 && !cookie.value.isEmpty
-                && domain(cookie.domain, matchesHost: loginURL.host)
+                && Self.domain(cookie.domain, matchesHost: host)
         } ?? []
     }
 
-    private func replaceAuthenticationCookies(with cookies: [HTTPCookie]) {
-        authenticationCookies.forEach(cookieStorage.deleteCookie)
-        cookies.forEach(cookieStorage.setCookie)
+    @discardableResult
+    private func replaceAuthenticationCookies(with cookies: [HTTPCookie]) async -> [HTTPCookie] {
+        let host = loginURL.host
+        return await withCookieStorage { storage in
+            let previousCookies = Self.authenticationCookies(in: storage, for: host)
+            previousCookies.forEach(storage.deleteCookie)
+            cookies.forEach(storage.setCookie)
+            return previousCookies
+        }
     }
 
-    private func captureCookies(from response: HTTPURLResponse) {
+    private func captureCookies(from response: HTTPURLResponse) async {
         let fields = response.allHeaderFields.reduce(into: [String: String]()) { result, entry in
             guard let key = entry.key as? String, let value = entry.value as? String else {
                 return
@@ -235,8 +255,23 @@ actor HNAuthenticationClient {
         }
 
         let responseURL = response.url ?? loginURL
-        HTTPCookie.cookies(withResponseHeaderFields: fields, for: responseURL)
-            .forEach(cookieStorage.setCookie)
+        let cookies = HTTPCookie.cookies(withResponseHeaderFields: fields, for: responseURL)
+        await withCookieStorage { storage in
+            cookies.forEach(storage.setCookie)
+        }
+    }
+
+    private func withCookieStorage<Value: Sendable>(
+        _ operation: @escaping @Sendable (HTTPCookieStorage) -> Value
+    ) async -> Value {
+        let storage = cookieStorage
+        // Cookie storage can synchronously wait on default-QoS system work.
+        // Suspend the caller and avoid inheriting its higher priority.
+        return await withCheckedContinuation { continuation in
+            cookieStorageQueue.async(qos: .default, flags: .enforceQoS) {
+                continuation.resume(returning: operation(storage))
+            }
+        }
     }
 
     private func classifyFailedLogin(_ data: Data) -> HNAuthenticationError {
@@ -323,7 +358,7 @@ actor HNAuthenticationClient {
         return "\(scheme)://\(host)"
     }
 
-    private func domain(_ cookieDomain: String, matchesHost host: String?) -> Bool {
+    private static func domain(_ cookieDomain: String, matchesHost host: String?) -> Bool {
         guard let host else {
             return false
         }
