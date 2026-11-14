@@ -123,12 +123,6 @@ struct IOSStoryList: View {
                     )
                 }
             }
-            .onAppear {
-                DiscussionDiagnostics.log("navigation.stackAppear story=\(String(describing: selectedItem?.id)) compact=\(String(describing: preferredCompactColumn)) sizeClass=\(String(describing: horizontalSizeClass))")
-            }
-            .onDisappear {
-                DiscussionDiagnostics.log("navigation.stackDisappear story=\(String(describing: selectedItem?.id)) compact=\(String(describing: preferredCompactColumn)) sizeClass=\(String(describing: horizontalSizeClass))")
-            }
         }
         .navigationSplitViewStyle(.balanced)
         .sheet(isPresented: $showsSettings) {
@@ -150,12 +144,6 @@ struct IOSStoryList: View {
         .onChange(of: selection) { _, _ in
             selectedItem = nil
             preferredCompactColumn = .sidebar
-        }
-        .onChange(of: selectedItem?.id) { oldID, newID in
-            DiscussionDiagnostics.log("navigation.selection old=\(String(describing: oldID)) new=\(String(describing: newID)) compact=\(String(describing: preferredCompactColumn))")
-        }
-        .onChange(of: preferredCompactColumn) { oldColumn, newColumn in
-            DiscussionDiagnostics.log("navigation.compactColumn old=\(String(describing: oldColumn)) new=\(String(describing: newColumn)) story=\(String(describing: selectedItem?.id))")
         }
         .task(id: selection) {
             guard loadsAutomatically, !showsSavedStories else { return }
@@ -332,7 +320,6 @@ struct IOSStoryList: View {
     }
 
     private func selectItem(_ item: Item) {
-        DiscussionDiagnostics.log("selection.ios feed=\(selection.rawValue) saved=\(showsSavedStories) \(DiscussionDiagnostics.summary(item))")
         storyLink = nil
         selectedItem = item
         preferredCompactColumn = .detail
