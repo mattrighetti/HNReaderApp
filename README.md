@@ -27,6 +27,10 @@ The iOS app targets iOS 18 or later and supports iPhone and iPad. Run the
 - Browse feeds with search, unread filtering, pull-to-refresh, and automatic pagination.
 - Read discussions, expand replies, and open author profiles and their comments.
 - Save stories and comments for later, including an offline snapshot of saved comments.
+- Long-press a comment and choose **Share as Image…** to preview a PNG with
+  background presets, optional username and article title, and an
+  optional HNReader watermark. Share it through the system share sheet. Comments too long
+  for one image can still be shared as links.
 - Choose an orange, plum, midnight, or forest app icon in Settings.
 
 To open Hacker News links from the iOS share sheet, create a shortcut with
@@ -99,6 +103,10 @@ To run the deterministic tests without live API requests:
 xcodebuild -project HNReader.xcodeproj -scheme HNReader \
   -destination 'platform=macOS' CODE_SIGNING_ALLOWED=NO test
 ```
+
+The `HNReader iOS` scheme also includes renderer and UI tests for comment image
+sharing. Run the scheme’s tests on an installed iPhone or iPad simulator. UI tests
+use local fixtures and isolated saved-item state.
 
 ## License
 [MIT](LICENSE) or [APACHE 2.0](LICENSE)

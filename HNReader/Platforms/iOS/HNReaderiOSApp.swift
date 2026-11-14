@@ -13,8 +13,17 @@ struct HNReaderiOSApp: App {
 
     var body: some Scene {
         WindowGroup {
-            HomeView()
-                .environment(appState)
+            #if DEBUG
+                if ProcessInfo.processInfo.arguments.contains("--comment-image-fixture") {
+                    CommentImageExportTestScene()
+                } else {
+                    HomeView()
+                        .environment(appState)
+                }
+            #else
+                HomeView()
+                    .environment(appState)
+            #endif
         }
     }
 }

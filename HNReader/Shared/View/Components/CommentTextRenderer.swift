@@ -7,7 +7,7 @@ import SwiftUI
 #endif
 
 extension NSAttributedString.Key {
-    fileprivate static let hackerNewsQuote = NSAttributedString.Key("HNReader.HackerNewsQuote")
+    static let hackerNewsQuote = NSAttributedString.Key("HNReader.HackerNewsQuote")
 }
 
 @MainActor

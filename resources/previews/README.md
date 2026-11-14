@@ -26,6 +26,7 @@ If a shared file shows no previews, check whether its declarations are guarded b
 | [HNAccountView.swift](../../HNReader/Shared/View/HNAccountView.swift) | Both | Signed-out form; target-aware mock profile |
 | [UserCommentsView.swift](../../HNReader/Shared/View/UserCommentsView.swift) | Both | User comments with local fixtures |
 | [IOSSettingsView.swift](../../HNReader/Platforms/iOS/IOSSettingsView.swift) | iOS | App icon picker |
+| [CommentImageExportView.swift](../../HNReader/Platforms/iOS/CommentImageExport/CommentImageExportView.swift) | iOS | Export flow and overflow; card and sharing sheet mocks with palette, username/title options, short/long comments, light/dark, and native sheet presentation |
 | [SettingsView.swift](../../HNReader/Platforms/macOS/SettingsView.swift) | Mac | System appearance, light/dark |
 | [ItemList.swift](../../HNReader/Shared/View/ItemList.swift) | Both | Mac lists and discussion states; iOS story list |
 | [ItemCell.swift](../../HNReader/Shared/View/ItemCell.swift) | Mac | Compact rows in light/dark, narrow, selected, saved comments |

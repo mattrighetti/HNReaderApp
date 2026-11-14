@@ -54,6 +54,7 @@ private enum CommentThreadLayout {
 struct CommentView: View {
     let item: Item
     let storyAuthor: String?
+    let storyTitle: String?
     let depth: Int
     let parentAuthor: String?
     let collapseAll: Bool
@@ -77,10 +78,14 @@ struct CommentView: View {
     private var hasMore: Bool { nextOffset < (item.kids?.count ?? 0) }
     @State private var isCollapsed: Bool
     @State private var repliesExpanded: Bool
+    #if os(iOS)
+        @State private var imageExport: CommentImageSnapshot?
+    #endif
 
     init(
         item: Item,
         storyAuthor: String? = nil,
+        storyTitle: String? = nil,
         depth: Int = 0,
         parentAuthor: String? = nil,
         collapseAll: Bool = false,
@@ -90,6 +95,7 @@ struct CommentView: View {
     ) {
         self.item = item
         self.storyAuthor = storyAuthor
+        self.storyTitle = storyTitle
         self.depth = depth
         self.parentAuthor = parentAuthor
         self.collapseAll = collapseAll
@@ -165,6 +171,11 @@ struct CommentView: View {
         .onChange(of: collapseAll) { _, collapsed in
             isCollapsed = collapsed
         }
+        #if os(iOS)
+            .sheet(item: $imageExport) { snapshot in
+                CommentImageExportView(snapshot: snapshot)
+            }
+        #endif
     }
 
     @ViewBuilder
@@ -183,6 +194,15 @@ struct CommentView: View {
         ShareLink(item: item.discussionURL) {
             Label("Share Comment", systemImage: "square.and.arrow.up")
         }
+
+        #if os(iOS)
+            if CommentImageSnapshot.canExport(item) {
+                Button("Share as Image…", systemImage: "photo") {
+                    imageExport = CommentImageSnapshot(item: item, articleTitle: storyTitle)
+                }
+                .accessibilityIdentifier("comment.image.export.\(item.id)")
+            }
+        #endif
 
         Button {
             #if os(macOS)
@@ -408,6 +428,7 @@ struct CommentView: View {
                 CommentView(
                     item: reply,
                     storyAuthor: storyAuthor,
+                    storyTitle: storyTitle,
                     depth: depth + 1,
                     parentAuthor: author,
                     collapseAll: collapseAll,

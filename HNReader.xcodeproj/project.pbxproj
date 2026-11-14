@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 54;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -100,6 +100,8 @@
 		C9E9BCFD2674C80E001B4E19 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9E9BCFC2674C80E001B4E19 /* AppState.swift */; };
 		C9E9BD012674D007001B4E19 /* HackerNews.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9E9BD002674D007001B4E19 /* HackerNews.swift */; };
 		C9E9BD032674D095001B4E19 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9E9BD022674D095001B4E19 /* User.swift */; };
+		CF3000000000000000000001 /* HNReaderTests/RendererTests/CommentImageRendererTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF3000000000000000000002 /* HNReaderTests/RendererTests/CommentImageRendererTests.swift */; };
+		CF4000000000000000000001 /* HNReaderTests/UITests/CommentImageExportUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF4000000000000000000002 /* HNReaderTests/UITests/CommentImageExportUITests.swift */; };
 		D10000000000000000000001 /* Charis-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000001 /* Charis-Regular.ttf */; };
 		D10000000000000000000002 /* Charis-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000002 /* Charis-Italic.ttf */; };
 		D10000000000000000000003 /* Charis-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000003 /* Charis-Bold.ttf */; };
@@ -125,6 +127,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = C9D0937226741BBE002CC786;
 			remoteInfo = HNReader;
+		};
+		CF3000000000000000000007 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C9D0936B26741BBE002CC786 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B30000000000000000000004;
+			remoteInfo = "HNReader iOS";
 		};
 /* End PBXContainerItemProxy section */
 
@@ -171,13 +180,13 @@
 		BAA100000000000000000004 /* HNAuthenticationClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HNAuthenticationClient.swift; sourceTree = "<group>"; };
 		BAA100000000000000000005 /* HNAuthenticationClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HNAuthenticationClientTests.swift; sourceTree = "<group>"; };
 		BAA200000000000000000003 /* HNAccountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HNAccountView.swift; sourceTree = "<group>"; };
+		BAA300000000000000000003 /* StorySearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorySearchView.swift; sourceTree = "<group>"; };
 		BFA100000000000000000001 /* IOSStoryList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSStoryList.swift; sourceTree = "<group>"; };
 		BFA200000000000000000001 /* IOSStoryRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSStoryRow.swift; sourceTree = "<group>"; };
 		BFA300000000000000000001 /* MacReaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacReaderView.swift; sourceTree = "<group>"; };
 		BFA400000000000000000001 /* Sidebar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sidebar.swift; sourceTree = "<group>"; };
 		C93F99B5267554F00046F870 /* ItemCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemCell.swift; sourceTree = "<group>"; };
 		C93F99B7267557FC0046F870 /* ItemList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemList.swift; sourceTree = "<group>"; };
-		BAA300000000000000000003 /* StorySearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorySearchView.swift; sourceTree = "<group>"; };
 		C93F99B9267580CE0046F870 /* HTMLText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTMLText.swift; sourceTree = "<group>"; };
 		C9D0937326741BBE002CC786 /* HNReader.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HNReader.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C9D0937626741BBE002CC786 /* HNReaderApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HNReaderApp.swift; sourceTree = "<group>"; };
@@ -192,6 +201,10 @@
 		C9E9BCFC2674C80E001B4E19 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
 		C9E9BD002674D007001B4E19 /* HackerNews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HackerNews.swift; sourceTree = "<group>"; };
 		C9E9BD022674D095001B4E19 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		CF3000000000000000000002 /* HNReaderTests/RendererTests/CommentImageRendererTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HNReaderTests/RendererTests/CommentImageRendererTests.swift; sourceTree = SOURCE_ROOT; };
+		CF3000000000000000000003 /* HNReaderiOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; path = HNReaderiOSTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		CF4000000000000000000002 /* HNReaderTests/UITests/CommentImageExportUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HNReaderTests/UITests/CommentImageExportUITests.swift; sourceTree = SOURCE_ROOT; };
+		CF4000000000000000000003 /* HNReaderiOSUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; path = HNReaderiOSUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D20000000000000000000001 /* Charis-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Charis-Regular.ttf"; sourceTree = "<group>"; };
 		D20000000000000000000002 /* Charis-Italic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Charis-Italic.ttf"; sourceTree = "<group>"; };
 		D20000000000000000000003 /* Charis-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Charis-Bold.ttf"; sourceTree = "<group>"; };
@@ -201,6 +214,10 @@
 		D20000000000000000000007 /* NotoSerif.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = NotoSerif.ttf; sourceTree = "<group>"; };
 		E20000000000000000000001 /* ArticleFontSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArticleFontSettingsView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		CF1000000000000000000006 /* CommentImageExport */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = CommentImageExport; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		B30000000000000000000002 /* Frameworks */ = {
@@ -218,6 +235,20 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		C9D0938726741BC0002CC786 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CF3000000000000000000005 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CF4000000000000000000005 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -309,6 +340,7 @@
 		B1000000000000000000000D /* HNReader/Platforms/iOS */ = {
 			isa = PBXGroup;
 			children = (
+				CF1000000000000000000006 /* CommentImageExport */,
 				B10000000000000000000009 /* HNReaderiOSApp.swift */,
 				BFA100000000000000000001 /* IOSStoryList.swift */,
 				BFA200000000000000000001 /* IOSStoryRow.swift */,
@@ -349,6 +381,8 @@
 				C9D0937326741BBE002CC786 /* HNReader.app */,
 				B10000000000000000000005 /* HNReader.app */,
 				C9D0938A26741BC0002CC786 /* HNReaderTests.xctest */,
+				CF4000000000000000000003 /* HNReaderiOSUITests.xctest */,
+				CF3000000000000000000003 /* HNReaderiOSTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -377,6 +411,8 @@
 		C9D0938D26741BC0002CC786 /* HNReaderTests */ = {
 			isa = PBXGroup;
 			children = (
+				CF3000000000000000000002 /* HNReaderTests/RendererTests/CommentImageRendererTests.swift */,
+				CF4000000000000000000002 /* HNReaderTests/UITests/CommentImageExportUITests.swift */,
 				C9D0939026741BC0002CC786 /* Info.plist */,
 				33071AE1286F3A139C23E0A9 /* HNClientTests */,
 				330716F7289F75F50DB30273 /* UtilsTests */,
@@ -447,6 +483,9 @@
 			);
 			dependencies = (
 			);
+			fileSystemSynchronizedGroups = (
+				CF1000000000000000000006 /* CommentImageExport */,
+			);
 			name = "HNReader iOS";
 			packageProductDependencies = (
 			);
@@ -491,6 +530,42 @@
 			productReference = C9D0938A26741BC0002CC786 /* HNReaderTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		CF3000000000000000000009 /* HNReader iOS Tests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CF300000000000000000000A /* Build configuration list for PBXNativeTarget "HNReader iOS Tests" */;
+			buildPhases = (
+				CF3000000000000000000004 /* Sources */,
+				CF3000000000000000000005 /* Frameworks */,
+				CF3000000000000000000006 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				CF3000000000000000000008 /* PBXTargetDependency */,
+			);
+			name = "HNReader iOS Tests";
+			productName = HNReaderiOSTests;
+			productReference = CF3000000000000000000003 /* HNReaderiOSTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		CF4000000000000000000009 /* HNReader iOS UI Tests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CF400000000000000000000A /* Build configuration list for PBXNativeTarget "HNReader iOS UI Tests" */;
+			buildPhases = (
+				CF4000000000000000000004 /* Sources */,
+				CF4000000000000000000005 /* Frameworks */,
+				CF4000000000000000000006 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				CF3000000000000000000008 /* PBXTargetDependency */,
+			);
+			name = "HNReader iOS UI Tests";
+			productName = HNReaderiOSUITests;
+			productReference = CF4000000000000000000003 /* HNReaderiOSUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -525,6 +600,8 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
+				CF4000000000000000000009 /* HNReader iOS UI Tests */,
+				CF3000000000000000000009 /* HNReader iOS Tests */,
 				B30000000000000000000004 /* HNReader iOS */,
 				C9D0937226741BBE002CC786 /* HNReader */,
 				C9D0938926741BC0002CC786 /* HNReaderTests */,
@@ -573,6 +650,20 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		C9D0938826741BC0002CC786 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CF3000000000000000000006 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CF4000000000000000000006 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -687,6 +778,22 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		CF3000000000000000000004 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CF3000000000000000000001 /* HNReaderTests/RendererTests/CommentImageRendererTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CF4000000000000000000004 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CF4000000000000000000001 /* HNReaderTests/UITests/CommentImageExportUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -694,6 +801,11 @@
 			isa = PBXTargetDependency;
 			target = C9D0937226741BBE002CC786 /* HNReader */;
 			targetProxy = C9D0938B26741BC0002CC786 /* PBXContainerItemProxy */;
+		};
+		CF3000000000000000000008 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B30000000000000000000004 /* HNReader iOS */;
+			targetProxy = CF3000000000000000000007 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -981,6 +1093,92 @@
 			};
 			name = Release;
 		};
+		CF300000000000000000000B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.6;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.mattrighetti.HNReaderiOSTests;
+				PRODUCT_NAME = HNReaderiOSTests;
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/HNReader.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/HNReader";
+			};
+			name = Debug;
+		};
+		CF300000000000000000000C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.6;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.mattrighetti.HNReaderiOSTests;
+				PRODUCT_NAME = HNReaderiOSTests;
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/HNReader.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/HNReader";
+			};
+			name = Release;
+		};
+		CF400000000000000000000B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.6;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.mattrighetti.HNReaderiOSUITests;
+				PRODUCT_NAME = HNReaderiOSUITests;
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = "HNReader iOS";
+			};
+			name = Debug;
+		};
+		CF400000000000000000000C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.6;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.mattrighetti.HNReaderiOSUITests;
+				PRODUCT_NAME = HNReaderiOSUITests;
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = "HNReader iOS";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -1016,6 +1214,24 @@
 			buildConfigurations = (
 				C9D093A226741BC0002CC786 /* Debug */,
 				C9D093A326741BC0002CC786 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		CF300000000000000000000A /* Build configuration list for PBXNativeTarget "HNReader iOS Tests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CF300000000000000000000B /* Debug */,
+				CF300000000000000000000C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		CF400000000000000000000A /* Build configuration list for PBXNativeTarget "HNReader iOS UI Tests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CF400000000000000000000B /* Debug */,
+				CF400000000000000000000C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
