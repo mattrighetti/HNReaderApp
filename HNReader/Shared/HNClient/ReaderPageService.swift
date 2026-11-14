@@ -1,23 +1,4 @@
 import Foundation
-import OSLog
-
-/// Debug-only diagnostics: public item IDs and loading state, never comment text or account data.
-enum DiscussionDiagnostics {
-    private static let logger = Logger(
-        subsystem: "com.mattrighetti.HNReader", category: "Comments")
-
-    static func log(_ message: @autoclosure () -> String) {
-        #if DEBUG
-            let rendered = message()
-            logger.notice("[HNComments] \(rendered, privacy: .public)")
-        #endif
-    }
-
-    static func summary(_ item: Item?) -> String {
-        guard let item else { return "item=null" }
-        return "item=\(item.id) type=\(item.type?.rawValue ?? "nil") descendants=\(item.descendants ?? -1) kids=\(item.kids?.count ?? 0) firstKids=\(Array((item.kids ?? []).prefix(20))) deleted=\(item.deleted == true) dead=\(item.dead == true)"
-    }
-}
 
 extension NewsService {
     /// Resolve a comment's parent chain to the story, poll, or job that owns the discussion.
@@ -44,19 +25,16 @@ extension NewsService {
 
     /// Return one atomic page, skipping batches that contain no visible comments.
     func commentPage(
-        ids: [Int], offset: Int, pageSize: Int = 20, requestID: UUID = UUID()
+        ids: [Int], offset: Int, pageSize: Int = 20
     ) async throws -> CommentPage {
         var cursor = offset
         var comments: [Item] = []
         repeat {
             let batch = Array(ids.dropFirst(cursor).prefix(pageSize))
             guard !batch.isEmpty else { break }
-            DiscussionDiagnostics.log("batch.start request=\(requestID) offset=\(cursor) ids=\(batch)")
             let items = try await items(ids: batch)
             try Task.checkCancellation()
             let visible = items.filter(\.isVisibleComment)
-            let returnedIDs = Set(items.map(\.id))
-            DiscussionDiagnostics.log("batch.result request=\(requestID) visible=\(visible.map(\.id)) filtered=\(items.filter { !$0.isVisibleComment }.map(\.id)) missing=\(batch.filter { !returnedIDs.contains($0) })")
             comments += visible
             cursor += batch.count
         } while comments.isEmpty && cursor < ids.count
@@ -64,10 +42,9 @@ extension NewsService {
     }
 
     func discussionPage(
-        item snapshot: Item, offset: Int, fetchMetadata: Bool, requestID: UUID = UUID()
+        item snapshot: Item, offset: Int, fetchMetadata: Bool
     ) async throws -> DiscussionPage
     {
-        DiscussionDiagnostics.log("discussion.start request=\(requestID) offset=\(offset) fetchMetadata=\(fetchMetadata) \(DiscussionDiagnostics.summary(snapshot))")
         let current: Item
         if fetchMetadata {
             // Feed and saved snapshots may predate the story's latest comment IDs.
@@ -78,11 +55,9 @@ extension NewsService {
         } else {
             current = snapshot
         }
-        DiscussionDiagnostics.log("discussion.metadata request=\(requestID) \(DiscussionDiagnostics.summary(current))")
         let page = try await commentPage(
-            ids: current.kids ?? [], offset: offset, requestID: requestID)
+            ids: current.kids ?? [], offset: offset)
         try Task.checkCancellation()
-        DiscussionDiagnostics.log("discussion.result request=\(requestID) story=\(current.id) comments=\(page.comments.map(\.id)) nextOffset=\(page.nextOffset)")
         return DiscussionPage(item: current, page: page)
     }
 
