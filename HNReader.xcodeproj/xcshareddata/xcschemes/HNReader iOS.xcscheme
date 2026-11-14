@@ -28,6 +28,14 @@
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES"
       shouldAutocreateTestPlan = "YES">
+      <Testables>
+         <TestableReference skipped = "NO">
+            <BuildableReference BuildableIdentifier = "primary" BlueprintIdentifier = "CF3000000000000000000009" BuildableName = "HNReaderiOSTests.xctest" BlueprintName = "HNReader iOS Tests" ReferencedContainer = "container:HNReader.xcodeproj"/>
+         </TestableReference>
+         <TestableReference skipped = "NO">
+            <BuildableReference BuildableIdentifier = "primary" BlueprintIdentifier = "CF4000000000000000000009" BuildableName = "HNReaderiOSUITests.xctest" BlueprintName = "HNReader iOS UI Tests" ReferencedContainer = "container:HNReader.xcodeproj"/>
+         </TestableReference>
+      </Testables>
    </TestAction>
    <LaunchAction
       buildConfiguration = "Debug"

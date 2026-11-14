@@ -93,6 +93,7 @@ struct StoryDetail: View {
                             CommentView(
                                 item: comment,
                                 storyAuthor: item.by,
+                                storyTitle: item.title,
                                 collapseAll: threadsCollapsed,
                                 previewThreads: previewThreads
                             )
