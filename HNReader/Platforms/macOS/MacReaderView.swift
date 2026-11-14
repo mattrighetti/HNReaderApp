@@ -194,7 +194,9 @@ import SwiftUI
             defer { if revision == request { isLoadingMore = false } }
             do {
                 let result = try await repository.nextPage(after: feed, category: category)
-                guard revision == request, selection.category == category, !Task.isCancelled else {
+                // A completed page is still valid if native List layout removed its footer.
+                // The repository checks cancellation before committing the page to its cache.
+                guard revision == request, selection.category == category else {
                     return
                 }
                 feed = result
