@@ -8,8 +8,6 @@ struct SettingsView: View {
             VStack(alignment: .leading, spacing: 20) {
                 appHeader
 
-                account
-
                 articleFontLink
 
                 project
@@ -61,46 +59,6 @@ struct SettingsView: View {
         }
         .clickableCursor()
         .buttonStyle(.plain)
-    }
-
-    private var account: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text("Account")
-                .font(.system(size: 12, weight: .semibold))
-
-            NavigationLink {
-                HNAccountView()
-            } label: {
-                HStack(spacing: 12) {
-                    Image(systemName: "person.crop.circle")
-                        .font(.system(size: 18))
-                        .foregroundStyle(.secondary)
-
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("Hacker News Account")
-                            .font(.system(size: 12, weight: .medium))
-
-                        Text("Sign in or view your profile")
-                            .font(.system(size: 10))
-                            .foregroundStyle(.secondary)
-                    }
-
-                    Spacer()
-
-                    Image(systemName: "chevron.right")
-                        .font(.system(size: 10, weight: .semibold))
-                        .foregroundStyle(.tertiary)
-                }
-                .padding(14)
-                .contentShape(Rectangle())
-                .background(
-                    Color(nsColor: .controlBackgroundColor),
-                    in: RoundedRectangle(cornerRadius: 10)
-                )
-            }
-            .clickableCursor()
-            .buttonStyle(.plain)
-        }
     }
 
     private var appHeader: some View {
