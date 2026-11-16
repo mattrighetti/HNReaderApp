@@ -24,7 +24,7 @@ struct Sidebar: View {
 
             List(selection: $selection) {
                 Section("Discover") {
-                    ForEach(AppState.SidebarSelection.allCases.filter { $0 != .saved }) { section in
+                    ForEach(AppState.SidebarSelection.allCases.filter { $0 != .saved && $0 != .profile }) { section in
                         Label(section.rawValue, systemImage: section.iconName)
                             .contentShape(Rectangle())
                             .clickableCursor()
@@ -47,6 +47,13 @@ struct Sidebar: View {
                     .clickableCursor()
                     .tag(AppState.SidebarSelection.saved)
                     .padding(.vertical, 4)
+                }
+                Section("Account") {
+                    Label("Profile", systemImage: "person.crop.circle")
+                        .contentShape(Rectangle())
+                        .clickableCursor()
+                        .tag(AppState.SidebarSelection.profile)
+                        .padding(.vertical, 4)
                 }
             }
             .listStyle(.sidebar)

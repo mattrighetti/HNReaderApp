@@ -72,7 +72,44 @@ import SwiftUI
             NavigationSplitView(columnVisibility: $columnVisibility) {
                 Sidebar(selection: $sidebarSelection)
                     .navigationSplitViewColumnWidth(min: 180, ideal: 205, max: 260)
-            } content: {
+            } detail: {
+                if selection == .profile {
+                    NavigationStack {
+                        HNAccountView(loadsAutomatically: loadsAutomatically)
+                    }
+                } else {
+                    readerColumns
+                }
+            }
+            .navigationSplitViewStyle(.balanced)
+            .onChange(of: selection) { _, selection in
+                if selection != .search {
+                    selectedSearchItem = nil
+                }
+            }
+            .task(id: selection) {
+                guard loadsAutomatically else {
+                    return
+                }
+
+                selectedID = nil
+                if selection.category != nil {
+                    await loadFeed()
+                } else {
+                    revision = UUID()
+                    isLoading = false
+                    isLoadingMore = false
+                }
+            }
+            .onChange(of: selectedItem?.id) { _, _ in
+                if let item = selectedItem {
+                    appState.markRead(item)
+                }
+            }
+        }
+
+        private var readerColumns: some View {
+            HSplitView {
                 Group {
                     if selection == .search {
                         StorySearchView(selectedItem: $selectedSearchItem)
@@ -99,13 +136,8 @@ import SwiftUI
                         )
                     }
                 }
-                .frame(minWidth: 312)
-                .navigationSplitViewColumnWidth(min: 312, ideal: 312, max: 720)
-                .background {
-                    SplitColumnWidth(minimum: 312, maximum: 720)
-                        .allowsHitTesting(false)
-                }
-            } detail: {
+                .frame(minWidth: 312, idealWidth: 312, maxWidth: 720)
+
                 NavigationStack {
                     if let item = selectedItem {
                         if item.type == .comment {
@@ -123,32 +155,7 @@ import SwiftUI
                         ContentUnavailableView("Select a story", systemImage: "newspaper")
                     }
                 }
-                .id(selectedItem?.id)
-            }
-            .navigationSplitViewStyle(.balanced)
-            .onChange(of: selection) { _, selection in
-                if selection != .search {
-                    selectedSearchItem = nil
-                }
-            }
-            .task(id: selection) {
-                guard loadsAutomatically else {
-                    return
-                }
-
-                selectedID = nil
-                if selection.category != nil {
-                    await loadFeed()
-                } else {
-                    revision = UUID()
-                    isLoading = false
-                    isLoadingMore = false
-                }
-            }
-            .onChange(of: selectedItem?.id) { _, _ in
-                if let item = selectedItem {
-                    appState.markRead(item)
-                }
+                .frame(minWidth: 352, maxWidth: .infinity, maxHeight: .infinity)
             }
         }
 

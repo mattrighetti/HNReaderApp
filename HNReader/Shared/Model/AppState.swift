@@ -123,6 +123,9 @@ final class AppState {
         case job = "Jobs"
         case search = "Search"
         case saved = "Saved"
+        #if os(macOS)
+            case profile = "Profile"
+        #endif
 
         var id: String {
             rawValue
@@ -142,6 +145,10 @@ final class AppState {
                 return .show
             case .job:
                 return .job
+            #if os(macOS)
+                case .profile:
+                    return nil
+            #endif
             case .search, .saved:
                 return nil
             }
@@ -163,6 +170,10 @@ final class AppState {
                 return "Find your next chapter"
             case .search:
                 return "Find stories by keyword"
+            #if os(macOS)
+                case .profile:
+                    return "Your Hacker News account"
+            #endif
             case .saved:
                 return "Good reads, kept for later"
             }
@@ -184,6 +195,10 @@ final class AppState {
                 return "briefcase"
             case .search:
                 return "magnifyingglass"
+            #if os(macOS)
+                case .profile:
+                    return "person.crop.circle"
+            #endif
             case .saved:
                 return "bookmark"
             }
