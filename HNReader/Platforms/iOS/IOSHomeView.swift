@@ -1,8 +1,7 @@
 import SwiftUI
-import UIKit
 
 struct IOSHomeView: View {
-    enum Tab: Hashable {
+    enum AppTab: Hashable {
         case stories
         case search
         case saved
@@ -11,7 +10,7 @@ struct IOSHomeView: View {
 
     @Environment(AppState.self) private var appState
 
-    @State private var selectedTab: Tab
+    @State private var selectedTab: AppTab
     @State private var selectedFeed: AppState.SidebarSelection = .top
     @State private var storyLink: AppState.StoryLink?
     private let initialRows: [StoryRow]
@@ -28,7 +27,7 @@ struct IOSHomeView: View {
         loadsAutomatically: Bool = true,
         previewComments: [Item]? = nil,
         previewThreads: [Int: [Item]]? = nil,
-        initialTab: Tab = .stories,
+        initialTab: AppTab = .stories,
         profileAccount: HNAuthenticatedAccount? = nil,
         profileUser: User? = nil
     ) {
@@ -44,79 +43,52 @@ struct IOSHomeView: View {
 
     var body: some View {
         TabView(selection: $selectedTab) {
-            IOSStoryList(
-                selection: $selectedFeed,
-                showsSavedStories: false,
-                initialRows: initialRows,
-                repository: repository,
-                loadsAutomatically: loadsAutomatically,
-                previewComments: previewComments,
-                previewThreads: previewThreads,
-                storyLink: $storyLink
-            )
-            .tabItem {
-                tabLabel("Stories", systemImage: "newspaper.fill")
-            }
-            .tag(Tab.stories)
-
-            NavigationStack {
-                StorySearchView()
-            }
-            .tabItem {
-                tabLabel("Search", systemImage: "magnifyingglass")
-            }
-            .tag(Tab.search)
-
-            IOSStoryList(
-                selection: .constant(.saved),
-                showsSavedStories: true,
-                repository: repository,
-                loadsAutomatically: loadsAutomatically,
-                previewComments: previewComments,
-                previewThreads: previewThreads
-            )
-            .tabItem {
-                tabLabel("Saved", systemImage: "bookmark.fill")
-            }
-            .tag(Tab.saved)
-
-            NavigationStack {
-                HNAccountView(
-                    account: profileAccount,
-                    previewUser: profileUser,
-                    loadsAutomatically: loadsAutomatically
+            Tab("Stories", systemImage: "newspaper.fill", value: .stories) {
+                IOSStoryList(
+                    selection: $selectedFeed,
+                    showsSavedStories: false,
+                    initialRows: initialRows,
+                    repository: repository,
+                    loadsAutomatically: loadsAutomatically,
+                    previewComments: previewComments,
+                    previewThreads: previewThreads,
+                    storyLink: $storyLink
                 )
             }
-            .tabItem {
-                tabLabel("Profile", systemImage: "person.fill")
+
+            Tab("Search", systemImage: "magnifyingglass", value: .search) {
+                NavigationStack {
+                    StorySearchView()
+                }
             }
-            .tag(Tab.profile)
+
+            Tab("Saved", systemImage: "bookmark.fill", value: .saved) {
+                IOSStoryList(
+                    selection: .constant(.saved),
+                    showsSavedStories: true,
+                    repository: repository,
+                    loadsAutomatically: loadsAutomatically,
+                    previewComments: previewComments,
+                    previewThreads: previewThreads
+                )
+            }
+
+            Tab("Profile", systemImage: "person.fill", value: .profile) {
+                NavigationStack {
+                    HNAccountView(
+                        account: profileAccount,
+                        previewUser: profileUser,
+                        loadsAutomatically: loadsAutomatically
+                    )
+                }
+            }
         }
+        .tabViewStyle(.tabBarOnly)
         .onChange(of: appState.incomingStoryLink, initial: true) { _, link in
             guard let link else { return }
             selectedTab = .stories
             storyLink = link
             appState.incomingStoryLink = nil
-        }
-    }
-
-    private func tabLabel(_ title: LocalizedStringKey, systemImage: String) -> some View {
-        let configuration = UIImage.SymbolConfiguration(pointSize: 16, weight: .medium)
-        let icon: Image
-        if let symbol = UIImage(systemName: systemImage, withConfiguration: configuration) {
-            // Render the symbol at its configured size before the tab bar applies its tint.
-            let image = UIGraphicsImageRenderer(size: symbol.size).image { _ in
-                symbol.draw(at: .zero)
-            }
-            icon = Image(uiImage: image.withRenderingMode(.alwaysTemplate))
-        } else {
-            icon = Image(systemName: systemImage)
-        }
-
-        return Label {
-            Text(title)
-        } icon: {
-            icon
         }
     }
 }
@@ -161,17 +133,17 @@ struct IOSHomeView: View {
         }
     }
 
-    #Preview("iOS · Two Columns · No Selection", traits: .fixedLayout(width: 1000, height: 700)) {
+    #Preview("iPad · Stories", traits: .fixedLayout(width: 1000, height: 700)) {
         IOSStoryListCanvas()
             .environment(\.horizontalSizeClass, .regular)
     }
 
-    #Preview("iOS · Two Columns · Discussion", traits: .fixedLayout(width: 1000, height: 700)) {
+    #Preview("iPad · Discussion", traits: .fixedLayout(width: 1000, height: 700)) {
         IOSStoryListCanvas(selectedItem: PreviewData.stories.first)
             .environment(\.horizontalSizeClass, .regular)
     }
 
-    #Preview("iOS · Two Columns · Saved Empty", traits: .fixedLayout(width: 1000, height: 700)) {
+    #Preview("iPad · Saved Empty", traits: .fixedLayout(width: 1000, height: 700)) {
         IOSStoryList(
             selection: .constant(.saved),
             showsSavedStories: true,

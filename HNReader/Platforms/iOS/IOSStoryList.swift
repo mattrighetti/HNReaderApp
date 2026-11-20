@@ -28,8 +28,6 @@ struct IOSStoryList: View {
     private let repository: FeedRepository
     @State private var unreadOnly = false
     @State private var selectedItem: Item?
-    @State private var columnVisibility: NavigationSplitViewVisibility = .all
-    @State private var preferredCompactColumn: NavigationSplitViewColumn = .sidebar
     @State private var showsSettings = false
     @State private var showsLinkError = false
 
@@ -86,11 +84,8 @@ struct IOSStoryList: View {
     }
 
     var body: some View {
-        NavigationSplitView(
-            columnVisibility: $columnVisibility,
-            preferredCompactColumn: $preferredCompactColumn
-        ) {
-            sidebar
+        NavigationStack {
+            feedContent
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar(.visible, for: .navigationBar)
                 .toolbar {
@@ -102,29 +97,11 @@ struct IOSStoryList: View {
                         .tint(.primary)
                     }
                 }
-                .navigationSplitViewColumnWidth(min: 300, ideal: 350, max: 420)
-                .overlay(alignment: .trailing) {
-                    if horizontalSizeClass == .regular {
-                        Rectangle()
-                            .fill(Color(.separator))
-                            .frame(width: 0.5)
-                    }
+                .navigationDestination(item: $selectedItem) { item in
+                    detail(for: item)
+                        .id(item.id)
                 }
-        } detail: {
-            NavigationStack {
-                if let selectedItem {
-                    detail(for: selectedItem)
-                        .id(selectedItem.id)
-                } else {
-                    ContentUnavailableView(
-                        "Select a story",
-                        systemImage: "newspaper",
-                        description: Text("Choose a story from the list to read the discussion.")
-                    )
-                }
-            }
         }
-        .navigationSplitViewStyle(.balanced)
         .sheet(isPresented: $showsSettings) {
             IOSSettingsView()
         }
@@ -143,7 +120,6 @@ struct IOSStoryList: View {
         }
         .onChange(of: selection) { _, _ in
             selectedItem = nil
-            preferredCompactColumn = .sidebar
         }
         .task(id: selection) {
             guard loadsAutomatically, !showsSavedStories else { return }
@@ -160,7 +136,7 @@ struct IOSStoryList: View {
     }
 
     @ViewBuilder
-    private var sidebar: some View {
+    private var feedContent: some View {
         if showsSavedStories {
             storyList
                 .toolbar {
@@ -272,6 +248,9 @@ struct IOSStoryList: View {
         .scrollBounceBehavior(.always, axes: .vertical)
         .scrollContentBackground(.hidden)
         .background(IOSPlainBackground())
+        .frame(maxWidth: horizontalSizeClass == .regular ? 900 : .infinity)
+        .frame(maxWidth: .infinity)
+        .background(IOSPlainBackground())
         .overlay {
             if visibleRows.isEmpty && errorMessage == nil && (showsSavedStories || !isLoading) {
                 ContentUnavailableView(
@@ -286,9 +265,7 @@ struct IOSStoryList: View {
     }
 
     private func storyRow(_ row: StoryRow) -> some View {
-        let isSelected = horizontalSizeClass == .regular && selectedItem?.id == row.id
-
-        return VStack(spacing: 0) {
+        VStack(spacing: 0) {
             Button {
                 selectItem(row.item)
             } label: {
@@ -299,15 +276,6 @@ struct IOSStoryList: View {
                     .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
-            .background {
-                if isSelected {
-                    RoundedRectangle(cornerRadius: 12)
-                        .fill(Color.accentColor.opacity(0.12))
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 2)
-                }
-            }
-            .accessibilityAddTraits(isSelected ? .isSelected : [])
             .accessibilityIdentifier("story.\(row.id)")
             .id(row.id)
 
@@ -322,7 +290,6 @@ struct IOSStoryList: View {
     private func selectItem(_ item: Item) {
         storyLink = nil
         selectedItem = item
-        preferredCompactColumn = .detail
     }
 
     private func openStory(from link: AppState.StoryLink) async {
