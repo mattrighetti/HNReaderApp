@@ -138,25 +138,31 @@ import SwiftUI
                 }
                 .frame(minWidth: 312, idealWidth: 312, maxWidth: 720)
 
-                NavigationStack {
-                    if let item = selectedItem {
-                        if item.type == .comment {
-                            SavedCommentDetail(item: item, previewThreads: previewThreads)
-                        } else {
-                            StoryDetail(
-                                item: item,
-                                initialComments: previewComments,
-                                previewThreads: previewThreads,
-                                loadsAutomatically: loadsAutomatically
-                            )
-                            .id(item.id)
-                        }
-                    } else {
-                        ContentUnavailableView("Select a story", systemImage: "newspaper")
-                    }
-                }
-                .frame(minWidth: 352, maxWidth: .infinity, maxHeight: .infinity)
+                // Size the pane independently of the selected detail's ideal width.
+                Color.clear
+                    .frame(minWidth: 352, maxWidth: .infinity, maxHeight: .infinity)
+                    .overlay { readerDetail }
             }
+        }
+
+        private var readerDetail: some View {
+            NavigationStack {
+                if let item = selectedItem {
+                    if item.type == .comment {
+                        SavedCommentDetail(item: item, previewThreads: previewThreads)
+                    } else {
+                        StoryDetail(
+                            item: item,
+                            initialComments: previewComments,
+                            previewThreads: previewThreads,
+                            loadsAutomatically: loadsAutomatically
+                        )
+                    }
+                } else {
+                    ContentUnavailableView("Select a story", systemImage: "newspaper")
+                }
+            }
+            .id(selectedItem?.id)
         }
 
         @MainActor
